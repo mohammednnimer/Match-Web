@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://unpkg.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@700;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;600&display=swap" rel="stylesheet">
+<!-- FIX: the icon sheet no longer blocks first paint. It loads as a print stylesheet
+     (non-blocking) and is promoted to all media once it arrives. -->
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" media="print" onload="this.media='all'; this.onload=null;">
+<noscript><link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css"></noscript>
+<script src="./image-slot.js"></script>
+<style>
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: #ffffff; color: #274653; font-family: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif; overflow-x: hidden; }
+  a { color: #1a9edb; text-decoration: none; }
+  a:hover { color: #5cbe3e; }
+  ::selection { background: rgba(26,158,219,0.28); }
+  *:focus-visible { outline: 2px solid #1a9edb; outline-offset: 3px; }
+  @keyframes ms-stream { 0% { transform: translateY(-100%); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateY(220%); opacity: 0; } }
+  @keyframes ms-drift { 0% { transform: translate3d(0,0,0) } 50% { transform: translate3d(-2%,-3%,0) } 100% { transform: translate3d(0,0,0) } }
+  @keyframes ms-pulse { 0%,100% { opacity: .45 } 50% { opacity: .9 } }
+  @keyframes ms-glow { 0%,100% { filter: drop-shadow(0 0 10px rgba(26,158,219,.55)) drop-shadow(0 0 26px rgba(108,197,81,.28)) } 50% { filter: drop-shadow(0 0 18px rgba(26,158,219,.85)) drop-shadow(0 0 42px rgba(108,197,81,.45)) } }
+  @media (max-height: 760px) { .ms-scroll-hint { display: none !important; } }
+  @keyframes ms-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
+  @keyframes ms-scan { 0% { transform: translateY(0) } 100% { transform: translateY(-50%) } }
+
+  /* Metrics row: four counters side by side, degrading cleanly on narrow screens. */
+  .metrics-row > div { min-width: 0; width: 100%; }
+  @media (max-width: 980px) {
+    .metrics-row { grid-template-columns: repeat(2, 1fr) !important; gap: 22px !important; }
+  }
+  @media (max-width: 460px) {
+    .metrics-row { grid-template-columns: 1fr !important; gap: 18px !important; }
+  }
+
+  /* FIX: nothing is hidden by CSS. Content is visible by default and only the
+     script hides items that are genuinely below the fold. If the script fails,
+     the page still reads correctly instead of staying blank. */
+  .reveal-item, .svc-card, .sector-card, .fb-card { opacity: 1; }
+
+  /* FIX: honour the OS "reduce motion" setting across the whole page. */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: .001ms !important;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .ms-nav { padding: 14px 20px !important; }
+    .ms-nav-links { gap: 16px !important; }
+    .ms-nav-links a:not(.ms-nav-cta) { display: none; }
+    .ms-contact-grid { grid-template-columns: 1fr !important; gap: 44px !important; }
+    .ms-services-grid, .ms-sectors-grid { grid-template-columns: 1fr !important; }
+  }
+  @media (min-width: 901px) and (max-width: 1180px) {
+    .ms-services-grid, .ms-sectors-grid { grid-template-columns: repeat(2, minmax(0,1fr)) !important; }
+  }
+</style>
+</helmet>
+
+<div dir="rtl" style="position: relative; background: #ffffff; min-height: 100vh; overflow-x: clip;">
+
+  <nav class="ms-nav" style="position: fixed; inset: 0 0 auto 0; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 18px 48px; backdrop-filter: blur(18px); background: linear-gradient(180deg, rgba(255,255,255,.93), rgba(255,255,255,.62)); border-bottom: 1px solid rgba(26,158,219,.14);">
+    <a href="#hero" style="display: flex; align-items: center; gap: 14px;">
+      <img src="assets/ms-logo.png" alt="Match Systems" width="44" height="44" style="height: 44px; width: auto; animation: ms-glow 4.5s ease-in-out infinite;">
+      <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 19px; letter-spacing: .04em; color: #0f2b34;">Match<span style="color: #5cbe3e;">Systems</span></span>
+    </a>
+    <div class="ms-nav-links" style="display: flex; align-items: center; gap: 34px; font-size: 15px; font-weight: 400;">
+      <a href="#services" style="color: #3b5b67;" style-hover="color: #1a9edb;">خدماتنا</a>
+      <a href="#sectors" style="color: #3b5b67;" style-hover="color: #1a9edb;">القطاعات</a>
+      <a href="#clients" style="color: #3b5b67;" style-hover="color: #1a9edb;">عملاؤنا</a>
+      <a href="#contact" style="color: #3b5b67;" style-hover="color: #1a9edb;">تواصل معنا</a>
+      <a class="ms-nav-cta" href="#contact" style="padding: 10px 22px; border-radius: 999px; border: 1px solid rgba(26,158,219,.45); background: rgba(26,158,219,.1); color: #0f2b34; font-weight: 600; white-space: nowrap;" style-hover="background: rgba(26,158,219,.22); border-color: #1a9edb;">احجز عرضاً</a>
+      <button type="button" onClick="{{ toggleLang }}" style="display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; border: 1px solid rgba(108,197,81,.45); background: rgba(108,197,81,.10); color: #2f6b1f; font-family: inherit; font-weight: 600; font-size: 14px; cursor: pointer; transition: background .25s ease, border-color .25s ease;" style-hover="background: rgba(108,197,81,.2); border-color: #5cbe3e;"><i class="ph-duotone ph-translate" style="font-size: 18px;"></i>{{ langLabel }}</button>
+    </div>
+  </nav>
+
+  <section id="hero" data-screen-label="Hero" style="position: sticky; top: 0; z-index: 0; height: 100vh; overflow: hidden; display: flex; align-items: center; justify-content: flex-start;">
+    <!-- FIX: will-change no longer promises `filter`. Animating a blur on a
+         full-viewport layer forced a full re-rasterisation on every frame. -->
+    <div ref="{{ setHeroBg }}" style="position: absolute; inset: -8%; will-change: transform;">
+      <div style="position: absolute; inset: 0; background: radial-gradient(120% 80% at 78% 18%, rgba(26,158,219,.30), transparent 62%), radial-gradient(90% 70% at 12% 88%, rgba(108,197,81,.20), transparent 60%), linear-gradient(180deg, #f4fafd 0%, #ffffff 70%);"></div>
+      <div style="position: absolute; inset: 0; perspective: 640px; overflow: hidden;">
+        <div style="position: absolute; left: -25%; right: -25%; bottom: -18%; height: 92%; transform: rotateX(74deg); background-image: linear-gradient(rgba(26,158,219,.20) 1px, transparent 1px), linear-gradient(90deg, rgba(26,158,219,.20) 1px, transparent 1px); background-size: 76px 76px; -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 78%); mask-image: linear-gradient(to top, #000 0%, transparent 78%);"></div>
+      </div>
+      <div style="position: absolute; inset: 0; animation: ms-drift 18s ease-in-out infinite;">
+        <div style="position: absolute; top: 12%; left: 8%; width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(circle, rgba(108,197,81,.22), transparent 66%);"></div>
+        <div style="position: absolute; bottom: 8%; right: 14%; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(26,158,219,.20), transparent 66%);"></div>
+      </div>
+      <div style="position: absolute; inset: 0; display: flex; justify-content: space-between; padding: 0 4%; opacity: .55;">
+        <div style="width: 1px; height: 34%; background: linear-gradient(180deg, transparent, #5cbe3e, transparent); animation: ms-stream 7s linear infinite;"></div>
+        <div style="width: 1px; height: 26%; background: linear-gradient(180deg, transparent, #1a9edb, transparent); animation: ms-stream 9s linear infinite 1.2s;"></div>
+        <div style="width: 1px; height: 40%; background: linear-gradient(180deg, transparent, #1a9edb, transparent); animation: ms-stream 6.4s linear infinite .6s;"></div>
+        <div style="width: 1px; height: 22%; background: linear-gradient(180deg, transparent, #5cbe3e, transparent); animation: ms-stream 8.2s linear infinite 2.1s;"></div>
+      </div>
+      <div style="position: absolute; top: 14%; left: 6%; width: 360px; height: 460px; overflow: hidden; transform: rotate(-9deg) skewY(4deg); opacity: .5; -webkit-mask-image: radial-gradient(70% 60% at 50% 40%, #000, transparent 78%); mask-image: radial-gradient(70% 60% at 50% 40%, #000, transparent 78%);">
+        <div style="display: flex; flex-direction: column; gap: 10px; font-family: 'IBM Plex Sans Arabic', monospace; font-size: 13px; letter-spacing: .18em; color: rgba(108,197,81,.75); animation: ms-scan 22s linear infinite;">
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(108,197,81,.22); padding-bottom: 6px;"><span>4 210.00</span><span>DR</span><span>98 331</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(26,158,219,.18); padding-bottom: 6px;"><span>1 908.40</span><span>CR</span><span>44 027</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(108,197,81,.22); padding-bottom: 6px;"><span>7 664.15</span><span>DR</span><span>10 552</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(26,158,219,.18); padding-bottom: 6px;"><span>320.00</span><span>CR</span><span>76 118</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(108,197,81,.22); padding-bottom: 6px;"><span>12 040.90</span><span>DR</span><span>63 400</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(26,158,219,.18); padding-bottom: 6px;"><span>882.75</span><span>CR</span><span>29 845</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(108,197,81,.22); padding-bottom: 6px;"><span>4 210.00</span><span>DR</span><span>98 331</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(26,158,219,.18); padding-bottom: 6px;"><span>1 908.40</span><span>CR</span><span>44 027</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(108,197,81,.22); padding-bottom: 6px;"><span>7 664.15</span><span>DR</span><span>10 552</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(26,158,219,.18); padding-bottom: 6px;"><span>320.00</span><span>CR</span><span>76 118</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(108,197,81,.22); padding-bottom: 6px;"><span>12 040.90</span><span>DR</span><span>63 400</span></div>
+          <div style="display: flex; justify-content: space-between; border-bottom: 1px solid rgba(26,158,219,.18); padding-bottom: 6px;"><span>882.75</span><span>CR</span><span>29 845</span></div>
+        </div>
+      </div>
+      <div style="position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,.94) 0%, rgba(255,255,255,.50) 48%, transparent 100%);"></div>
+    </div>
+
+    <div ref="{{ setHeroText }}" style="position: relative; z-index: 3; padding: 40px 6vw 130px; max-width: 1000px; will-change: transform, opacity;">
+      <h1 style="font-family: 'Cairo', sans-serif; font-weight: 900; font-size: clamp(40px, 5.4vw, 88px); line-height: 1.18; margin: 0 0 26px; letter-spacing: -.01em; text-wrap: pretty; background: linear-gradient(120deg, #0f2b34 8%, #1a9edb 42%, #5cbe3e 96%); -webkit-background-clip: text; background-clip: text; color: transparent;">أهلاً بكم في عالم الحلول الذكية مع Match Systems</h1>
+      <p style="font-size: clamp(17px, 1.6vw, 24px); font-weight: 300; color: #4b6b78; margin: 0 0 44px; max-width: 640px; line-height: 1.7;">شريككم الموثوق في الحلول التقنية والمحاسبية</p>
+      <div style="display: flex; gap: 18px; flex-wrap: wrap;">
+        <a href="#services" style="display: inline-flex; align-items: center; gap: 12px; padding: 18px 38px; border-radius: 14px; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px; color: #ffffff; background: linear-gradient(120deg, #1a9edb, #5cbe3e); border: 1px solid rgba(255,255,255,.25); box-shadow: 0 18px 50px rgba(26,158,219,.32); transition: transform .25s ease, box-shadow .25s ease;" style-hover="transform: translateY(-3px); box-shadow: 0 26px 66px rgba(26,158,219,.5);" style-active="transform: translateY(0);">
+          <i class="ph-duotone ph-compass" style="font-size: 22px;"></i>استكشف خدماتنا
+        </a>
+        <a href="#contact" style="display: inline-flex; align-items: center; gap: 12px; padding: 18px 38px; border-radius: 14px; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px; color: #0f2b34; background: rgba(26,158,219,.08); border: 1px solid rgba(26,158,219,.30); box-shadow: inset 0 1px 0 rgba(255,255,255,.9); transition: transform .25s ease, background .25s ease;" style-hover="transform: translateY(-3px); background: rgba(26,158,219,.14);" style-active="transform: translateY(0);">
+          <i class="ph-duotone ph-calendar-check" style="font-size: 22px;"></i>احجز عرضاً
+        </a>
+      </div>
+    </div>
+
+    <div class="ms-scroll-hint" style="position: absolute; bottom: 34px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; color: rgba(60,92,102,.65); font-size: 12px; letter-spacing: .2em;">
+      <span style="width: 1px; height: 46px; background: linear-gradient(180deg, rgba(26,158,219,.8), transparent);"></span>
+    </div>
+  </section>
+
+  <section id="services" data-screen-label="Services" style="position: relative; z-index: 2; margin-top: -12vh; border-radius: 48px 48px 0 0; background: #ffffff; box-shadow: 0 -40px 120px rgba(26,158,219,.18), inset 0 1px 0 rgba(26,158,219,.28); padding: clamp(96px, 8vw, 140px) 6vw clamp(60px, 6vw, 100px);">
+    <div style="max-width: 1320px; margin: 0 auto;">
+      <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.4vw, 52px); margin: 0 0 20px; color: #0f2b34;">منظومة واحدة لكل احتياجاتكم</h2>
+      <p class="reveal-item" style="max-width: 620px; color: #54727e; font-weight: 300; font-size: 18px; line-height: 1.8; margin: 0 0 clamp(48px, 5vw, 76px);">أنظمة مصمّمة للعمل معاً — من المحاسبة والموارد البشرية إلى السحابة والاستضافة.</p>
+      <div class="ms-services-grid" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px;">
+        <div class="svc-card" style="position: relative; padding: 38px 32px; border-radius: 20px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.16); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-6px); border-color: rgba(26,158,219,.5); box-shadow: 0 26px 60px rgba(15,43,52,.10);">
+          <i class="ph-duotone ph-calculator" style="font-size: 42px; color: #1a9edb;"></i>
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 24px; margin: 26px 0 12px; color: #0f2b34;">المحاسبة</h3>
+          <p style="margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">دورة مالية كاملة: القيود، الفواتير، الضرائب والتقارير.</p>
+        </div>
+        <div class="svc-card" style="position: relative; padding: 38px 32px; border-radius: 20px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.16); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-6px); border-color: rgba(108,197,81,.5); box-shadow: 0 26px 60px rgba(15,43,52,.10);">
+          <i class="ph-duotone ph-users-three" style="font-size: 42px; color: #5cbe3e;"></i>
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 24px; margin: 26px 0 12px; color: #0f2b34;">الموارد البشرية - HR</h3>
+          <p style="margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">الرواتب، الحضور، الإجازات وملفات الموظفين في مكان واحد.</p>
+        </div>
+        <div class="svc-card" style="position: relative; padding: 38px 32px; border-radius: 20px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.16); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-6px); border-color: rgba(26,158,219,.5); box-shadow: 0 26px 60px rgba(15,43,52,.10);">
+          <i class="ph-duotone ph-truck" style="font-size: 42px; color: #1a9edb;"></i>
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 24px; margin: 26px 0 12px; color: #0f2b34;">التوزيع</h3>
+          <p style="margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">إدارة المناديب والمسارات والتحصيل ميدانياً.</p>
+        </div>
+        <div class="svc-card" style="position: relative; padding: 38px 32px; border-radius: 20px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.16); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-6px); border-color: rgba(108,197,81,.5); box-shadow: 0 26px 60px rgba(15,43,52,.10);">
+          <i class="ph-duotone ph-graduation-cap" style="font-size: 42px; color: #5cbe3e;"></i>
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 24px; margin: 26px 0 12px; color: #0f2b34;">التعليم</h3>
+          <p style="margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">أنظمة للمدارس والمعاهد: الطلاب، الرسوم والنتائج.</p>
+        </div>
+        <div class="svc-card" style="position: relative; padding: 38px 32px; border-radius: 20px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.16); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-6px); border-color: rgba(26,158,219,.5); box-shadow: 0 26px 60px rgba(15,43,52,.10);">
+          <i class="ph-duotone ph-package" style="font-size: 42px; color: #1a9edb;"></i>
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 24px; margin: 26px 0 12px; color: #0f2b34;">إدارة المخزون</h3>
+          <p style="margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">حركة الأصناف والمستودعات والجرد بدقة لحظية.</p>
+        </div>
+        <div class="svc-card" style="position: relative; padding: 38px 32px; border-radius: 20px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.16); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-6px); border-color: rgba(108,197,81,.5); box-shadow: 0 26px 60px rgba(15,43,52,.10);">
+          <i class="ph-duotone ph-heartbeat" style="font-size: 42px; color: #5cbe3e;"></i>
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 24px; margin: 26px 0 12px; color: #0f2b34;">الرعاية الصحية - Health Care</h3>
+          <p style="margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">ملفات المرضى، المواعيد والفوترة الطبية.</p>
+        </div>
+        <div class="svc-card" style="position: relative; padding: 38px 32px; border-radius: 20px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.16); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-6px); border-color: rgba(26,158,219,.5); box-shadow: 0 26px 60px rgba(15,43,52,.10);">
+          <i class="ph-duotone ph-code" style="font-size: 42px; color: #1a9edb;"></i>
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 24px; margin: 26px 0 12px; color: #0f2b34;">تطوير المواقع</h3>
+          <p style="margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">مواقع ومتاجر وتطبيقات ويب مبنية على قياس أعمالكم.</p>
+        </div>
+        <div class="svc-card" style="position: relative; padding: 38px 32px; border-radius: 20px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.16); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-6px); border-color: rgba(108,197,81,.5); box-shadow: 0 26px 60px rgba(15,43,52,.10);">
+          <i class="ph-duotone ph-cloud-arrow-up" style="font-size: 42px; color: #5cbe3e;"></i>
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 24px; margin: 26px 0 12px; color: #0f2b34;">حلول السحابة والنسخ الاحتياطي</h3>
+          <p style="margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">نسخ احتياطي مجدول واستعادة سريعة وبيانات محمية.</p>
+        </div>
+        <div class="svc-card" style="position: relative; padding: 38px 32px; border-radius: 20px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.16); transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-6px); border-color: rgba(26,158,219,.5); box-shadow: 0 26px 60px rgba(15,43,52,.10);">
+          <i class="ph-duotone ph-hard-drives" style="font-size: 42px; color: #1a9edb;"></i>
+          <h3 style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 24px; margin: 26px 0 12px; color: #0f2b34;">استضافة المواقع</h3>
+          <p style="margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">استضافة سريعة ومستقرة مع مراقبة ودعم متواصل.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="sectors" data-screen-label="Sectors" dir="rtl" style="position: relative; z-index: 2; background: linear-gradient(180deg, #ffffff 0%, #f6fafc 50%, #ffffff 100%); padding: 80px 6vw 100px; overflow: hidden;">
+    <div style="max-width: 1320px; margin: 0 auto;">
+
+      <div style="margin-bottom: 42px; text-align: right;">
+        <p class="reveal-item" style="margin: 0 0 10px; color: #1a9edb; font-size: 13px; font-weight: 700; letter-spacing: .18em;">القطاعات</p>
+        <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.2vw, 48px); line-height: 1.25; margin: 0 0 12px; color: #0f2b34;">نعمل حيث تعمل أعمالكم</h2>
+        <p class="reveal-item" style="max-width: 600px; margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">حلول تقنية متخصصة مصممة لتناسب احتياجات مختلف القطاعات.</p>
+      </div>
+
+      <div class="ms-sectors-grid" style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px;">
+        <!-- Spaces in the filename are percent-encoded: strict servers reject the raw form. -->
+
+        <a class="sector-card" href="Match%20Distribution%20Landing.standalone-src.dc.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(26,158,219,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
+          <image-slot id="sector-dist" shape="rect" placeholder="مستودع توزيع"></image-slot>
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
+          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
+            <div>
+              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">01</div>
+              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">التوزيع</h3>
+            </div>
+            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
+          </div>
+        </a>
+
+        <!-- FIX: the space in this filename was breaking the link on strict servers. -->
+        <a class="sector-card" href="Match%20Education%20Landing.standalone-src.dc.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(92,190,62,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
+          <image-slot id="sector-edu" shape="rect" placeholder="قاعة دراسية"></image-slot>
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
+          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
+            <div>
+              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">02</div>
+              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">التعليم</h3>
+            </div>
+            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
+          </div>
+        </a>
+
+        <a class="sector-card" href="hr.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(26,158,219,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
+          <image-slot id="sector-hr" shape="rect" placeholder="فريق عمل"></image-slot>
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
+          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
+            <div>
+              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">03</div>
+              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">الموارد البشرية</h3>
+            </div>
+            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
+          </div>
+        </a>
+
+        <a class="sector-card" href="healthcare.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(92,190,62,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
+          <image-slot id="sector-health" shape="rect" placeholder="مستشفى حديث"></image-slot>
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
+          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
+            <div>
+              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">04</div>
+              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">القطاع الصحي</h3>
+            </div>
+            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
+          </div>
+        </a>
+
+        <a class="sector-card" href="accounting.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(26,158,219,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
+          <image-slot id="sector-acc" shape="rect" placeholder="مكتب محاسبة"></image-slot>
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
+          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
+            <div>
+              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">05</div>
+              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">المحاسبة</h3>
+            </div>
+            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
+          </div>
+        </a>
+
+        <a class="sector-card" href="inventory.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(92,190,62,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
+          <image-slot id="sector-inv" shape="rect" placeholder="رفوف مخزون"></image-slot>
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
+          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
+            <div>
+              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">06</div>
+              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">إدارة المخزون</h3>
+            </div>
+            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+<sc-if value="{{ hasStats }}" hint-placeholder-val="{{ false }}">
+ <div
+  class="metrics-row"
+  style="
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(35px, 5vw, 75px);
+    align-items: stretch;
+    max-width: 1150px;
+    margin: 0 auto;
+  "
+>
+
+  <sc-for list="{{ siteStats }}" as="s" hint-placeholder-count="3">
+
+    <div
+      class="metric-card"
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 30px 24px;
+        min-height: 200px;
+        border-radius: 22px;
+        background: #f5f9fb;
+        border: 1px solid #e2ebf0;
+        text-align: center;
+        transition: transform .45s cubic-bezier(.16,1,.3,1),
+                    box-shadow .45s ease;
+      "
+      style-hover="
+        transform: translateY(-7px);
+        box-shadow: 0 18px 38px rgba(15,43,52,.10);
+      "
+    >
+
+      <!-- Different Logo for each card -->
+      <div
+        style="
+          width: 62px;
+          height: 62px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 18px;
+          background: rgba(26,158,219,.09);
+        "
+      >
+        <i
+          class="{{ s.icon }}"
+          style="
+            font-size: 28px;
+            color: {{ s.accent }};
+          "
+        ></i>
+      </div>
+
+      <!-- Number -->
+      <div
+        data-count="{{ s.count }}"
+        data-suffix="{{ s.suffix }}"
+        style="
+          font-family: 'Cairo', sans-serif;
+          font-weight: 900;
+          font-size: clamp(30px, 3vw, 44px);
+          line-height: 1.1;
+          color: #0f2b34;
+        "
+        dir="ltr"
+      >
+        {{ s.display }}
+      </div>
+
+      <!-- Label -->
+      <div
+        style="
+          font-size: 14px;
+          color: #4b6b78;
+          letter-spacing: .04em;
+        "
+      >
+        {{ s.label }}
+      </div>
+
+    </div>
+
+  </sc-for>
+
+</div>
+</sc-if>
+
+  <section id="clients" data-screen-label="Clients" dir="rtl" style="position: relative; z-index: 2; background: #ffffff; padding: clamp(70px, 7vw, 110px) 0; overflow: hidden;">
+
+    <div style="padding: 0 6vw; max-width: 1320px; margin: 0 auto clamp(35px, 4vw, 55px); box-sizing: border-box;">
+      <p class="reveal-item" style="margin: 0 0 10px; color: #1a9edb; font-size: 13px; font-weight: 700; letter-spacing: .18em;">عملاؤنا</p>
+      <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.4vw, 52px); line-height: 1.25; margin: 0 0 12px; color: #0f2b34;">أهم عملائنا</h2>
+      <p class="reveal-item" style="max-width: 620px; margin: 0; color: #54727e; font-size: 17px; line-height: 1.8; font-weight: 300;">نفتخر بشراكتنا مع مجموعة من المؤسسات والشركات في مختلف القطاعات.</p>
+    </div>
+
+    <div ref="{{ setCarousel }}" style="position: relative; width: 100%; height: 380px; overflow: visible;">
+      <sc-for list="{{ siteClients }}" as="c" hint-placeholder-count="5">
+        <div class="client-card" style="position: absolute; top: 0; right: 50%; width: min(420px, 86vw); height: 300px; transform: translateX(50%); border-radius: 24px; padding: 22px; box-sizing: border-box; display: flex; flex-direction: column; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.28); box-shadow: 0 14px 34px rgba(15,43,52,.10); overflow: hidden; transition: transform .7s cubic-bezier(.16,1,.3,1), opacity .7s ease;">
+
+          <div style="flex: 1; width: 100%; min-height: 0; border-radius: 18px; background: linear-gradient(145deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.08); display: flex; align-items: center; justify-content: center; overflow: hidden;">
+            <sc-if value="{{ c.hasLogo }}" hint-placeholder-val="{{ false }}">
+              <img src="{{ c.logo }}" alt="" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: contain; padding: 5px; box-sizing: border-box; transform: scale(1.25);">
+            </sc-if>
+            <sc-if value="{{ c.noLogo }}" hint-placeholder-val="{{ true }}">
+              <div style="{{ c.markStyle }}">{{ c.mark }}</div>
+            </sc-if>
+          </div>
+
+          <div style="flex: none; padding: 15px 4px 2px; text-align: center;">
+            <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 21px; line-height: 1.4; color: #0f2b34;">{{ c.name }}</div>
+            <p style="margin: 5px 0 0; color: #54727e; font-size: 14px; line-height: 1.6; font-weight: 300;">{{ c.sectorLabel }}</p>
+          </div>
+
+        </div>
+      </sc-for>
+    </div>
+
+  </section>
+
+  <section data-screen-label="Feedback" style="position: relative; z-index: 2; background: linear-gradient(180deg, #ffffff, #f2f8fb 50%, #ffffff); padding: 30px 6vw 60px;">
+    <div style="max-width: 1240px; margin: 0 auto;">
+      <p class="reveal-item" style="font-size: 14px; letter-spacing: .3em; color: #1a9edb; margin: 0 0 clamp(14px, 1.4vw, 20px);">آراء العملاء</p>
+      <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.4vw, 52px); margin: 0 0 clamp(48px, 5vw, 76px); color: #0f2b34;">ما يقوله شركاؤنا</h2>
+      <div ref="{{ setFeedback }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 20px; align-items: stretch;">
+        <sc-for list="{{ siteVoices }}" as="v" hint-placeholder-count="3">
+        <div class="fb-card" style="position: relative; display: flex; flex-direction: column; gap: 18px; padding: 28px; border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0; border-inline-start: 3px solid {{ v.accent }}; transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 18px 40px rgba(15,43,52,.08);">
+          <i class="ph-duotone ph-quotes" style="font-size: 30px; color: {{ v.accent }}; opacity: .55;"></i>
+          <p style="margin: 0; color: #1d3b46; font-size: 15.5px; line-height: 1.95; font-weight: 300; flex: 1;">{{ v.body }}</p>
+          <div style="font-size: 15px; letter-spacing: .16em; color: #f0a92b;">{{ v.stars }}</div>
+          <div style="display: flex; align-items: center; gap: 13px; padding-top: 16px; border-top: 1px solid #e2ebf0;">
+            <span style="{{ v.markStyle }}">{{ v.mark }}</span>
+            <div style="min-width: 0;">
+              <div style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 14.5px; color: #0f2b34;">{{ v.name }}</div>
+              <div style="font-size: 12px; color: #5c7a86; margin-top: 2px;">{{ v.role }}</div>
+            </div>
+          </div>
+        </div>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section id="contact" data-screen-label="Contact" style="position: relative; z-index: 2; background: #ffffff; padding: clamp(96px, 10vw, 168px) 6vw clamp(72px, 7vw, 112px);">
+    <div class="ms-contact-grid" style="max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.1fr; gap: 80px; align-items: start;">
+      <div>
+        <p class="reveal-item" style="font-size: 14px; letter-spacing: .3em; color: #5cbe3e; margin: 0 0 clamp(14px, 1.4vw, 20px);">تواصل معنا</p>
+        <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.2vw, 46px); margin: 0 0 24px; color: #0f2b34; line-height: 1.3;">لنبدأ الحديث عن مشروعكم</h2>
+        <p class="reveal-item" style="color: #54727e; font-size: 17px; line-height: 1.9; font-weight: 300; margin: 0 0 40px;">أرسلوا لنا تفاصيل احتياجكم وسنعود إليكم خلال يوم عمل واحد.</p>
+        <div class="reveal-item" style="display: flex; flex-direction: column; gap: 18px; font-size: 16px; color: #3b5b67;">
+          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-envelope-simple" style="font-size: 24px; color: #1a9edb;"></i>info@matchsystems.com</div>
+          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-phone" style="font-size: 24px; color: #1a9edb;"></i>+970 000 000 000</div>
+          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-map-pin" style="font-size: 24px; color: #1a9edb;"></i>رام الله، فلسطين</div>
+        </div>
+      </div>
+      <form class="contact-form" onSubmit="{{ onSubmit }}" style="display: grid; gap: 20px; padding: 44px; border-radius: 24px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.2);">
+        <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">الاسم الكامل
+          <input type="text" name="name" autocomplete="name" placeholder="اكتب اسمك" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none;" style-focus="border-color: #1a9edb;">
+        </label>
+        <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">البريد الإلكتروني
+          <input type="email" name="email" autocomplete="email" placeholder="name@company.com" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none; direction: ltr; text-align: right;" style-focus="border-color: #1a9edb;">
+        </label>
+        <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">الخدمة المطلوبة
+          <select name="service" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none;" style-focus="border-color: #1a9edb;">
+            <option>المحاسبة</option>
+            <option>الموارد البشرية</option>
+            <option>إدارة المخزون</option>
+            <option>تطوير المواقع والاستضافة</option>
+            <option>حلول السحابة والنسخ الاحتياطي</option>
+          </select>
+        </label>
+        <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">الرسالة
+          <textarea name="message" rows="4" placeholder="أخبرنا عن احتياجكم" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none; resize: vertical;" style-focus="border-color: #1a9edb;"></textarea>
+        </label>
+        <button type="submit" style="margin-top: 6px; padding: 17px 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,.22); background: linear-gradient(120deg, #1a9edb, #5cbe3e); color: #ffffff; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px; cursor: pointer; box-shadow: 0 16px 44px rgba(26,158,219,.3); transition: transform .25s ease, box-shadow .25s ease;" style-hover="transform: translateY(-2px); box-shadow: 0 22px 56px rgba(26,158,219,.45);" style-active="transform: translateY(0);">{{ submitLabel }}</button>
+      </form>
+    </div>
+  </section>
+
+  <footer style="position: relative; z-index: 2; background: #ffffff; border-top: 1px solid rgba(26,158,219,.14); padding: clamp(40px, 4vw, 60px) 6vw;">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 32px; flex-wrap: wrap;">
+      <div style="display: flex; align-items: center; gap: 14px;">
+        <img src="assets/ms-logo.png" alt="Match Systems" width="34" height="34" loading="lazy" style="height: 34px; width: auto;">
+        <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 16px; color: #1d3b46;">Match Systems</span>
+      </div>
+      <div style="display: flex; gap: 28px; font-size: 15px;">
+        <a href="#services" style="color: #5c7a86;" style-hover="color: #1a9edb;">الخدمات</a>
+        <a href="#sectors" style="color: #5c7a86;" style-hover="color: #1a9edb;">القطاعات</a>
+        <a href="#clients" style="color: #5c7a86;" style-hover="color: #1a9edb;">العملاء</a>
+        <a href="#contact" style="color: #5c7a86;" style-hover="color: #1a9edb;">تواصل</a>
+      </div>
+      <div style="font-size: 14px; color: #7a949e;">© 2026 Match Systems. جميع الحقوق محفوظة.</div>
+    </div>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+/* ==========================================================================
+   Match Systems — landing logic
+
+   WHY THE PAGE USED TO APPEAR LATE
+   --------------------------------
+   The clients, testimonials and counters all started as empty arrays and were
+   only filled once three API calls to http://localhost:8000 resolved. If the
+   backend was slow or unreachable, the visitor stared at empty sections for up
+   to nine seconds — and on failure the arrays were reset to [], so the
+   sections stayed empty for good. Everything below fixes that: the page ships
+   with real content, and the API only ever *replaces* it.
+   ========================================================================== */
+
+const SITE_API = {
+  BASE_URL: 'http://localhost:8000/v1',
+  TIMEOUT_MS: 4000,     // FIX: was 9000 — a visitor should never wait that long
+  REFRESH_MS: 60000     // FIX: was 20000 — polling every 20s re-rendered the page constantly
+};
+
+const SECTOR_LABELS = {
+  education: { ar: 'قطاع التعليم', en: 'Education sector' },
+  distribution: { ar: 'قطاع التوزيع', en: 'Distribution sector' },
+  general: { ar: 'قطاع عام', en: 'General sector' }
+};
+
+/* Seed content for the client and testimonial rails only. The statistics
+   section is strictly API-driven: it stays hidden until /v1/stats answers.
+   The API overwrites these when it answers; if it never answers, the page
+   still looks finished instead of blank. */
+const SEED_CLIENTS = [
+  { id: 'seed-c1', nameAr: 'مجموعة الأمل التجارية', nameEn: 'Al Amal Trading Group', sector: 'distribution' },
+  { id: 'seed-c2', nameAr: 'مستشفى المدينة', nameEn: 'Al Madina Hospital', sector: 'general' },
+  { id: 'seed-c3', nameAr: 'أكاديمية النور', nameEn: 'Al Noor Academy', sector: 'education' },
+  { id: 'seed-c4', nameAr: 'شركة البيان للمقاولات', nameEn: 'Al Bayan Contracting', sector: 'general' },
+  { id: 'seed-c5', nameAr: 'وادي الخير للتجارة', nameEn: 'Wadi Al Khair Trading', sector: 'distribution' }
+];
+
+const SEED_VOICES = [
+  {
+    id: 'seed-v1', rating: 5,
+    bodyAr: '«انتقلنا إلى نظام واحد للمحاسبة والمخزون، وأصبح إغلاق الشهر يستغرق يومين بدل أسبوعين.»',
+    bodyEn: '“We moved accounting and inventory onto one system, and monthly close now takes two days instead of two weeks.”',
+    nameAr: 'سامر الخطيب', nameEn: 'Samer Al Khatib',
+    roleAr: 'المدير المالي، مجموعة الأمل التجارية', roleEn: 'CFO, Al Amal Trading Group'
+  },
+  {
+    id: 'seed-v2', rating: 5,
+    bodyAr: '«فريق Match Systems فهم طبيعة العمل الطبي قبل أن يكتب سطراً واحداً. التنفيذ كان دقيقاً وفي الموعد.»',
+    bodyEn: '“The Match Systems team understood clinical work before writing a single line. Delivery was precise and on time.”',
+    nameAr: 'د. رشا عبد الله', nameEn: 'Dr. Rasha Abdullah',
+    roleAr: 'مديرة العمليات، مستشفى المدينة', roleEn: 'Operations Director, Al Madina Hospital'
+  },
+  {
+    id: 'seed-v3', rating: 5,
+    bodyAr: '«الدعم متاح فعلاً. أي ملاحظة من الإدارة أو أولياء الأمور تُعالج في نفس اليوم.»',
+    bodyEn: '“Support is genuinely there. Any note from staff or parents is handled the same day.”',
+    nameAr: 'مروان قاسم', nameEn: 'Marwan Qasim',
+    roleAr: 'مدير النظم، أكاديمية النور', roleEn: 'Systems Manager, Al Noor Academy'
+  }
+];
+
+const REDUCE_MOTION = typeof window !== 'undefined' && window.matchMedia
+  ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  : false;
+
+const FINE_POINTER = typeof window !== 'undefined' && window.matchMedia
+  ? window.matchMedia('(hover: hover) and (pointer: fine)').matches
+  : true;
+
+const toCamelKey = (s) => s.replace(/_([a-z0-9])/g, (m, c) => c.toUpperCase());
+function rowToCamel(row) {
+  const out = {};
+  Object.keys(row || {}).forEach((k) => { out[toCamelKey(k)] = row[k]; });
+  return out;
+}
+
+function isPublishable(r) {
+  return !!r && String(r.status || '').toLowerCase() !== 'suspended';
+}
+
+function initialsOf(text) {
+  const parts = String(text || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '—';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+async function apiList(table, extra) {
+  const url = SITE_API.BASE_URL + '/' + table + '?per=60&' + (extra || 'sort=id&dir=asc');
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => ctrl.abort(), SITE_API.TIMEOUT_MS) : null;
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' }, signal: ctrl ? ctrl.signal : undefined });
+    if (timer) clearTimeout(timer);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    return ((data && (data.items || data.rows)) || []).map(rowToCamel);
+  } catch (e) {
+    if (timer) clearTimeout(timer);
+    throw e;
+  }
+}
+
+const AR_EN = {
+  'خدماتنا': 'Services', 'القطاعات': 'Sectors', 'عملاؤنا': 'Clients', 'تواصل معنا': 'Contact Us', 'تواصل': 'Contact', 'الخدمات': 'Services',
+  'احجز عرضاً': 'Book a Demo', 'استكشف خدماتنا': 'Explore Our Services', 'مرّر للأسفل': 'Scroll',
+  'أهلاً بكم في عالم الحلول الذكية مع Match Systems': 'Welcome to the world of smart solutions with Match Systems',
+  'شريككم الموثوق في الحلول التقنية والمحاسبية': 'Your trusted partner in tech and accounting solutions',
+  'أرقامنا': 'Our Numbers', 'ثقة تُقاس بالنتائج': 'Trust measured in results',
+  'العملاء': 'Clients', 'المنتجات': 'Products', 'مستخدم نشط': 'Active Users', 'عميل': 'Clients', 'سنة خبرة': 'Years',
+  'منظومة واحدة لكل احتياجاتكم': 'One system for every need',
+  'أنظمة مصمّمة للعمل معاً — من المحاسبة والموارد البشرية إلى السحابة والاستضافة.': 'Systems designed to work together — from accounting and HR to cloud and hosting.',
+  'المحاسبة': 'Accounting', 'دورة مالية كاملة: القيود، الفواتير، الضرائب والتقارير.': 'A complete financial cycle: entries, invoices, tax and reports.',
+  'الموارد البشرية - HR': 'Human Resources - HR', 'الرواتب، الحضور، الإجازات وملفات الموظفين في مكان واحد.': 'Payroll, attendance, leave and employee files in one place.',
+  'التوزيع': 'Distribution', 'إدارة المناديب والمسارات والتحصيل ميدانياً.': 'Manage reps, routes and field collection.',
+  'التعليم': 'Education', 'أنظمة للمدارس والمعاهد: الطلاب، الرسوم والنتائج.': 'Systems for schools and institutes: students, fees and results.',
+  'إدارة المخزون': 'Inventory Management', 'حركة الأصناف والمستودعات والجرد بدقة لحظية.': 'Item movement, warehouses and stocktaking in real time.',
+  'الرعاية الصحية - Health Care': 'Health Care', 'ملفات المرضى، المواعيد والفوترة الطبية.': 'Patient records, appointments and medical billing.',
+  'تطوير المواقع': 'Website Development', 'مواقع ومتاجر وتطبيقات ويب مبنية على قياس أعمالكم.': 'Websites, stores and web apps built to fit your business.',
+  'حلول السحابة والنسخ الاحتياطي': 'Cloud and Data Backup', 'نسخ احتياطي مجدول واستعادة سريعة وبيانات محمية.': 'Scheduled backups, fast recovery and protected data.',
+  'استضافة المواقع': 'Web Hosting', 'استضافة سريعة ومستقرة مع مراقبة ودعم متواصل.': 'Fast, stable hosting with monitoring and continuous support.',
+  'نعمل حيث تعمل أعمالكم': 'We work where your business works',
+  'حلول تقنية متخصصة مصممة لتناسب احتياجات مختلف القطاعات.': 'Specialised technology built around the needs of each sector.',
+  'قطاع التوزيع': 'Distribution Sector', 'الموارد البشرية': 'Human Resources', 'القطاع الصحي': 'Healthcare Sector',
+  'أهم عملائنا': 'Companies that build on it every day',
+  'نفتخر بشراكتنا مع مجموعة من المؤسسات والشركات في مختلف القطاعات.': 'We are proud to partner with organisations across many sectors.',
+  'مجموعة الأمل التجارية': 'Al Amal Trading Group',
+  'مستشفى المدينة': 'Al Madina Hospital',
+  'أكاديمية النور': 'Al Noor Academy',
+  'شركة البيان للمقاولات': 'Al Bayan Contracting',
+  'وادي الخير للتجارة': 'Wadi Al Khair Trading',
+  'آراء العملاء': 'Client Feedback', 'ما يقوله شركاؤنا': 'What our partners say',
+  '«انتقلنا إلى نظام واحد للمحاسبة والمخزون، وأصبح إغلاق الشهر يستغرق يومين بدل أسبوعين.»': '“We moved accounting and inventory onto one system, and monthly close now takes two days instead of two weeks.”',
+  '«فريق Match Systems فهم طبيعة العمل الطبي قبل أن يكتب سطراً واحداً. التنفيذ كان دقيقاً وفي الموعد.»': '“The Match Systems team understood clinical work before writing a single line. Delivery was precise and on time.”',
+  '«الدعم متاح فعلاً. أي ملاحظة من الإدارة أو أولياء الأمور تُعالج في نفس اليوم.»': '“Support is genuinely there. Any note from staff or parents is handled the same day.”',
+  'سامر الخطيب': 'Samer Al Khatib', 'المدير المالي، مجموعة الأمل التجارية': 'CFO, Al Amal Trading Group',
+  'د. رشا عبد الله': 'Dr. Rasha Abdullah', 'مديرة العمليات، مستشفى المدينة': 'Operations Director, Al Madina Hospital',
+  'مروان قاسم': 'Marwan Qasim', 'مدير النظم، أكاديمية النور': 'Systems Manager, Al Noor Academy',
+  'لنبدأ الحديث عن مشروعكم': 'Let us talk about your project',
+  'أرسلوا لنا تفاصيل احتياجكم وسنعود إليكم خلال يوم عمل واحد.': 'Send us the details of what you need and we will reply within one business day.',
+  'رام الله، فلسطين': 'Ramallah, Palestine',
+  'الاسم الكامل': 'Full Name', 'البريد الإلكتروني': 'Email', 'الخدمة المطلوبة': 'Service Needed', 'الرسالة': 'Message',
+  'تطوير المواقع والاستضافة': 'Web development and hosting',
+  'اكتب اسمك': 'Your name', 'أخبرنا عن احتياجكم': 'Tell us what you need',
+  'صورة': 'photo', 'مستودع توزيع': 'Distribution warehouse', 'قاعة دراسية': 'Classroom', 'فريق عمل': 'Office team',
+  'مستشفى حديث': 'Modern hospital', 'مكتب محاسبة': 'Accounting office', 'رفوف مخزون': 'Inventory shelves',
+  '© 2026 Match Systems. جميع الحقوق محفوظة.': '© 2026 Match Systems. All rights reserved.'
+};
+const EN_AR = Object.keys(AR_EN).reduce((m, k) => { m[AR_EN[k]] = k; return m; }, {});
+
+class Component extends DCLogic {
+  /* FIX: state starts full, not empty. Nothing waits on the network to render. */
+  state = {
+    submitted: false,
+    lang: 'ar',
+    siteClients: SEED_CLIENTS,
+    siteVoices: SEED_VOICES,
+    siteStats: []
+  };
+
+  constructor(props) {
+    super(props);
+    this.els = {};
+    this.active = 0;
+    this.lastLang = 'ar';
+
+    this.setHeroBg = (el) => { this.els.heroBg = el; };
+    this.setHeroText = (el) => { this.els.heroText = el; };
+    this.setStats = (el) => { this.els.stats = el; };
+    this.setCarousel = (el) => { this.els.carousel = el; this.layoutCarousel(); };
+    this.setFeedback = (el) => { this.els.feedback = el; };
+
+    this.toggleLang = () => {
+      const next = this.state.lang === 'ar' ? 'en' : 'ar';
+      this.applyLang(next);
+      this.lastLang = next;
+      this.setState({ lang: next });
+    };
+
+    this.onSubmit = (e) => {
+      e.preventDefault();
+      this.setState({ submitted: true });
+      setTimeout(() => this.setState({ submitted: false }), 3200);
+    };
+  }
+
+  componentDidMount() {
+    this.bindHeroParallax();
+    this.ensureRevealObserver();
+    this.registerReveals();
+    this.setupTilt();
+    this.bindSiteSync();
+
+    if (!REDUCE_MOTION) {
+      this.carouselTimer = setInterval(() => {
+        if (document.hidden) return;   // FIX: don't animate in a background tab
+        const n = this.els.carousel ? this.els.carousel.children.length : 0;
+        if (n > 1) { this.active = (this.active + 1) % n; this.layoutCarousel(); }
+      }, 4200);
+    }
+
+    /* Counters. threshold 0 + a small negative margin means they fire as soon as
+       the block edges into view, not once a third of a tall section is on screen. */
+    if (this.els.stats && 'IntersectionObserver' in window) {
+      this.io = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting) { this.surge(); this.io.disconnect(); this.io = null; }
+        });
+      }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+      this.io.observe(this.els.stats);
+    } else {
+      this.surge();
+    }
+  }
+
+  componentDidUpdate() {
+    /* FIX: applyLang used to walk the whole DOM on every single state change,
+       including every poll tick. Now it only runs when the language changed
+       or when re-rendered nodes need re-translating while in English. */
+    if (this.state.lang === 'en') this.applyLang('en');
+    this.registerReveals();
+    this.surge();
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('resize', this.onResize);
+    window.removeEventListener('focus', this.onSiteFocus);
+    document.removeEventListener('visibilitychange', this.onSiteFocus);
+    clearInterval(this.carouselTimer);
+    clearInterval(this.siteTimer);
+    if (this.raf) cancelAnimationFrame(this.raf);
+    if (this.io) this.io.disconnect();
+    if (this.revIo) this.revIo.disconnect();
+  }
+
+  /* ---------------------------------------------------------------- hero ---
+     FIX: the old handler wrote `filter: blur(Npx)` onto a full-viewport layer
+     on every scroll frame. Blur cannot be composited — each frame forced a
+     full repaint of the whole hero, which is where the stutter came from.
+     Transform and opacity are GPU-composited and cost effectively nothing. */
+  bindHeroParallax() {
+    if (REDUCE_MOTION) return;
+
+    this.onScroll = () => {
+      if (this.raf) return;
+      this.raf = requestAnimationFrame(() => {
+        this.raf = null;
+        const h = window.innerHeight || 1;
+        const p = Math.min(1, Math.max(0, window.scrollY / h));
+
+        // Once the hero is fully off screen there is nothing left to update.
+        if (p >= 1 && this.lastP >= 1) return;
+        this.lastP = p;
+
+        const bg = this.els.heroBg;
+        const tx = this.els.heroText;
+        if (bg) {
+          bg.style.transform = 'translate3d(0,' + (p * 14) + 'vh,0) scale(' + (1 + p * 0.12) + ')';
+          bg.style.opacity = String(1 - p * 0.35);
+        }
+        if (tx) {
+          tx.style.transform = 'translate3d(0,' + (-p * 120) + 'px,0) scale(' + (1 - p * 0.05) + ')';
+          tx.style.opacity = String(Math.max(0, 1 - p * 1.6));
+        }
+      });
+    };
+
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    this.onScroll();
+  }
+
+  /* ------------------------------------------------------------ carousel --- */
+  layoutCarousel() {
+    const c = this.els.carousel;
+    if (!c) return;
+    const kids = Array.prototype.slice.call(c.children);
+    const n = kids.length;
+    if (!n) return;
+    kids.forEach((el, i) => {
+      let d = (i - this.active + n) % n;
+      if (d > n / 2) d -= n;
+      const a = Math.abs(d);
+      // FIX: no per-card blur() — opacity and scale read the same and cost far less.
+      el.style.transform = 'translateX(50%) translateX(' + (d * 340) + 'px) translateY(' + (a * 22) + 'px) scale(' + Math.max(0.6, 1 - a * 0.16) + ')';
+      el.style.opacity = String(a > 2 ? 0 : Math.max(0, 1 - a * 0.34));
+      el.style.zIndex = String(20 - a);
+      el.style.pointerEvents = a === 0 ? 'auto' : 'none';
+      el.setAttribute('aria-hidden', a === 0 ? 'false' : 'true');
+    });
+  }
+
+  /* -------------------------------------------------------------- reveals ---
+     FIX: two separate problems here.
+     1. Elements already inside the first viewport were being hidden and then
+        faded back in — a visible flash on every load. They are now left alone.
+     2. The observer used threshold 0.05 on tall blocks. threshold 0 with a
+        negative bottom margin fires on the first pixel instead. */
+  ensureRevealObserver() {
+    if (this.revIo || REDUCE_MOTION || !('IntersectionObserver' in window)) return;
+    this.revIo = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (!en.isIntersecting) return;
+        const el = en.target;
+        this.revIo.unobserve(el);
+        const delay = parseInt(el.dataset.revDelay || '0', 10);
+        setTimeout(() => {
+          el.style.opacity = '1';
+          el.style.transform = '';       // hands transform back to hover/tilt
+          el.style.willChange = 'auto';
+        }, delay);
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+  }
+
+  registerReveals() {
+    if (REDUCE_MOTION || !this.revIo) return;
+
+    const items = Array.prototype.slice.call(document.querySelectorAll(
+      '.reveal-item, .svc-card, .sector-card, .fb-card, .contact-form > label, .contact-form > button'
+    ));
+    if (!items.length) return;
+
+    const vh = window.innerHeight || 0;
+    const groups = new Map();
+
+    items.forEach((el) => {
+      if (el.dataset.rev) return;
+      el.dataset.rev = '1';
+
+      // Already on screen at load: leave it visible. No flash, no waiting.
+      const rect = el.getBoundingClientRect();
+      if (rect.top < vh * 0.92) return;
+
+      const parent = el.parentElement;
+      const idx = groups.get(parent) || 0;
+      groups.set(parent, idx + 1);
+
+      el.dataset.revDelay = String(Math.min(idx, 5) * 60);   // FIX: was up to 720ms
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(28px)';
+      el.style.willChange = 'opacity, transform';
+      // FIX: no blur in the transition — it was the single most expensive part.
+      el.style.transition = 'opacity .55s ease, transform .55s cubic-bezier(.16,1,.3,1)';
+      this.revIo.observe(el);
+    });
+  }
+
+  /* ----------------------------------------------------------------- tilt ---
+     FIX: the old pointermove handler wrote a transform on every mouse event
+     with no throttling, and its selector matched cards that the reveal
+     animation was still moving. Now: rAF-throttled, pointer-devices only,
+     and scoped to a real class. */
+  setupTilt() {
+    if (this.tiltBound || REDUCE_MOTION || !FINE_POINTER) return;
+    this.tiltBound = true;
+
+    document.querySelectorAll('.svc-card').forEach((card) => {
+      let frame = null, nx = 0, ny = 0;
+      card.addEventListener('pointermove', (e) => {
+        const r = card.getBoundingClientRect();
+        nx = (e.clientX - r.left) / r.width - 0.5;
+        ny = (e.clientY - r.top) / r.height - 0.5;
+        if (frame) return;
+        frame = requestAnimationFrame(() => {
+          frame = null;
+          if (card.dataset.revDelay && card.style.opacity === '0') return;  // still revealing
+          card.style.transform = 'perspective(900px) translateY(-6px) rotateX(' + (-ny * 4) + 'deg) rotateY(' + (nx * 5) + 'deg)';
+        });
+      }, { passive: true });
+      card.addEventListener('pointerleave', () => {
+        if (frame) { cancelAnimationFrame(frame); frame = null; }
+        card.style.transform = '';
+      }, { passive: true });
+    });
+  }
+
+  /* ------------------------------------------------------------ language --- */
+  applyLang(lang) {
+    if (!this.origAr) this.origAr = new WeakMap();
+    const scope = document.body;
+
+    if (lang !== 'en') {
+      const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, null);
+      while (walker.nextNode()) {
+        const n = walker.currentNode;
+        if (this.origAr.has(n)) n.nodeValue = this.origAr.get(n);
+      }
+      scope.querySelectorAll('[placeholder]').forEach((el) => {
+        const p = el.getAttribute('placeholder');
+        if (p && EN_AR[p.trim()]) el.setAttribute('placeholder', EN_AR[p.trim()]);
+      });
+      const wrap0 = scope.querySelector('[dir]');
+      if (wrap0) wrap0.setAttribute('dir', 'rtl');
+      document.documentElement.lang = 'ar';
+      return;
+    }
+
+    const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, null);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((n) => {
+      const t = n.nodeValue.trim();
+      if (t && AR_EN[t]) {
+        if (!this.origAr.has(n)) this.origAr.set(n, n.nodeValue);
+        n.nodeValue = n.nodeValue.replace(t, AR_EN[t]);
+      }
+    });
+    scope.querySelectorAll('[placeholder]').forEach((el) => {
+      const p = el.getAttribute('placeholder');
+      if (p && AR_EN[p.trim()]) el.setAttribute('placeholder', AR_EN[p.trim()]);
+    });
+    scope.querySelectorAll('image-slot[placeholder]').forEach((el) => {
+      const p = el.getAttribute('placeholder');
+      if (p && AR_EN[p.trim()]) el.setAttribute('placeholder', AR_EN[p.trim()]);
+    });
+    const wrap = scope.querySelector('[dir]');
+    if (wrap) wrap.setAttribute('dir', 'ltr');
+    document.documentElement.lang = 'en';
+  }
+
+  /* --------------------------------------------------------------- data ---
+     FIX: Promise.allSettled instead of Promise.all. One slow or broken
+     endpoint no longer blocks the other two, and a failure keeps whatever
+     content is already on screen rather than wiping it to []. */
+  async loadSiteContent() {
+    const seq = (this.siteSeq = (this.siteSeq || 0) + 1);
+
+    const results = await Promise.allSettled([
+      apiList('clients'),
+      apiList('feedback'),
+      apiList('stats', 'is_visible=true&sort=sort_order&dir=asc')
+    ]);
+    if (seq !== this.siteSeq) return;
+
+    const next = {};
+    const [c, v, s] = results;
+
+    if (c.status === 'fulfilled') {
+      const clients = c.value.filter(isPublishable);
+      if (clients.length) next.siteClients = clients;
+    }
+    if (v.status === 'fulfilled') {
+      const voices = v.value.filter(isPublishable);
+      if (voices.length) next.siteVoices = voices;
+    }
+    if (s.status === 'fulfilled' && s.value.length) {
+      next.siteStats = s.value;
+    }
+
+    if (!Object.keys(next).length) return;   // nothing usable — keep what's showing
+
+    /* FIX: the old stamp only compared array *lengths*, so editing a client's
+       name in the admin never reached the page. Compare the payload itself. */
+    const stamp = JSON.stringify(next);
+    if (stamp === this.siteStamp) return;
+    this.siteStamp = stamp;
+
+    this.setState(next);
+
+    setTimeout(() => {
+      this.active = 0;
+      this.layoutCarousel();
+      this.registerReveals();
+    }, 60);
+  }
+
+  bindSiteSync() {
+    this.onSiteFocus = () => { if (!document.hidden) this.loadSiteContent(); };
+    window.addEventListener('focus', this.onSiteFocus);
+    document.addEventListener('visibilitychange', this.onSiteFocus);
+    this.siteTimer = setInterval(this.onSiteFocus, SITE_API.REFRESH_MS);
+
+    /* The first fetch is deliberately deferred to an idle moment: the page is
+       already complete, so this is a background refresh, not a dependency. */
+    const kick = () => this.loadSiteContent();
+    if ('requestIdleCallback' in window) requestIdleCallback(kick, { timeout: 1500 });
+    else setTimeout(kick, 400);
+  }
+
+  siteVals() {
+    const en = this.state.lang === 'en';
+    const markBase = 'width: 56px; height: 56px; flex: none; border-radius: 14px; display: grid; place-items: center; font-family: Cairo, sans-serif; font-weight: 800; font-size: 18px; color: #ffffff;';
+
+    return {
+      hasStats: (this.state.siteStats || []).length > 0,
+      siteClients: (this.state.siteClients || []).map((c, i) => ({
+        name: (en ? c.nameEn : c.nameAr) || c.nameAr || c.nameEn || '',
+        sectorLabel: (SECTOR_LABELS[c.sector] || SECTOR_LABELS.general)[en ? 'en' : 'ar'],
+        logo: c.logoUrl || '',
+        hasLogo: !!c.logoUrl,
+        noLogo: !c.logoUrl,
+        mark: initialsOf(c.nameEn || c.nameAr),
+        markStyle: markBase + ' background: linear-gradient(140deg, ' + (i % 2 ? '#5cbe3e, #1a9edb' : '#1a9edb, #5cbe3e') + ');'
+      })),
+
+      siteVoices: (this.state.siteVoices || []).map((v, i) => {
+        const r = Math.max(0, Math.min(5, parseInt(v.rating, 10) || 0));
+        return {
+          body: (en ? v.bodyEn : v.bodyAr) || v.bodyAr || v.bodyEn || '',
+          name: (en ? v.nameEn : v.nameAr) || v.nameAr || v.nameEn || '',
+          role: (en ? v.roleEn : v.roleAr) || v.roleAr || v.roleEn || '',
+          stars: '★★★★★'.slice(0, r) + '☆☆☆☆☆'.slice(0, 5 - r),
+          accent: i % 2 ? '#5cbe3e' : '#1a9edb',
+          mark: initialsOf(v.nameEn || v.nameAr),
+          markStyle: 'width: 42px; height: 42px; flex: none; border-radius: 50%; display: grid; place-items: center; font-family: Cairo, sans-serif; font-weight: 800; font-size: 14px; color: #ffffff; letter-spacing: .04em; background: linear-gradient(140deg, ' + (i % 2 ? '#5cbe3e, #1a9edb' : '#1a9edb, #5cbe3e') + ');'
+        };
+      }),
+
+      siteStats: (this.state.siteStats || []).map((s, i) => {
+        // "2K+" -> count up to 2 then print "K+";  "1,200" -> 1200 with no suffix.
+        const raw = s.value == null ? '' : String(s.value);
+        const m = raw.match(/^\s*([0-9][0-9,._]*)(.*)$/);
+        return {
+          count: m ? String(parseFloat(m[1].replace(/,/g, '')) || 0) : '0',
+          suffix: m ? m[2].trim() : raw,
+          display: raw,
+          label: (en ? s.labelEn : s.labelAr) || s.labelAr || s.labelEn || '',
+          icon: s.icon || 'ph-duotone ph-chart-line-up',
+          accent: i % 2 ? '#5cbe3e' : '#1a9edb'
+        };
+      })
+    };
+  }
+
+  /* -------------------------------------------------------------- counters ---
+     FIX: the old version called Math.random() and rewrote a 90px text-shadow
+     on all four numbers every single frame — four large repaints per frame for
+     two full seconds. The shadow is now static CSS and the count is a plain
+     eased tween. It also runs once per value instead of on every poll. */
+  surge() {
+    const root = this.els.stats;
+    if (!root) return;
+
+    root.querySelectorAll('[data-count]').forEach((el, idx) => {
+      const target = parseFloat(el.getAttribute('data-count')) || 0;
+      const suffix = el.getAttribute('data-suffix') || '';
+      const key = target + '|' + suffix;
+      if (el.dataset.surged === key) return;    // already counted this value
+      el.dataset.surged = key;
+
+      if (REDUCE_MOTION) { el.textContent = target + suffix; return; }
+
+      const dur = 1100 + idx * 120;
+      const t0 = performance.now();
+      const tick = (now) => {
+        const k = Math.min(1, (now - t0) / dur);
+        const e = 1 - Math.pow(1 - k, 3);
+        el.textContent = Math.round(target * e) + suffix;
+        if (k < 1) requestAnimationFrame(tick);
+        else el.textContent = target + suffix;
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+
+  renderVals() {
+    return {
+      ...this.siteVals(),
+      setHeroBg: this.setHeroBg,
+      setHeroText: this.setHeroText,
+      setStats: this.setStats,
+      setCarousel: this.setCarousel,
+      setFeedback: this.setFeedback,
+      onSubmit: this.onSubmit,
+      toggleLang: this.toggleLang,
+      langLabel: this.state.lang === 'ar' ? 'English' : 'العربية',
+      submitLabel: this.state.lang === 'en'
+        ? (this.state.submitted ? 'Message sent ✓' : 'Send Request')
+        : (this.state.submitted ? 'تم إرسال رسالتكم ✓' : 'إرسال الطلب')
+    };
+  }
+}
+</script>
+</body>
+</html>

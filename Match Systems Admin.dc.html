@@ -1,0 +1,1625 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob:; script-src * 'unsafe-inline' 'unsafe-eval'; connect-src * 'unsafe-inline'; img-src * data: blob:;">
+
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+<script src="./image-slot.js"></script>
+<style>
+  :root, [data-theme="light"] { --bg: #f4f7fa; --panel: rgba(255,255,255,.86); --card: rgba(255,255,255,.92); --field: #ffffff; --line: rgba(15,43,52,.10); --hover: rgba(0,153,222,.07); --text: #14313c; --muted: #6b8894; --shadow: 0 14px 34px rgba(15,43,52,.07); }
+  [data-theme="dark"] { --bg: #0d1620; --panel: rgba(18,31,42,.86); --card: rgba(22,37,49,.86); --field: rgba(11,21,29,.9); --line: rgba(0,153,222,.20); --hover: rgba(0,153,222,.14); --text: #e6f2f7; --muted: #8bacba; --shadow: 0 16px 40px rgba(0,0,0,.42); }
+  body { margin: 0; font-family: 'IBM Plex Sans Arabic', sans-serif; background: var(--bg); color: var(--text); }
+  a { color: #0099de; text-decoration: none; }
+  a:hover { color: #7bc643; }
+  input, select, textarea, button { font-family: inherit; }
+  *:focus-visible { outline: 2px solid #0099de; outline-offset: 2px; }
+  ::selection { background: rgba(0,153,222,.22); }
+  @keyframes ad-in { from { opacity: 0; transform: translateY(18px) } to { opacity: 1; transform: none } }
+  @keyframes ad-toast { 0% { opacity: 0; transform: translateY(24px) scale(.96) } 10% { opacity: 1; transform: none } 86% { opacity: 1; transform: none } 100% { opacity: 0; transform: translateY(-8px) scale(.98) } }
+  @keyframes ad-pulse { 0%,100% { opacity: .5; transform: scale(1) } 50% { opacity: 1; transform: scale(1.35) } }
+  @keyframes ad-rise { from { transform: scaleY(.02) } to { transform: scaleY(1) } }
+  @keyframes ad-pop { from { opacity: 0; transform: translateY(20px) scale(.97) } to { opacity: 1; transform: none } }
+</style>
+</helmet>
+
+<div dir="rtl" style="{{ shellStyle }} display: grid; grid-template-columns: auto 1fr; min-height: 100vh; background: var(--bg); color: var(--text); transition: background .5s ease, color .5s ease;">
+
+  <aside style="width: {{ sidebarWidth }}; position: sticky; top: 0; height: 100vh; box-sizing: border-box; padding: 22px 14px; display: flex; flex-direction: column; gap: 8px; background: var(--panel); border-left: 1px solid var(--line); backdrop-filter: blur(20px); transition: width .42s cubic-bezier(.16,1,.3,1);">
+    <div style="display: flex; align-items: center; gap: 12px; padding: 6px 10px 20px;">
+      <img src="assets/ms-logo.png" alt="Match Systems" style="height: 32px; width: auto; flex: none; filter: drop-shadow(0 0 12px rgba(0,153,222,.5));">
+      <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 15px; white-space: nowrap; opacity: {{ labelOpacity }}; transition: opacity .3s ease;">Match Systems</span>
+    </div>
+    <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 6px;">
+    <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="8">
+      <button type="button" onClick="{{ item.go }}" title="{{ item.label }}" style="{{ item.style }}">
+        <span style="{{ item.barStyle }}"></span>
+        <i class="{{ item.icon }}" style="font-size: 20px; flex: none;"></i>
+        <span style="white-space: nowrap; opacity: {{ labelOpacity }}; transition: opacity .3s ease;">{{ item.label }}</span>
+      </button>
+    </sc-for>
+    </div>
+    <div style="flex: none; display: flex; flex-direction: column; gap: 8px;">
+      <button type="button" onClick="{{ toggleTheme }}" style="display: flex; align-items: center; gap: 14px; padding: 11px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; font-size: 14px;" style-hover="background: var(--hover); color: var(--text);">
+        <i class="ph-duotone ph-moon-stars" style="font-size: 19px; flex: none;"></i>
+        <span style="white-space: nowrap; opacity: {{ labelOpacity }};">{{ t.theme }}</span>
+      </button>
+      <button type="button" onClick="{{ toggleSidebar }}" style="display: flex; align-items: center; gap: 14px; padding: 11px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--muted); cursor: pointer; font-size: 14px;" style-hover="background: var(--hover); color: var(--text);">
+        <i class="ph-duotone ph-sidebar-simple" style="font-size: 19px; flex: none;"></i>
+        <span style="white-space: nowrap; opacity: {{ labelOpacity }};">{{ t.collapse }}</span>
+      </button>
+    </div>
+  </aside>
+
+  <main style="min-width: 0; display: flex; flex-direction: column;">
+    <header style="position: sticky; top: 0; z-index: 30; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 16px; padding: 15px 28px; background: var(--panel); border-bottom: 1px solid var(--line); backdrop-filter: blur(22px);">
+      <div style="flex: none; max-width: 240px; overflow: hidden;">
+        <div style="font-size: 11px; letter-spacing: .2em; color: var(--muted); white-space: nowrap;">{{ t.adminOf }}</div>
+        <div style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 19px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ viewTitle }}</div>
+      </div>
+      <label style="flex: 1 1 160px; min-width: 0; max-width: 400px; margin-inline-start: auto; display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-radius: 999px; background: var(--field); border: 1px solid var(--line);">
+        <i class="ph-duotone ph-magnifying-glass" style="font-size: 18px; color: var(--muted);"></i>
+        <input value="{{ query }}" onInput="{{ onQuery }}" placeholder="{{ t.search }}" style="flex: 1; min-width: 0; border: none; background: transparent; color: var(--text); font-size: 14px; outline: none;">
+      </label>
+      <button type="button" onClick="{{ addNew }}" style="flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 12px; border: none; background: linear-gradient(120deg, #0099de, #7bc643); color: #fff; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 12px 28px rgba(0,153,222,.28); transition: transform .25s ease, box-shadow .25s ease;" style-hover="transform: translateY(-2px); box-shadow: 0 18px 38px rgba(0,153,222,.42);" style-active="transform: translateY(0);">
+        <i class="ph-duotone ph-plus-circle" style="font-size: 18px;"></i>{{ t.addNew }}
+      </button>
+      <button type="button" onClick="{{ onReconnect }}" title="{{ dbTitle }}" style="{{ dbBadgeStyle }}">
+        <span style="{{ dbDotStyle }}"></span>{{ dbLabel }}
+      </button>
+      <button type="button" onClick="{{ ringBell }}" style="flex: none; position: relative; width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line); background: var(--field); color: var(--text); cursor: pointer;" style-hover="background: var(--hover);">
+        <i class="ph-duotone ph-bell" style="font-size: 19px;"></i>
+        <span style="position: absolute; top: 9px; left: 10px; width: 8px; height: 8px; border-radius: 50%; background: #7bc643; box-shadow: 0 0 10px #7bc643; animation: ad-pulse 2s ease-in-out infinite;"></span>
+      </button>
+      <button type="button" onClick="{{ toggleLang }}" style="flex: none; white-space: nowrap; padding: 11px 15px; border-radius: 12px; border: 1px solid var(--line); background: var(--field); color: var(--text); font-weight: 600; font-size: 13px; cursor: pointer;" style-hover="background: var(--hover);">{{ langLabel }}</button>
+      <button type="button" onClick="{{ onLogout }}" title="{{ a.logout }}" style="flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; padding: 11px 15px; border-radius: 12px; border: 1px solid rgba(226,86,86,.4); background: rgba(226,86,86,.08); color: #c0392b; font-weight: 600; font-size: 13px; cursor: pointer;" style-hover="background: rgba(226,86,86,.16);"><i class="ph-duotone ph-sign-out" style="font-size: 17px;"></i>{{ a.logout }}</button>
+      <div style="flex: none; display: flex; align-items: center; gap: 10px; padding: 6px 13px 6px 6px; border-radius: 999px; border: 1px solid var(--line); background: var(--field);">
+        <div style="width: 32px; height: 32px; border-radius: 50%; display: grid; place-items: center; background: linear-gradient(140deg, #0099de, #7bc643); color: #fff; font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 13px;">MS</div>
+        <div style="line-height: 1.3;">
+          <div style="font-size: 13px; font-weight: 600; white-space: nowrap;">{{ t.adminName }}</div>
+          <div style="font-size: 11px; color: var(--muted); white-space: nowrap;">{{ t.adminRole }}</div>
+        </div>
+        <i class="ph-duotone ph-caret-down" style="font-size: 14px; color: var(--muted);"></i>
+      </div>
+    </header>
+
+    <div style="padding: 28px; display: flex; flex-direction: column; gap: 22px;">
+
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+        <div style="display: flex; flex-direction: column; gap: 20px; animation: ad-in .6s cubic-bezier(.16,1,.3,1) both;">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 18px;">
+            <sc-for list="{{ overviewCards }}" as="k" hint-placeholder-count="4">
+              <button type="button" onClick="{{ k.go }}" style="text-align: start; cursor: pointer; font-family: inherit; padding: 22px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 12px; transition: transform .35s cubic-bezier(.16,1,.3,1), border-color .3s ease;" style-hover="transform: translateY(-4px); border-color: rgba(0,153,222,.45);">
+                <span style="width: 40px; height: 40px; border-radius: 11px; display: grid; place-items: center; background: rgba(0,153,222,.12); border: 1px solid rgba(0,153,222,.28);">
+                  <i class="{{ k.icon }}" style="font-size: 20px; color: #0099de;"></i>
+                </span>
+                <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 28px; color: var(--text);" dir="ltr">{{ k.value }}</div>
+                <div style="font-size: 13px; color: var(--muted);">{{ k.label }}</div>
+              </button>
+            </sc-for>
+          </div>
+          <sc-if value="{{ countsLoading }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 22px; font-size: 13px; color: var(--muted);">
+              <i class="ph-duotone ph-circle-notch" style="font-size: 18px; animation: ad-pulse 1s ease-in-out infinite;"></i>{{ a.loading }}
+            </div>
+          </sc-if>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{ isEntity }}" hint-placeholder-val="{{ false }}">
+        <div style="display: flex; flex-direction: column; gap: 16px; animation: ad-in .6s cubic-bezier(.16,1,.3,1) both;">
+
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow);">
+            <span style="width: 42px; height: 42px; flex: none; border-radius: 12px; display: grid; place-items: center; background: rgba(0,153,222,.12); border: 1px solid rgba(0,153,222,.3);">
+              <i class="{{ entIcon }}" style="font-size: 21px; color: #0099de;"></i>
+            </span>
+            <div style="min-width: 0;">
+              <div style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 16px;">{{ entTitle }}</div>
+              <div style="font-size: 12px; color: var(--muted);">{{ entCount }}</div>
+            </div>
+            <div style="margin-inline-start: auto; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+              <span style="font-size: 11px; color: var(--muted); padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--field); white-space: nowrap;">{{ a.source }}: {{ entSource }}</span>
+              <button type="button" onClick="{{ entRefresh }}" style="display: inline-flex; align-items: center; gap: 7px; padding: 9px 15px; border-radius: 10px; border: 1px solid var(--line); background: var(--field); color: var(--text); font-size: 13px; cursor: pointer;">
+                <i class="ph-duotone ph-arrows-clockwise" style="font-size: 16px;"></i>{{ a.refresh }}
+              </button>
+              <sc-if value="{{ entMock }}" hint-placeholder-val="{{ true }}">
+                <button type="button" onClick="{{ entReset }}" style="display: inline-flex; align-items: center; gap: 7px; padding: 9px 15px; border-radius: 10px; border: 1px solid var(--line); background: var(--field); color: var(--muted); font-size: 13px; cursor: pointer;">
+                  <i class="ph-duotone ph-arrow-counter-clockwise" style="font-size: 16px;"></i>{{ a.resetData }}
+                </button>
+              </sc-if>
+            </div>
+          </div>
+
+          <sc-if value="{{ entReadOnly }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 12px; font-size: 13px; color: #0d7cb3; background: rgba(0,153,222,.09); border: 1px solid rgba(0,153,222,.28);">
+              <i class="ph-duotone ph-info" style="font-size: 18px;"></i>{{ a.readOnlyNote }}
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ entError }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; align-items: center; gap: 10px; padding: 13px 16px; border-radius: 12px; font-size: 13px; color: #c0392b; background: rgba(226,86,86,.1); border: 1px solid rgba(226,86,86,.35);">
+              <i class="ph-duotone ph-warning-circle" style="font-size: 18px;"></i>
+              <span style="flex: 1;">{{ entError }}</span>
+              <button type="button" onClick="{{ entRefresh }}" style="padding: 7px 14px; border-radius: 9px; border: 1px solid rgba(226,86,86,.4); background: transparent; color: #c0392b; font-size: 12px; cursor: pointer;">{{ a.retry }}</button>
+            </div>
+          </sc-if>
+
+          <div style="padding: 6px 6px 12px; border-radius: 18px; background: var(--card); border: 1px solid var(--line); box-shadow: var(--shadow); overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse; font-size: 14px; min-width: 720px;">
+              <thead>
+                <tr style="text-align: start;">
+                  <sc-for list="{{ entColumns }}" as="col" hint-placeholder-count="5">
+                    <th onClick="{{ col.sort }}" style="{{ col.style }}">{{ col.label }}{{ col.arrow }}</th>
+                  </sc-for>
+                  <th style="padding: 15px 16px; font-weight: 500; color: var(--muted); white-space: nowrap;">{{ t.actions }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <sc-for list="{{ entRows }}" as="row" hint-placeholder-count="6">
+                  <tr style="border-top: 1px solid var(--line);" style-hover="background: var(--hover);">
+                    <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="5">
+                      <td style="{{ cell.tdStyle }}" dir="{{ cell.dir }}">
+                        <sc-if value="{{ cell.isText }}" hint-placeholder-val="{{ true }}">
+                          <div style="{{ cell.mainStyle }}">{{ cell.text }}</div>
+                          <sc-if value="{{ cell.sub }}" hint-placeholder-val="{{ false }}">
+                            <div style="font-size: 11.5px; color: var(--muted); margin-top: 3px;" dir="{{ cell.dir }}">{{ cell.sub }}</div>
+                          </sc-if>
+                        </sc-if>
+                        <sc-if value="{{ cell.isBadge }}" hint-placeholder-val="{{ false }}">
+                          <span style="{{ cell.badgeStyle }}">{{ cell.badgeLabel }}</span>
+                        </sc-if>
+                      </td>
+                    </sc-for>
+                    <td style="padding: 12px 16px;">
+                      <div style="display: flex; gap: 7px;">
+                        <sc-if value="{{ row.canToggle }}" hint-placeholder-val="{{ true }}">
+                          <button type="button" onClick="{{ row.toggle }}" title="{{ row.toggleTitle }}" style="width: 33px; height: 33px; border-radius: 9px; border: 1px solid var(--line); background: var(--field); color: var(--muted); cursor: pointer; display: grid; place-items: center;" style-hover="color: #7bc643; border-color: rgba(123,198,67,.45);">
+                            <i class="{{ row.toggleIcon }}" style="font-size: 16px;"></i>
+                          </button>
+                        </sc-if>
+                        <sc-if value="{{ row.canEdit }}" hint-placeholder-val="{{ true }}">
+                          <button type="button" onClick="{{ row.edit }}" title="{{ a.edit }}" style="width: 33px; height: 33px; border-radius: 9px; border: 1px solid var(--line); background: var(--field); color: var(--muted); cursor: pointer; display: grid; place-items: center;" style-hover="color: #0099de; border-color: rgba(0,153,222,.45);">
+                            <i class="ph-duotone ph-pencil-simple" style="font-size: 16px;"></i>
+                          </button>
+                        </sc-if>
+                        <button type="button" onClick="{{ row.remove }}" title="{{ a.del }}" style="width: 33px; height: 33px; border-radius: 9px; border: 1px solid var(--line); background: var(--field); color: var(--muted); cursor: pointer; display: grid; place-items: center;" style-hover="color: #c0392b; border-color: rgba(226,86,86,.45);">
+                          <i class="ph-duotone ph-trash" style="font-size: 16px;"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </sc-for>
+              </tbody>
+            </table>
+
+            <sc-if value="{{ entLoading }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 26px; font-size: 13px; color: var(--muted);">
+                <i class="ph-duotone ph-circle-notch" style="font-size: 18px; animation: ad-pulse 1s ease-in-out infinite;"></i>{{ a.loading }}
+              </div>
+            </sc-if>
+            <sc-if value="{{ entEmpty }}" hint-placeholder-val="{{ false }}">
+              <div style="display: flex; align-items: center; justify-content: center; gap: 10px; padding: 30px; font-size: 13px; color: var(--muted);">
+                <i class="ph-duotone ph-tray" style="font-size: 19px;"></i>{{ a.empty }}
+              </div>
+            </sc-if>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 6px; font-size: 12px; color: var(--muted);">
+              <span>{{ entPageInfo }}</span>
+              <div style="display: flex; gap: 8px;">
+                <button type="button" onClick="{{ entPrev }}" style="padding: 8px 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--field); color: var(--text); font-size: 12px; cursor: pointer;">{{ t.prev }}</button>
+                <button type="button" onClick="{{ entNext }}" style="padding: 8px 14px; border-radius: 9px; border: 1px solid var(--line); background: var(--field); color: var(--text); font-size: 12px; cursor: pointer;">{{ t.next }}</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+
+  <sc-if value="{{ entForm }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ onFormClose }}" style="position: fixed; inset: 0; z-index: 85; display: grid; place-items: center; background: rgba(8,20,28,.5); backdrop-filter: blur(6px); animation: ad-pop .3s ease both; padding: 20px;">
+      <div onClick="{{ stopEvt }}" style="width: min(560px, 94vw); max-height: 88vh; overflow-y: auto; padding: 28px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 40px 90px rgba(8,20,28,.4);">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px;">
+          <div style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 18px;">{{ formTitle }}</div>
+          <button type="button" onClick="{{ onFormClose }}" style="width: 34px; height: 34px; flex: none; border-radius: 10px; border: 1px solid var(--line); background: var(--field); color: var(--muted); cursor: pointer;">
+            <i class="ph-duotone ph-x" style="font-size: 16px;"></i>
+          </button>
+        </div>
+
+        <sc-if value="{{ formHasErrors }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-bottom: 16px; padding: 12px 15px; border-radius: 12px; background: rgba(226,86,86,.1); border: 1px solid rgba(226,86,86,.35); color: #c0392b; font-size: 13px; display: flex; flex-direction: column; gap: 6px;">
+            <sc-for list="{{ formErrors }}" as="err" hint-placeholder-count="1">
+              <div style="display: flex; align-items: flex-start; gap: 8px;">
+                <i class="ph-duotone ph-warning-circle" style="font-size: 16px; margin-top: 1px; flex: none;"></i>
+                <span>{{ err.message }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <sc-for list="{{ formFields }}" as="fld" hint-placeholder-count="5">
+            <label style="display: grid; gap: 7px; font-size: 12px; color: var(--muted);">{{ fld.label }}
+              <sc-if value="{{ fld.isInput }}" hint-placeholder-val="{{ true }}">
+                <input type="{{ fld.inputType }}" value="{{ fld.value }}" onInput="{{ fld.onInput }}" dir="{{ fld.dir }}" autocomplete="{{ fld.autoComplete }}" style="{{ fld.style }}">
+              </sc-if>
+              <sc-if value="{{ fld.isSelect }}" hint-placeholder-val="{{ false }}">
+                <select value="{{ fld.value }}" onChange="{{ fld.onInput }}" dir="{{ fld.dir }}" disabled="{{ fld.disabled }}" style="{{ fld.selectStyle }}">
+                  <sc-for list="{{ fld.options }}" as="opt" hint-placeholder-count="3">
+                    <option value="{{ opt.value }}">{{ opt.label }}</option>
+                  </sc-for>
+                </select>
+              </sc-if>
+              <sc-if value="{{ fld.isArea }}" hint-placeholder-val="{{ false }}">
+                <textarea rows="4" value="{{ fld.value }}" onInput="{{ fld.onInput }}" dir="{{ fld.dir }}" style="{{ fld.style }} resize: vertical; line-height: 1.7;"></textarea>
+              </sc-if>
+              <sc-if value="{{ fld.isImage }}" hint-placeholder-val="{{ false }}">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="width: 62px; height: 62px; flex: none; border-radius: 13px; display: grid; place-items: center; overflow: hidden; background: var(--field); border: 1px dashed var(--line);">
+                  <sc-if value="{{ fld.preview }}" hint-placeholder-val="{{ false }}">
+  <img sc-src="{{ fld.preview }}" alt="" style="width: 100%; height: 100%; object-fit: contain;">
+</sc-if>
+                    <sc-if value="{{ fld.noPreview }}" hint-placeholder-val="{{ true }}">
+                      <i class="ph-duotone ph-image" style="font-size: 24px; color: var(--muted);"></i>
+                    </sc-if>
+                  </span>
+                  <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+                    <input type="text" value="{{ fld.value }}" onInput="{{ fld.onInput }}" dir="ltr" placeholder="https://…" style="{{ fld.style }}">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; padding: 8px 14px; border-radius: 10px; cursor: pointer; font-size: 12.5px; color: var(--text); background: var(--field); border: 1px solid var(--line);">
+                      <i class="ph-duotone ph-upload-simple" style="font-size: 16px;"></i>{{ a.chooseImage }}
+                      <input type="file" accept="image/*" onChange="{{ fld.onPickFile }}" style="display: none;">
+                    </label>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ fld.hint }}" hint-placeholder-val="{{ false }}">
+                <span style="font-size: 11px; color: var(--muted); opacity: .8;">{{ fld.hint }}</span>
+              </sc-if>
+            </label>
+          </sc-for>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+          <button type="button" onClick="{{ onFormClose }}" style="padding: 11px 20px; border-radius: 11px; border: 1px solid var(--line); background: var(--field); color: var(--text); font-size: 14px; cursor: pointer;">{{ a.cancel }}</button>
+          <button type="button" onClick="{{ onFormSave }}" style="padding: 11px 24px; border-radius: 11px; border: none; background: linear-gradient(120deg, #0099de, #7bc643); color: #fff; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 10px 24px rgba(0,153,222,.3);">{{ formSaveLabel }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ entConfirm }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ onConfirmNo }}" style="position: fixed; inset: 0; z-index: 88; display: grid; place-items: center; background: rgba(8,20,28,.55); backdrop-filter: blur(6px); animation: ad-pop .3s ease both; padding: 20px;">
+      <div onClick="{{ stopEvt }}" style="width: min(440px, 94vw); padding: 28px; border-radius: 20px; background: var(--card); border: 1px solid rgba(226,86,86,.4); box-shadow: 0 40px 90px rgba(8,20,28,.45);">
+        <div style="display: flex; align-items: center; gap: 13px; margin-bottom: 14px;">
+          <span style="width: 44px; height: 44px; flex: none; border-radius: 13px; display: grid; place-items: center; background: rgba(226,86,86,.12); border: 1px solid rgba(226,86,86,.35);">
+            <i class="ph-duotone ph-warning" style="font-size: 22px; color: #c0392b;"></i>
+          </span>
+          <div style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px;">{{ a.confirmTitle }}</div>
+        </div>
+        <div style="font-size: 14px; font-weight: 600; margin-bottom: 6px;">{{ confirmLabel }}</div>
+        <p style="margin: 0; font-size: 13px; line-height: 1.8; color: var(--muted);">{{ confirmText }}</p>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+          <button type="button" onClick="{{ onConfirmNo }}" style="padding: 11px 20px; border-radius: 11px; border: 1px solid var(--line); background: var(--field); color: var(--text); font-size: 14px; cursor: pointer;">{{ a.cancel }}</button>
+          <button type="button" onClick="{{ onConfirmYes }}" style="padding: 11px 22px; border-radius: 11px; border: none; background: #c0392b; color: #fff; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 10px 24px rgba(192,57,43,.3);">{{ a.confirmYes }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+  <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModal }}" style="position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; background: rgba(8,20,28,.5); backdrop-filter: blur(6px); animation: ad-in .3s ease both;">
+      <div onClick="{{ stop }}" style="width: min(520px, 92vw); padding: 30px; border-radius: 20px; background: var(--card); border: 1px solid var(--line); box-shadow: 0 40px 90px rgba(0,0,0,.35); animation: ad-pop .45s cubic-bezier(.16,1,.3,1) both;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 22px;">
+          <div style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 19px;">{{ modalTitle }}</div>
+          <button type="button" onClick="{{ closeModal }}" style="width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: var(--field); color: var(--muted); cursor: pointer;" style-hover="background: var(--hover);"><i class="ph-duotone ph-x" style="font-size: 16px;"></i></button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <label style="display: grid; gap: 8px; font-size: 12px; color: var(--muted);">{{ t.titleAr }}
+            <input value="{{ modalAr }}" onInput="{{ onModalAr }}" style="padding: 12px 14px; border-radius: 11px; border: 1px solid var(--line); background: var(--field); color: var(--text); font-size: 14px; outline: none;" style-focus="border-color: #0099de;">
+          </label>
+          <label style="display: grid; gap: 8px; font-size: 12px; color: var(--muted);">{{ t.titleEn }}
+            <input value="{{ modalEn }}" onInput="{{ onModalEn }}" dir="ltr" style="padding: 12px 14px; border-radius: 11px; border: 1px solid var(--line); background: var(--field); color: var(--text); font-size: 14px; outline: none;" style-focus="border-color: #7bc643;">
+          </label>
+          <label style="display: grid; gap: 8px; font-size: 12px; color: var(--muted);">{{ t.body }}
+            <textarea rows="4" value="{{ modalBody }}" onInput="{{ onModalBody }}" style="padding: 12px 14px; border-radius: 11px; border: 1px solid var(--line); background: var(--field); color: var(--text); font-size: 14px; outline: none; resize: vertical;" style-focus="border-color: #0099de;"></textarea>
+          </label>
+        </div>
+        <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+          <button type="button" onClick="{{ closeModal }}" style="padding: 11px 20px; border-radius: 11px; border: 1px solid var(--line); background: var(--field); color: var(--text); font-size: 14px; cursor: pointer;" style-hover="background: var(--hover);">{{ t.cancel }}</button>
+          <button type="button" onClick="{{ saveModal }}" style="padding: 11px 24px; border-radius: 11px; border: none; background: linear-gradient(120deg, #0099de, #7bc643); color: #fff; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 12px 26px rgba(0,153,222,.28);" style-hover="transform: translateY(-2px);">{{ t.save }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+
+  <div style="position: fixed; bottom: 26px; left: 26px; z-index: 90; display: flex; flex-direction: column; gap: 10px;">
+    <sc-for list="{{ toasts }}" as="toast" hint-placeholder-count="0">
+      <div style="{{ toast.style }}">
+        <i class="{{ toast.icon }}" style="font-size: 19px;"></i>
+        <span style="font-size: 14px;">{{ toast.text }}</span>
+      </div>
+    </sc-for>
+  </div>
+</div>
+  <sc-if value="{{ authChecking }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 210; display: grid; place-items: center; background: #0a1128; color: #9db4c4; font-family: 'IBM Plex Sans Arabic', sans-serif;">
+      <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
+        <img src="assets/ms-logo.png" alt="Match Systems" style="width: 52px; height: 52px; object-fit: contain; filter: drop-shadow(0 0 14px rgba(0,153,222,.5));">
+        <div style="display: flex; align-items: center; gap: 10px; font-size: 13px;">
+          <i class="ph-duotone ph-circle-notch" style="font-size: 18px; color: #0099de; animation: ad-pulse 1s ease-in-out infinite;"></i>{{ a.checking }}
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ showLogin }}" hint-placeholder-val="{{ false }}">
+    <div style="position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; padding: 24px; background: radial-gradient(70% 55% at 70% 20%, rgba(0,153,222,.22), transparent 70%), radial-gradient(50% 42% at 15% 85%, rgba(123,198,67,.14), transparent 74%), #0a1128;">
+      <form onSubmit="{{ onLoginSubmit }}" style="width: min(420px, 94vw); padding: 34px; border-radius: 22px; background: rgba(16,26,55,.86); border: 1px solid rgba(0,153,222,.32); box-shadow: 0 40px 90px rgba(4,8,20,.6); backdrop-filter: blur(18px); animation: ad-pop .4s ease both;">
+        <div style="display: flex; align-items: center; gap: 13px; margin-bottom: 26px;">
+          <img src="assets/ms-logo.png" alt="Match Systems" style="width: 42px; height: 42px; object-fit: contain; filter: drop-shadow(0 0 12px rgba(0,153,222,.5));">
+          <div>
+            <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 18px; color: #ffffff;">{{ a.loginTitle }}</div>
+            <div style="font-size: 12px; color: #9db4c4; margin-top: 2px;">{{ a.loginSub }}</div>
+          </div>
+        </div>
+
+        <sc-if value="{{ authError }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: flex-start; gap: 9px; margin-bottom: 16px; padding: 12px 14px; border-radius: 12px; background: rgba(226,86,86,.14); border: 1px solid rgba(226,86,86,.42); color: #ffb4ac; font-size: 13px;">
+            <i class="ph-duotone ph-warning-circle" style="font-size: 17px; margin-top: 1px; flex: none;"></i>
+            <span>{{ authError }}</span>
+          </div>
+        </sc-if>
+
+        <label style="display: grid; gap: 7px; font-size: 12px; color: #9db4c4; margin-bottom: 14px;">{{ a.loginEmail }}
+          <input type="email" value="{{ authEmail }}" onInput="{{ onAuthEmail }}" dir="ltr" autocomplete="username" placeholder="admin@matchsystems.com" style="padding: 13px 15px; border-radius: 12px; border: 1px solid rgba(0,153,222,.3); background: rgba(10,17,40,.75); color: #ffffff; font-size: 14px; outline: none; width: 100%; box-sizing: border-box;">
+        </label>
+
+        <label style="display: grid; gap: 7px; font-size: 12px; color: #9db4c4; margin-bottom: 22px;">{{ a.loginPassword }}
+          <input type="password" value="{{ authPassword }}" onInput="{{ onAuthPassword }}" dir="ltr" autocomplete="current-password" placeholder="••••••••" style="padding: 13px 15px; border-radius: 12px; border: 1px solid rgba(0,153,222,.3); background: rgba(10,17,40,.75); color: #ffffff; font-size: 14px; outline: none; width: 100%; box-sizing: border-box;">
+        </label>
+
+        <button type="submit" style="{{ loginButtonStyle }}">
+          <sc-if value="{{ authBusy }}" hint-placeholder-val="{{ false }}">
+            <i class="ph-duotone ph-circle-notch" style="font-size: 18px; animation: ad-pulse .9s ease-in-out infinite;"></i>
+          </sc-if>
+          <sc-if value="{{ authIdle }}" hint-placeholder-val="{{ true }}">
+            <i class="ph-duotone ph-sign-in" style="font-size: 18px;"></i>
+          </sc-if>
+          {{ loginButtonLabel }}
+        </button>
+
+        <div style="margin-top: 18px; font-size: 11px; color: #6f8ba0; text-align: center;" dir="ltr">{{ apiHost }}</div>
+      </form>
+    </div>
+  </sc-if>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:940}}">
+const STR = {
+  ar: {
+    adminOf: 'لوحة تحكم', search: 'بحث سريع…', addNew: 'إضافة سجل', theme: 'الوضع الليلي', collapse: 'تصغير القائمة',
+    adminName: 'مدير النظام', adminRole: 'صلاحيات كاملة',
+    nav: ['نظرة عامة', 'الأرقام والمؤشرات', 'الخدمات', 'القطاعات', 'محفظة العملاء', 'آراء العملاء', 'مكتبة الوسائط', 'اللغات والترجمة'],
+    metric: 'المؤشر', value: 'القيمة', status: 'الحالة', actions: 'إجراءات',
+    edit: 'تعديل', del: 'حذف', hide: 'إظهار / إخفاء', approve: 'اعتماد',
+    active: 'مُفعّل', hidden: 'مخفي', draft: 'مسودة',
+    trafficTitle: 'زيارات الموقع', trafficSub: 'آخر اثني عشر شهراً', activity: 'النشاط الأخير',
+    livePreview: 'معاينة مباشرة على الموقع', livePreviewNote: 'أي تعديل على القيم يظهر فوراً في قسم الأرقام على الصفحة الرئيسية.',
+    dragHint: 'اسحب البطاقات لإعادة ترتيب الخدمات على الصفحة الرئيسية.',
+    company: 'الشركة', sector: 'القطاع', website: 'الموقع', carousel: 'في الكاروسيل',
+    prev: 'السابق', next: 'التالي', key: 'المفتاح', saveAll: 'حفظ كل الترجمات',
+    titleAr: 'العنوان بالعربية', titleEn: 'العنوان بالإنجليزية', body: 'النص', save: 'حفظ', cancel: 'إلغاء',
+    photo: 'صورة', created: 'تم إنشاء السجل', updated: 'تم تحديث السجل', deleted: 'تم حذف السجل',
+    saved: 'تم حفظ الترجمات', notif: 'ثلاث مراجعات جديدة بانتظار الاعتماد', newRecord: 'سجل جديد'
+  },
+  en: {
+    adminOf: 'Admin panel', search: 'Quick search…', addNew: 'Add record', theme: 'Dark mode', collapse: 'Collapse',
+    adminName: 'System Admin', adminRole: 'Full access',
+    nav: ['Overview', 'Statistics & Counters', 'Services', 'Industry Sectors', 'Client Portfolio', 'Client Feedbacks', 'Media Library', 'Localization'],
+    metric: 'Metric', value: 'Value', status: 'Status', actions: 'Actions',
+    edit: 'Edit', del: 'Delete', hide: 'Show / hide', approve: 'Approve',
+    active: 'Active', hidden: 'Hidden', draft: 'Draft',
+    trafficTitle: 'Website traffic', trafficSub: 'Last twelve months', activity: 'Recent activity',
+    livePreview: 'Live website preview', livePreviewNote: 'Any change to these values appears immediately in the numbers section of the landing page.',
+    dragHint: 'Drag rows to reorder services on the landing page.',
+    company: 'Company', sector: 'Sector', website: 'Website', carousel: 'In carousel',
+    prev: 'Previous', next: 'Next', key: 'Key', saveAll: 'Save all translations',
+    titleAr: 'Title (Arabic)', titleEn: 'Title (English)', body: 'Body', save: 'Save', cancel: 'Cancel',
+    photo: 'photo', created: 'Record created', updated: 'Record updated', deleted: 'Record deleted',
+    saved: 'Translations saved', notif: 'Three new reviews awaiting approval', newRecord: 'New record'
+  }
+};
+
+const NAV_ICONS = ['ph-duotone ph-squares-four', 'ph-duotone ph-chart-line-up', 'ph-duotone ph-stack', 'ph-duotone ph-buildings', 'ph-duotone ph-briefcase', 'ph-duotone ph-chat-centered-dots', 'ph-duotone ph-images', 'ph-duotone ph-translate'];
+
+const ADMIN_STR = {
+  ar: {
+    created: 'تم إنشاء السجل بنجاح', updated: 'تم تحديث السجل', deleted: 'تم حذف السجل نهائياً',
+    enabled: 'تم تفعيل السجل', blocked: 'تم حظر السجل', reseeded: 'تمت إعادة تعيين البيانات التجريبية',
+    save: 'حفظ', saving: 'جارٍ الحفظ…', cancel: 'إلغاء', close: 'إغلاق',
+    newIn: 'سجل جديد في', editIn: 'تعديل سجل في',
+    block: 'حظر / إيقاف', activate: 'تفعيل', edit: 'تعديل', del: 'حذف',
+    refresh: 'تحديث', resetData: 'إعادة الاتصال', retry: 'إعادة المحاولة',
+    loading: 'جارٍ تحميل البيانات…', empty: 'لا توجد سجلات مطابقة.',
+    confirmTitle: 'تأكيد الحذف النهائي', confirmYes: 'نعم، احذف نهائياً',
+    readOnlyNote: 'سجل النظام للقراءة فقط — يُنشأ تلقائياً من مسار التدقيق.',
+    source: 'قاعدة البيانات', mockMode: '', liveMode: 'خادم مباشر',
+    actions: { create: 'إنشاء', update: 'تعديل', delete: 'حذف', seed: 'تهيئة' },
+    db: { connecting: 'جارٍ الاتصال بقاعدة البيانات…', online: 'متصل بقاعدة البيانات', offline: 'خطأ في الاتصال' },
+    loginTitle: 'لوحة تحكم Match Systems', loginSub: 'سجّل الدخول للمتابعة', loginEmail: 'البريد الإلكتروني', loginPassword: 'كلمة المرور',
+    loginAction: 'تسجيل الدخول', loginBusy: 'جارٍ التحقق…', loginOk: 'تم تسجيل الدخول بنجاح', loggedOut: 'تم تسجيل الخروج', logout: 'خروج',
+    pickSectorFirst: '— اختر القطاع أولاً —', loadingCompanies: '— جارٍ تحميل الشركات… —',
+    checking: 'جارٍ التحقق من الجلسة…', noCompanies: '— لا توجد شركات، أضف شركة أولاً —', sessionGone: 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً.', loginInvalid: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.', loginFailed: 'تعذّر تسجيل الدخول. تحقق من اتصال الخادم.', loginMissing: 'يرجى إدخال البريد الإلكتروني وكلمة المرور.',
+    chooseImage: 'اختيار صورة', logoType: 'الملف المختار ليس صورة.', logoSize: 'حجم الشعار يتجاوز 512 كيلوبايت.', logoRead: 'تعذّرت قراءة الملف.',
+    reconnecting: 'إعادة محاولة الاتصال…', dbOnline: 'تم الاتصال بقاعدة البيانات بنجاح', dbOffline: 'تعذّر الوصول إلى قاعدة البيانات'
+  },
+  en: {
+    created: 'Record created successfully', updated: 'Record updated', deleted: 'Record permanently deleted',
+    enabled: 'Record activated', blocked: 'Record blocked', reseeded: 'Demo data has been reset',
+    save: 'Save', saving: 'Saving…', cancel: 'Cancel', close: 'Close',
+    newIn: 'New record in', editIn: 'Edit record in',
+    block: 'Block / suspend', activate: 'Activate', edit: 'Edit', del: 'Delete',
+    refresh: 'Refresh', resetData: 'Reconnect', retry: 'Retry',
+    loading: 'Loading records…', empty: 'No matching records.',
+    confirmTitle: 'Confirm permanent deletion', confirmYes: 'Yes, delete permanently',
+    readOnlyNote: 'System log is read only — generated automatically from the audit trail.',
+    source: 'Database', mockMode: '', liveMode: 'Live server',
+    actions: { create: 'Create', update: 'Update', delete: 'Delete', seed: 'Seed' },
+    db: { connecting: 'Connecting to database…', online: 'Connected to Remote DB', offline: 'Connection Error' },
+    loginTitle: 'Match Systems Admin', loginSub: 'Sign in to continue', loginEmail: 'Email', loginPassword: 'Password',
+    loginAction: 'Sign in', loginBusy: 'Verifying…', loginOk: 'Signed in successfully', loggedOut: 'Signed out', logout: 'Log out',
+    pickSectorFirst: '— Choose a sector first —', loadingCompanies: '— Loading companies… —',
+    checking: 'Checking your session…', noCompanies: '— No companies yet, add one first —', sessionGone: 'Your session expired. Please sign in again.', loginInvalid: 'Invalid email or password.', loginFailed: 'Sign-in failed. Check the server connection.', loginMissing: 'Enter both email and password.',
+    chooseImage: 'Choose image', logoType: 'The selected file is not an image.', logoSize: 'Logo exceeds 512 KB.', logoRead: 'Could not read the file.',
+    reconnecting: 'Retrying connection…', dbOnline: 'Connected to the database', dbOffline: 'Cannot reach the database'
+  }
+};
+
+/* ==========================================================================
+   ADMIN DATA LAYER
+   Schema definitions, validation, and the audit trail contract.
+   Every admin screen talks to API.* only; the transport lives in DB_CONFIG
+   below. Tables and seed data: db/schema.sql and db/seed.sql.
+   ========================================================================== */
+
+const nowIso = () => new Date().toISOString();
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+function apiError(status, message, fields) {
+  const e = new Error(message);
+  e.name = 'ApiError';
+  e.status = status;
+  e.fields = fields || [];
+  return e;
+}
+
+/* --- Entity models / schema definitions ---------------------------------- */
+const SECTORS = [
+  { v: 'education', ar: 'تعليم', en: 'Education' },
+  { v: 'distribution', ar: 'توزيع', en: 'Distribution' },
+  { v: 'general', ar: 'عام', en: 'General' }
+];
+
+const SCHEMA = {
+  users: {
+    path: '/users', icon: 'ph-duotone ph-user-gear', ar: 'مستخدمو النظام', en: 'System Users',
+    columns: [
+      { key: 'name', ar: 'الاسم', en: 'Name', sortable: true },
+      { key: 'email', ar: 'البريد الإلكتروني', en: 'Email', ltr: true, sortable: true },
+      { key: 'createdAt', ar: 'تاريخ الإنشاء', en: 'Created', ltr: true, sortable: true }
+    ],
+    // Payload: { name, email, password }
+    fields: [
+      { key: 'name', readKey: 'name', ar: 'الاسم', en: 'Name',
+        type: 'text', required: true, max: 80 },
+      { key: 'email', readKey: 'email', ar: 'البريد الإلكتروني', en: 'Email',
+        type: 'email', required: true, ltr: true },
+      { key: 'password', readKey: '', ar: 'كلمة المرور', en: 'Password',
+        type: 'password', ltr: true,
+        hintAr: 'ثمانية أحرف على الأقل. اتركه فارغاً عند التعديل للإبقاء على كلمة المرور الحالية.',
+        hintEn: 'At least 8 characters. Leave blank when editing to keep the current password.' }
+    ]
+  },
+  portals: {
+    path: '/portals', icon: 'ph-duotone ph-squares-four', ar: 'البوابات', en: 'Portals',
+    columns: [
+      { key: 'name', ar: 'البوابة', en: 'Portal', sortable: true },
+      { key: 'code', ar: 'المفتاح', en: 'Key', ltr: true },
+      { key: 'roles', ar: 'الأدوار', en: 'Roles' },
+      { key: 'seats', ar: 'المستخدمون', en: 'Users', sortable: true },
+      { key: 'status', ar: 'الحالة', en: 'Status' }
+    ],
+    fields: [
+      { key: 'nameAr', ar: 'اسم البوابة (عربي)', en: 'Portal name (Arabic)', type: 'text', required: true, max: 60 },
+      { key: 'nameEn', ar: 'اسم البوابة (إنجليزي)', en: 'Portal name (English)', type: 'text', required: true, max: 60, ltr: true },
+      { key: 'code', ar: 'المفتاح', en: 'Key', type: 'text', required: true, ltr: true, pattern: '^[a-z][a-z0-9_]{2,19}$',
+        hintAr: 'حروف إنجليزية صغيرة وشرطة سفلية', hintEn: 'Lowercase letters and underscore' },
+      { key: 'roles', ar: 'عدد الأدوار', en: 'Roles', type: 'number', required: true, min: 1, max: 40 },
+      { key: 'status', ar: 'الحالة', en: 'Status', type: 'select', required: true,
+        options: [{ v: 'active', ar: 'مُفعّلة', en: 'Enabled' }, { v: 'suspended', ar: 'معطّلة', en: 'Disabled' }] }
+    ]
+  },
+  subscriptions: {
+    path: '/subscriptions', icon: 'ph-duotone ph-credit-card', ar: 'الاشتراكات', en: 'Subscriptions',
+    columns: [
+      { key: 'companyName', ar: 'الشركة', en: 'Company', sortable: true },
+      { key: 'plan', ar: 'الباقة', en: 'Package' },
+      { key: 'year', ar: 'العام الدراسي', en: 'Academic year', ltr: true },
+      { key: 'seats', ar: 'المقاعد', en: 'Seats', sortable: true },
+      { key: 'status', ar: 'الحالة', en: 'Status' }
+    ],
+    fields: [
+      { key: 'sector', readKey: 'sector', ar: 'نوع القطاع', en: 'Sector',
+        type: 'select', required: true, options: SECTORS,
+        hintAr: 'اختر القطاع أولاً لعرض شركاته', hintEn: 'Pick a sector first to list its companies' },
+      { key: 'client_id', readKey: 'clientId', ar: 'الشركة', en: 'Company', type: 'select', required: true, optionsFrom: 'clients' },
+      { key: 'plan', ar: 'الباقة', en: 'Package', type: 'select', required: true,
+        options: [{ v: 'basic', ar: 'أساسية', en: 'Basic' }, { v: 'standard', ar: 'قياسية', en: 'Standard' }, { v: 'premium', ar: 'متقدمة', en: 'Premium' }] },
+      { key: 'year', ar: 'العام الدراسي', en: 'Academic year', type: 'select', required: true,
+        options: [{ v: '2024/2025', ar: '2024/2025', en: '2024/2025' }, { v: '2025/2026', ar: '2025/2026', en: '2025/2026' }, { v: '2026/2027', ar: '2026/2027', en: '2026/2027' }] },
+      { key: 'seats', ar: 'المقاعد المشتراة', en: 'Purchased seats', type: 'number', required: true, min: 1, max: 20000 },
+      { key: 'endsAt', ar: 'تاريخ الانتهاء', en: 'Ends on', type: 'text', required: true, ltr: true,
+        pattern: '^[0-9]{4}-[0-9]{2}-[0-9]{2}$', hintAr: 'بصيغة YYYY-MM-DD', hintEn: 'Format YYYY-MM-DD' },
+      { key: 'status', ar: 'الحالة', en: 'Status', type: 'select', required: true,
+        options: [{ v: 'active', ar: 'ساري', en: 'Active' }, { v: 'suspended', ar: 'منتهٍ', en: 'Expired' }, { v: 'draft', ar: 'قيد التجديد', en: 'Renewing' }] }
+    ]
+  },
+  modules: {
+    path: '/modules', icon: 'ph-duotone ph-puzzle-piece', ar: 'الوحدات والمزايا', en: 'Modules & Features',
+    columns: [
+      { key: 'name', ar: 'الوحدة', en: 'Module', sortable: true },
+      { key: 'code', ar: 'المفتاح', en: 'Key', ltr: true },
+      { key: 'scope', ar: 'النطاق', en: 'Scope' },
+      { key: 'seats', ar: 'الشركات', en: 'Clients', sortable: true },
+      { key: 'status', ar: 'الحالة', en: 'Status' }
+    ],
+    fields: [
+      { key: 'nameAr', ar: 'اسم الوحدة (عربي)', en: 'Module name (Arabic)', type: 'text', required: true, max: 60 },
+      { key: 'nameEn', ar: 'اسم الوحدة (إنجليزي)', en: 'Module name (English)', type: 'text', required: true, max: 60, ltr: true },
+      { key: 'code', ar: 'المفتاح', en: 'Key', type: 'text', required: true, ltr: true, pattern: '^[a-z][a-z0-9_.]{2,29}$',
+        hintAr: 'مثال academic.timetable', hintEn: 'e.g. academic.timetable' },
+      { key: 'scope', ar: 'النطاق', en: 'Scope', type: 'select', required: true,
+        options: [{ v: 'global', ar: 'كل الشركات', en: 'All clients' }, { v: 'per_client', ar: 'حسب الشركة', en: 'Per client' }] },
+      { key: 'status', ar: 'الحالة', en: 'Status', type: 'select', required: true,
+        options: [{ v: 'active', ar: 'مُفعّلة', en: 'Enabled' }, { v: 'suspended', ar: 'معطّلة', en: 'Disabled' }, { v: 'draft', ar: 'تجريبية', en: 'Beta' }] }
+    ]
+  },
+  stats: {
+    path: '/stats', icon: 'ph-duotone ph-chart-line-up', ar: 'الأرقام والمؤشرات', en: 'Statistics & Counters',
+    columns: [
+      { key: 'labelAr', ar: 'اسم المؤشر', en: 'Metric', sortable: true },
+      { key: 'value', ar: 'القيمة', en: 'Value', ltr: true },
+      { key: 'visibility', ar: 'الظهور', en: 'Visibility' }
+    ],
+    // Payload sent to the API: { label, value, is_visible }
+    fields: [
+      { key: 'label', readKey: 'labelAr', ar: 'اسم المؤشر', en: 'Metric label',
+        type: 'text', required: true, max: 60 },
+      { key: 'value', readKey: 'value', ar: 'القيمة', en: 'Value',
+        type: 'text', required: true, max: 20, ltr: true,
+        hintAr: 'اكتب القيمة كما تظهر، مثال 150+ أو 2K+ أو 98%',
+        hintEn: 'Exactly as displayed, e.g. 150+, 2K+, 98%' },
+      { key: 'is_visible', readKey: 'isVisible', ar: 'الظهور على الموقع', en: 'Visibility',
+        type: 'select', required: true, fallback: 'true',
+        options: [{ v: 'true', ar: 'ظاهر', en: 'Show' }, { v: 'false', ar: 'مخفي', en: 'Hide' }] }
+    ]
+  },
+  clients: {
+    path: '/clients', icon: 'ph-duotone ph-briefcase', ar: 'محفظة العملاء', en: 'Client Portfolio',
+    columns: [
+      { key: 'name', ar: 'الشركة', en: 'Company', sortable: true },
+      { key: 'sector', ar: 'التصنيف', en: 'Category' },
+      { key: 'status', ar: 'الحالة', en: 'Status' }
+    ],
+    // Payload sent to the API: { name, category, logo }
+    fields: [
+      { key: 'name', readKey: 'nameAr', ar: 'اسم الشركة', en: 'Company name',
+        type: 'text', required: true, max: 80 },
+      { key: 'category', readKey: 'sector', ar: 'التصنيف / نوع القطاع', en: 'Industry / Category',
+        type: 'select', required: true, options: SECTORS },
+      { key: 'logo', readKey: 'logoUrl', ar: 'شعار الشركة', en: 'Company logo',
+        type: 'image', hintAr: 'ارفع صورة من جهازك أو الصق رابطاً مباشراً للشعار',
+        hintEn: 'Upload an image or paste a direct link to the logo' }
+    ]
+  },
+  feedback: {
+    path: '/feedback', icon: 'ph-duotone ph-chat-centered-text', ar: 'آراء العملاء', en: 'Client Feedback',
+    columns: [
+      { key: 'name', ar: 'صاحب الرأي', en: 'Reviewer', sortable: true },
+      { key: 'companyName', ar: 'الشركة', en: 'Company' },
+      { key: 'sector', ar: 'القطاع', en: 'Sector' },
+      { key: 'rating', ar: 'التقييم', en: 'Rating', sortable: true },
+      { key: 'status', ar: 'الحالة', en: 'Status' }
+    ],
+    // Payload sent to the API: { client_name, job_title, client_id, feedback, rating }
+    // sector is resolved server-side from the selected company by a DB trigger.
+    fields: [
+      { key: 'client_name', readKey: 'nameAr', ar: 'اسم العميل', en: 'Client name',
+        type: 'text', required: true, max: 60 },
+      { key: 'job_title', readKey: 'roleAr', ar: 'المسمى الوظيفي', en: 'Job title',
+        type: 'text', required: true, max: 90 },
+      { key: 'sector', readKey: 'sector', ar: 'نوع القطاع', en: 'Sector',
+        type: 'select', required: true, options: SECTORS,
+        hintAr: 'اختر القطاع أولاً لعرض شركاته', hintEn: 'Pick a sector first to list its companies' },
+      { key: 'client_id', readKey: 'clientId', ar: 'الشركة', en: 'Company',
+        type: 'select', required: true, optionsFrom: 'clients', dependsOn: 'sector' },
+      { key: 'feedback', readKey: 'bodyAr', ar: 'نص الرأي', en: 'Feedback',
+        type: 'textarea', required: true, max: 400 },
+      { key: 'rating', readKey: 'rating', ar: 'التقييم', en: 'Rating',
+        type: 'select', required: true, fallback: '5',
+        options: [
+          { v: '5', ar: '★★★★★  ممتاز', en: '★★★★★  Excellent' },
+          { v: '4', ar: '★★★★☆  جيد جداً', en: '★★★★☆  Very good' },
+          { v: '3', ar: '★★★☆☆  جيد', en: '★★★☆☆  Good' },
+          { v: '2', ar: '★★☆☆☆  مقبول', en: '★★☆☆☆  Fair' },
+          { v: '1', ar: '★☆☆☆☆  ضعيف', en: '★☆☆☆☆  Poor' }
+        ] }
+    ]
+  },
+  logs: {
+    path: '/logs', icon: 'ph-duotone ph-list-magnifying-glass', ar: 'سجل النظام', en: 'System Logs', readOnly: true,
+    columns: [
+      { key: 'actor', ar: 'المستخدم', en: 'Actor' },
+      { key: 'action', ar: 'الإجراء', en: 'Action' },
+      { key: 'target', ar: 'السجل', en: 'Record', ltr: true },
+      { key: 'at', ar: 'التوقيت', en: 'Time', sortable: true, ltr: true },
+      { key: 'status', ar: 'المستوى', en: 'Level' }
+    ],
+    fields: []
+  }
+};
+
+const SECTOR_KEYS = SECTORS.map((s) => s.v);
+const ENTITY_KEYS = ['stats', 'clients', 'feedback', 'users', 'portals', 'subscriptions', 'modules', 'logs'];
+
+/* --- Validation, shared by the client form and the mock server ------------ */
+function validateRecord(entity, values, lang) {
+  const errs = [];
+  const push = (key, ar, en) => errs.push({ key, message: lang === 'en' ? en : ar });
+  (SCHEMA[entity].fields || []).forEach((f) => {
+    const raw = values[f.key];
+    const val = typeof raw === 'string' ? raw.trim() : raw;
+    const label = lang === 'en' ? f.en : f.ar;
+    if (f.required && (val === '' || val == null)) {
+      push(f.key, 'الحقل ' + label + ' مطلوب.', label + ' is required.');
+      return;
+    }
+    if (val === '' || val == null) return;
+    if (f.max && f.type !== 'number' && String(val).length > f.max) {
+      push(f.key, 'الحد الأقصى ' + f.max + ' حرفاً في ' + label + '.', label + ' exceeds ' + f.max + ' characters.');
+    }
+    if (f.type === 'email' && !/^[^ @]+@[^ @]+[.][^ @]{2,}$/.test(String(val))) {
+      push(f.key, 'صيغة البريد الإلكتروني غير صحيحة.', 'Email format is not valid.');
+    }
+    if (f.type === 'number') {
+      const n = Number(val);
+      if (!isFinite(n)) push(f.key, label + ' يجب أن يكون رقماً.', label + ' must be a number.');
+      else if (f.min != null && n < f.min) push(f.key, 'أقل قيمة لـ ' + label + ' هي ' + f.min + '.', label + ' minimum is ' + f.min + '.');
+      else if (f.max != null && n > f.max) push(f.key, 'أعلى قيمة لـ ' + label + ' هي ' + f.max + '.', label + ' maximum is ' + f.max + '.');
+    }
+    if (f.pattern && !new RegExp(f.pattern).test(String(val))) {
+      push(f.key, label + ': ' + (f.hintAr || 'صيغة غير صحيحة') + '.', label + ': ' + (f.hintEn || 'invalid format') + '.');
+    }
+  });
+  return errs;
+}
+/* ==========================================================================
+   LIVE DATABASE TRANSPORT
+   ---------------------------------------------------------------------------
+   Point BASE_URL at the API that fronts your database, then everything in the
+   panel reads and writes real rows. Tables and seed data: db/schema.sql and
+   db/seed.sql.
+
+   Expected REST contract (one route group per table):
+     GET    {BASE}/health
+     GET    {BASE}/{table}?q=&page=&per=&sort=&dir=   -> { items: [...], total: n }
+     POST   {BASE}/{table}                            -> created row
+     PATCH  {BASE}/{table}/{id}                       -> updated row
+     DELETE {BASE}/{table}/{id}                       -> { ok: true }
+
+   Rows travel in the database's snake_case column names; FIELD_MAP below
+   converts to and from the camelCase the UI uses.
+   ========================================================================== */
+const DB_CONFIG = {
+  BASE_URL: 'http://localhost:8000/v1',  // FastAPI host (backend/README.md)
+  TOKEN_KEY: 'ms_admin_jwt',
+  TIMEOUT_MS: 12000,
+  HEALTH_EVERY_MS: 20000,
+  MAX_PER: 500,            // must not exceed the API's own per-page ceiling
+};
+
+/* --- camelCase (UI) <-> snake_case (database) ----------------------------- */
+const toSnake = (s) => s.replace(/[A-Z]/g, (m) => '_' + m.toLowerCase());
+const toCamel = (s) => s.replace(/_([a-z0-9])/g, (m, c) => c.toUpperCase());
+
+// Only the columns whose names are not a plain camel/snake pair.
+const FIELD_MAP = {
+  portals:       { seats: 'user_count' },
+  modules:       { seats: 'client_count' },
+  users:         {},
+  subscriptions: { year: 'academic_year' },
+  feedback:      { client: 'client_site' },
+  clients:       {},
+  logs:          {}
+};
+
+function toDbRow(entity, obj) {
+  const map = FIELD_MAP[entity] || {};
+  const out = {};
+  Object.keys(obj || {}).forEach((k) => {
+    if (k.indexOf('__') === 0) return;          // transport-only hints
+    out[map[k] || toSnake(k)] = obj[k];
+  });
+  return out;
+}
+
+function fromDbRow(entity, row) {
+  const map = FIELD_MAP[entity] || {};
+  const back = {};
+  Object.keys(map).forEach((k) => { back[map[k]] = k; });
+  const out = {};
+  Object.keys(row || {}).forEach((k) => { out[back[k] || toCamel(k)] = row[k]; });
+  if (out.at) out.at = String(out.at);
+  return out;
+}
+
+function dbColumn(entity, key) {
+  const map = FIELD_MAP[entity] || {};
+  return map[key] || toSnake(key);
+}
+
+/* --- API client ----------------------------------------------------------- */
+const API = {
+  BASE_URL: DB_CONFIG.BASE_URL,
+  TOKEN_KEY: DB_CONFIG.TOKEN_KEY,
+  status: 'connecting',        // 'connecting' | 'online' | 'offline'
+  lastError: '',
+  listeners: [],
+  _user: { email: 'admin@matchsystems.com', nameAr: 'مدير النظام', nameEn: 'System Admin' },
+
+  user() { return this._user; },
+  token() {
+    try { return localStorage.getItem(this.TOKEN_KEY) || ''; } catch (e) { return this._mem || ''; }
+  },
+  setToken(v) {
+    this._mem = v;
+    try { localStorage.setItem(this.TOKEN_KEY, v); } catch (e) { /* memory only */ }
+  },
+  clearToken() {
+    this._mem = '';
+    try { localStorage.removeItem(this.TOKEN_KEY); } catch (e) { /* memory only */ }
+  },
+  login(email, password) {
+    return this.fetchJson('POST', this.BASE_URL + '/auth/login', { email: email, password: password });
+  },
+  ensureSession() { /* the login form calls setToken(); nothing is minted here */ },
+  headers() {
+    const h = { 'Content-Type': 'application/json', Accept: 'application/json' };
+    const tk = this.token();
+    if (tk) h.Authorization = 'Bearer ' + tk;
+    return h;
+  },
+
+  onStatus(fn) { this.listeners.push(fn); },
+  setStatus(next, err) {
+    const changed = next !== this.status;
+    this.status = next;
+    this.lastError = err || '';
+    if (changed) this.listeners.forEach((fn) => { try { fn(next, this.lastError); } catch (e) {} });
+  },
+
+  async fetchJson(method, url, body) {
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), DB_CONFIG.TIMEOUT_MS) : null;
+    let res;
+    try {
+      res = await fetch(url, {
+        method,
+        headers: this.headers(),
+        body: body ? JSON.stringify(body) : undefined,
+        signal: ctrl ? ctrl.signal : undefined
+      });
+    } catch (e) {
+      if (timer) clearTimeout(timer);
+      const msg = e && e.name === 'AbortError' ? 'Database request timed out.' : 'Cannot reach the database server.';
+      this.setStatus('offline', msg);
+      throw apiError(0, msg);
+    }
+    if (timer) clearTimeout(timer);
+    let data = null;
+    try { data = await res.json(); } catch (e) { /* empty body */ }
+    if (res.status === 401 || res.status === 403) {
+      this.setStatus('online');
+      throw apiError(res.status, 'Not authorised. Sign in again.');
+    }
+    if (!res.ok) {
+      this.setStatus('online');
+      throw apiError(res.status, (data && (data.message || data.error)) || ('Database rejected the request (' + res.status + ')'), data && data.errors);
+    }
+    this.setStatus('online');
+    return data;
+  },
+
+  async health() {
+    try {
+      await this.fetchJson('GET', this.BASE_URL + '/health');
+      return true;
+    } catch (e) { return false; }
+  },
+
+  table(entity) { return SCHEMA[entity].path; },
+
+  async list(entity, opts) {
+    const o = opts || {};
+    const sortKey = o.sort === 'name' ? 'nameAr' : (o.sort || 'id');
+    const extra = o.sector ? '&sector=' + encodeURIComponent(o.sector) : '';
+    const per = Math.max(1, Math.min(DB_CONFIG.MAX_PER, parseInt(o.per, 10) || 8));
+    const qs = ['q=' + encodeURIComponent(o.q || ''), 'page=' + (o.page || 0), 'per=' + per,
+                'sort=' + encodeURIComponent(dbColumn(entity, sortKey)), 'dir=' + (o.dir || 'asc')].join('&') + extra;
+    // No local fallback: if the API cannot answer, the caller shows an empty
+    // or error state rather than stale browser data.
+    const data = await this.fetchJson('GET', this.BASE_URL + this.table(entity) + '?' + qs);
+    const items = (data && (data.items || data.rows || data.data) || []).map((r) => fromDbRow(entity, r));
+    const total = data && (data.total != null ? data.total : items.length);
+    return { items, total, page: o.page || 0, per: per };
+  },
+
+  async create(entity, body) {
+    const row = await this.fetchJson('POST', this.BASE_URL + this.table(entity), toDbRow(entity, body));
+    return fromDbRow(entity, row || {});
+  },
+
+  async update(entity, id, body) {
+    const row = await this.fetchJson('PATCH', this.BASE_URL + this.table(entity) + '/' + id, toDbRow(entity, body));
+    return fromDbRow(entity, row || {});
+  },
+
+  async remove(entity, id) {
+    return this.fetchJson('DELETE', this.BASE_URL + this.table(entity) + '/' + id);
+  }
+};
+
+
+const VIEWS = ['overview'].concat(ENTITY_KEYS);
+const LEGACY_NAV_IDX = { overview: 0 };
+
+class Component extends DCLogic {
+  state = {
+    view: 'overview', lang: 'ar', theme: 'light', collapsed: false, query: '',
+    page: 0, sortAsc: true, sortKey: 'id', modal: null, toasts: [],
+    entity: { rows: [], total: 0, loading: false, error: '' }, form: null, confirm: null, dbStatus: 'connecting',
+    // Auth
+    authed: false, authChecking: true, authEmail: '', authPassword: '', authError: '', authBusy: false,
+    // Live counts for the overview cards
+    counts: {}
+  };
+
+  constructor(props) {
+    super(props);
+    this.dragFrom = null;
+    this.toastSeq = 0;
+  }
+
+  componentDidMount() {
+    document.documentElement.setAttribute('data-theme', this.state.theme);
+    this.verifySession().then((ok) => { if (ok) this.adminBoot(); });
+  }
+
+  componentDidUpdate(prev) {
+    if (prev.theme !== this.state.theme) document.documentElement.setAttribute('data-theme', this.state.theme);
+    // Reload only when a query input actually changed, never on data arrival.
+    const sig = this.adminSig();
+    if (sig === this.lastSig) return;
+    const queryOnly = prev.query !== this.state.query && prev.view === this.state.view;
+    this.lastSig = sig;
+    if (!this.isEntityView() || !this.state.authed) return;
+    clearTimeout(this.queryTimer);
+    if (queryOnly) this.queryTimer = setTimeout(() => this.loadEntity(), 240);
+    else this.loadEntity();
+  }
+
+  componentWillUnmount() { clearTimeout(this.queryTimer); }
+
+  L(o, key) { return this.state.lang === 'ar' ? o[key + 'Ar'] : o[key + 'En']; }
+  pick(o) { return this.state.lang === 'ar' ? o.ar : o.en; }
+
+  toast(text, icon) {
+    const id = ++this.toastSeq;
+    this.setState((s) => ({ toasts: s.toasts.concat([{ id, text, icon: icon || 'ph-duotone ph-check-circle' }]) }));
+    setTimeout(() => this.setState((s) => ({ toasts: s.toasts.filter((x) => x.id !== id) })), 3400);
+  }
+
+  badge(kind) {
+    const t = STR[this.state.lang];
+    const map = {
+      active: ['rgba(123,198,67,.14)', 'rgba(123,198,67,.35)', '#4e8b1f', t.active],
+      hidden: ['rgba(107,136,148,.14)', 'rgba(107,136,148,.3)', '#6b8894', t.hidden],
+      draft: ['rgba(0,153,222,.12)', 'rgba(0,153,222,.32)', '#0d7cb3', t.draft]
+    };
+    const [bg, bd, fg, label] = map[kind];
+    return { label, style: 'padding: 6px 13px; border-radius: 999px; font-size: 11px; white-space: nowrap; flex: none; background: ' + bg + '; border: 1px solid ' + bd + '; color: ' + fg + ';' };
+  }
+
+  matches(text) {
+    const q = this.state.query.trim().toLowerCase();
+    return !q || String(text).toLowerCase().indexOf(q) !== -1;
+  }
+
+  update(key, id, patch) {
+    this.setState((s) => ({ [key]: s[key].map((r) => (r.id === id ? Object.assign({}, r, patch) : r)) }));
+  }
+
+  removeRow(key, id) {
+    this.setState((s) => ({ [key]: s[key].filter((r) => r.id !== id) }));
+    this.toast(STR[this.state.lang].deleted, 'ph-duotone ph-trash');
+  }
+
+  /* --- admin CRUD plumbing ----------------------------------------------- */
+
+  /* --- authentication ------------------------------------------------------ */
+  async verifySession() {
+    if (!API.token()) {
+      this.setState({ authed: false, authChecking: false });
+      return false;
+    }
+    // A token in storage proves nothing; ask the API whether it still works.
+    try {
+      const saved = DB_CONFIG.TIMEOUT_MS;
+      DB_CONFIG.TIMEOUT_MS = 4000;
+      try { await API.fetchJson('GET', API.BASE_URL + '/logs?per=1'); }
+      finally { DB_CONFIG.TIMEOUT_MS = saved; }
+      this.setState({ authed: true, authChecking: false });
+      return true;
+    } catch (err) {
+      if (err && (err.status === 401 || err.status === 403)) {
+        API.clearToken();
+        this.setState({ authed: false, authChecking: false });
+        return false;
+      }
+      // Network/DB failure is not an auth failure: keep the session.
+      this.setState({ authed: true, authChecking: false });
+      return true;
+    }
+  }
+
+  async doLogin(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (this.state.authBusy) return;
+    const a = ADMIN_STR[this.state.lang];
+    const email = String(this.state.authEmail || '').trim();
+    const password = String(this.state.authPassword || '');
+    if (!email || !password) {
+      this.setState({ authError: a.loginMissing });
+      return;
+    }
+    this.setState({ authBusy: true, authError: '' });
+    try {
+      const res = await API.login(email, password);
+      if (!res || !res.access_token) throw apiError(500, a.loginFailed);
+      API.setToken(res.access_token);
+      this.setState({ authed: true, authBusy: false, authPassword: '', authError: '' });
+      this.toast(a.loginOk, 'ph-duotone ph-check-circle');
+      this.verifySession().then((ok) => { if (ok) this.adminBoot(); });
+    } catch (err) {
+      const msg = err && err.status === 401 ? a.loginInvalid : (err && err.message) || a.loginFailed;
+      this.setState({ authBusy: false, authError: msg });
+    }
+  }
+
+  sessionExpired() {
+    const a = ADMIN_STR[this.state.lang];
+    API.clearToken();
+    clearInterval(this.healthTimer);
+    this.setState({ authed: false, authChecking: false, authError: a.sessionGone, entity: { rows: [], total: 0, loading: false, error: '' } });
+  }
+
+  logout() {
+    const a = ADMIN_STR[this.state.lang];
+    API.clearToken();
+    clearInterval(this.healthTimer);
+    clearTimeout(this.queryTimer);
+    this.lastSig = null;
+    this.setState({
+      authed: false, authChecking: false, authPassword: '', authError: '',
+      view: 'overview', query: '', page: 0, form: null, confirm: null,
+      entity: { rows: [], total: 0, loading: false, error: '' }, counts: {}
+    });
+    this.toast(a.loggedOut, 'ph-duotone ph-sign-out');
+  }
+
+  async loadCounts() {
+    if (!this.state.authed) return;
+    this.setState({ countsLoading: true });
+    const wanted = ['clients', 'feedback', 'users', 'subscriptions', 'stats'];
+    const counts = {};
+    await Promise.all(wanted.map(async (key) => {
+      try {
+        const res = await API.list(key, { per: 1, page: 0 });
+        counts[key] = res.total || 0;
+      } catch (err) { counts[key] = null; }
+    }));
+    this.setState({ counts, countsLoading: false });
+  }
+
+  isEntityView(v) { return ENTITY_KEYS.indexOf(v || this.state.view) !== -1; }
+
+  adminSig() {
+    const s = this.state;
+    return [s.view, s.query, s.page, s.sortKey, s.sortAsc].join('|');
+  }
+
+  adminBoot() {
+    API.ensureSession();
+    this.lastSig = this.adminSig();
+    this.watchConnection();
+    if (this.isEntityView()) this.loadEntity();
+    this.loadRefOptions();
+    this.loadCounts();
+  }
+  async loadRefOptions() {
+    if (!this.state.authed) return;
+    // Company dropdowns are built strictly from live rows in GET /v1/clients.
+    // There is no hardcoded list and no fallback: an empty database yields an
+    // empty dropdown, which the form reports as "add a company first".
+    try {
+      const cl = await API.list('clients', { per: 500, sort: 'nameAr', dir: 'asc' });
+      this.refOpts = {
+        clients: (cl.items || []).map((r) => ({
+          v: String(r.id),
+          ar: r.nameAr || r.nameEn || ('#' + r.id),
+          en: r.nameEn || r.nameAr || ('#' + r.id)
+        }))
+      };
+      if (this.state.form) this.setState({ form: Object.assign({}, this.state.form) });
+    } catch (e) {
+      this.refOpts = { clients: [] };
+      if (this.state.form) this.setState({ form: Object.assign({}, this.state.form) });
+    }
+  }
+
+  async loadEntity() {
+    const entity = this.state.view;
+    if (!this.isEntityView(entity) || !this.state.authed) return;
+    const seq = (this.reqSeq = (this.reqSeq || 0) + 1);
+    this.setState({ entity: { rows: [], total: 0, loading: true, error: '' } });
+    try {
+      const res = await API.list(entity, {
+        q: this.state.query, page: this.state.page, per: 8,
+        sort: this.state.sortKey || 'id', dir: this.state.sortAsc ? 'asc' : 'desc'
+      });
+      if (seq !== this.reqSeq) return;
+      this.setState({ entity: { rows: res.items, total: res.total, loading: false, error: '' } });
+    } catch (err) {
+      if (seq !== this.reqSeq) return;
+      if (err && (err.status === 401 || err.status === 403)) { this.sessionExpired(); return; }
+      this.setState({ entity: { rows: [], total: 0, loading: false, error: err.message } });
+      this.toast(err.message, 'ph-duotone ph-warning-circle');
+    }
+  }
+
+  blankValues(entity) {
+    const v = {};
+    (SCHEMA[entity].fields || []).forEach((f) => { v[f.key] = f.fallback || ''; });
+    return v;
+  }
+
+  openCreate(entity) {
+    if (SCHEMA[entity].readOnly) return;
+    this.sectorClients = [];
+    this.setState({ form: { entity, id: null, values: this.blankValues(entity), errors: [], saving: false, clientsLoading: false } });
+  }
+
+  openEdit(entity, row) {
+    const values = {};
+    (SCHEMA[entity].fields || []).forEach((f) => {
+      const src = row[f.readKey || f.key];
+      values[f.key] = src == null ? '' : String(src);
+    });
+    this.sectorClients = [];
+    const hasSector = entity === 'feedback' && values.sector;
+    this.setState({ form: { entity, id: row.id, values, errors: [], saving: false, clientsLoading: !!hasSector } });
+    if (hasSector) this.loadClientsBySector(values.sector);
+  }
+
+  readImageFile(key, e) {
+    const file = e && e.target && e.target.files && e.target.files[0];
+    if (!file) return;
+    const a = ADMIN_STR[this.state.lang];
+    if (!/^image\//.test(file.type)) { this.toast(a.logoType, 'ph-duotone ph-warning-circle'); return; }
+    if (file.size > 512 * 1024) { this.toast(a.logoSize, 'ph-duotone ph-warning-circle'); return; }
+    const reader = new FileReader();
+    reader.onload = () => this.setFormField(key, String(reader.result || ''));
+    reader.onerror = () => this.toast(a.logoRead, 'ph-duotone ph-warning-circle');
+    reader.readAsDataURL(file);
+  }
+
+  /* Companies for one sector, fetched on demand when the sector changes.
+     No status filter is sent, so draft companies are included. */
+  async loadClientsBySector(rawSector) {
+    // Last line of defence: only a known lowercase code reaches the query string.
+    const label = SECTORS.find((s) => s.ar === rawSector || s.en === rawSector);
+    const sector = label ? label.v : String(rawSector || '').trim().toLowerCase();
+    if (sector && SECTOR_KEYS.indexOf(sector) === -1) {
+      this.sectorClients = [];
+      if (this.state.form) this.setState({ form: Object.assign({}, this.state.form, { clientsLoading: false }) });
+      return;
+    }
+    const seq = (this.secSeq = (this.secSeq || 0) + 1);
+    if (!sector) {
+      this.sectorClients = [];
+      if (this.state.form) this.setState({ form: Object.assign({}, this.state.form, { clientsLoading: false }) });
+      return;
+    }
+    this.clientsError = '';
+    try {
+      const res = await API.list('clients', { per: 500, sort: 'nameAr', dir: 'asc', sector: sector });
+      if (seq !== this.secSeq) return;
+      this.sectorClients = (res.items || []).map((r) => ({
+        v: String(r.id),
+        ar: r.nameAr || r.nameEn || ('#' + r.id),
+        en: r.nameEn || r.nameAr || ('#' + r.id)
+      }));
+    } catch (err) {
+      if (seq !== this.secSeq) return;
+      this.sectorClients = [];
+      this.clientsError = (err && err.message) ? String(err.message) : '';
+    }
+    if (this.state.form) this.setState({ form: Object.assign({}, this.state.form, { clientsLoading: false }) });
+  }
+
+  /* A <select> hands back whatever the browser considers the option's value.
+     If an option's value attribute ever fails to apply, the browser falls back
+     to its text content -- which here is a translated label. Map any label we
+     recognise back onto its stored code so the API only ever sees codes. */
+  optionsForField(entity, fl) {
+    if (!fl) return [];
+    if (!fl.optionsFrom) return fl.options || [];
+    if (fl.dependsOn) return this.sectorClients || [];
+    return (this.refOpts && this.refOpts[fl.optionsFrom]) || [];
+  }
+
+  coerceOptionValue(entity, key, raw) {
+    const fl = (SCHEMA[entity].fields || []).find((x) => x.key === key);
+    if (!fl || fl.type !== 'select') return raw;
+    const list = this.optionsForField(entity, fl);
+    const s = String(raw == null ? '' : raw).trim();
+    if (s === '' || !list.length) return s;
+    if (list.some((o) => String(o.v) === s)) return s;                 // already a code
+    const byLabel = list.find((o) => o.ar === s || o.en === s);
+    if (byLabel) return String(byLabel.v);
+    const lower = s.toLowerCase();
+    const byCase = list.find((o) => String(o.v).toLowerCase() === lower);
+    return byCase ? String(byCase.v) : s;
+  }
+
+  setFormField(key, value) {
+    const f = this.state.form;
+    if (!f) return;
+    const clean = this.coerceOptionValue(f.entity, key, value);
+    const values = Object.assign({}, f.values, { [key]: clean });
+    // Changing the sector re-queries the company list and clears the old pick.
+    if (key === 'sector' && f.entity === 'feedback') {
+      values.client_id = '';
+      this.sectorClients = [];
+      this.setState({ form: Object.assign({}, f, { values: values, clientsLoading: !!value }) });
+      this.loadClientsBySector(clean);
+      return;
+    }
+    this.setState({ form: Object.assign({}, f, { values: values }) });
+  }
+
+  async saveForm() {
+    const f = this.state.form;
+    if (!f || f.saving) return;
+    const a = ADMIN_STR[this.state.lang];
+    const errs = validateRecord(f.entity, f.values, this.state.lang);
+    if (errs.length) { this.setState({ form: Object.assign({}, f, { errors: errs }) }); return; }
+    this.setState({ form: Object.assign({}, f, { saving: true, errors: [] }) });
+    const payload = Object.assign({}, f.values, { __lang: this.state.lang });
+    (SCHEMA[f.entity].fields || []).forEach((fl) => {
+      if (fl.type === 'number') payload[fl.key] = Number(payload[fl.key]);
+    });
+    if (payload.rating != null && payload.rating !== '') payload.rating = Number(payload.rating);
+    if (payload.client_id != null && payload.client_id !== '') payload.client_id = Number(payload.client_id);
+    if (payload.is_visible != null) payload.is_visible = payload.is_visible === 'true' || payload.is_visible === true;
+    if (payload.is_active != null) payload.is_active = payload.is_active === 'true' || payload.is_active === true;
+    // An empty password on edit means "keep the current one".
+    if (payload.password != null && String(payload.password).trim() === '') delete payload.password;
+    try {
+      if (f.id == null) await API.create(f.entity, payload);
+      else await API.update(f.entity, f.id, payload);
+      this.setState({ form: null, page: f.id == null ? 0 : this.state.page });
+      this.toast(f.id == null ? a.created : a.updated, f.id == null ? 'ph-duotone ph-plus-circle' : 'ph-duotone ph-check-circle');
+      this.loadEntity();
+      if (f.entity === 'clients') this.loadRefOptions();
+    } catch (err) {
+      this.setState({ form: Object.assign({}, this.state.form, { saving: false, errors: err.fields && err.fields.length ? err.fields : [{ key: '', message: err.message }] }) });
+    }
+  }
+
+  askDelete(entity, row) {
+    this.setState({ confirm: { entity, id: row.id, label: row.nameAr || row.nameEn || row.email || row.code || row.target || ('#' + row.id) } });
+  }
+
+  async runDelete() {
+    const c = this.state.confirm;
+    if (!c) return;
+    const a = ADMIN_STR[this.state.lang];
+    this.setState({ confirm: null });
+    try {
+      await API.remove(c.entity, c.id);
+      this.toast(a.deleted, 'ph-duotone ph-trash');
+      const lastPage = Math.max(0, Math.ceil((this.state.entity.total - 1) / 8) - 1);
+      if (this.state.page > lastPage) this.setState({ page: lastPage });
+      this.loadEntity();
+      if (c.entity === 'clients') this.loadRefOptions();
+    } catch (err) {
+      this.toast(err.message, 'ph-duotone ph-warning-circle');
+    }
+  }
+
+  async toggleStatus(entity, row) {
+    const a = ADMIN_STR[this.state.lang];
+    if (entity === 'stats') {
+      const show = !(row.isVisible === true || row.isVisible === 'true');
+      try {
+        await API.update(entity, row.id, { is_visible: show, __validate: false });
+        this.toast(show ? a.enabled : a.blocked, show ? 'ph-duotone ph-eye' : 'ph-duotone ph-eye-slash');
+        this.loadEntity();
+      } catch (err) { this.toast(err.message, 'ph-duotone ph-warning-circle'); }
+      return;
+    }
+    const next = row.status === 'active' ? 'suspended' : 'active';
+    try {
+      await API.update(entity, row.id, { status: next, __validate: false, __lang: this.state.lang });
+      this.toast(next === 'active' ? a.enabled : a.blocked, next === 'active' ? 'ph-duotone ph-check-circle' : 'ph-duotone ph-prohibit');
+      this.loadEntity();
+    } catch (err) {
+      this.toast(err.message, 'ph-duotone ph-warning-circle');
+    }
+  }
+
+  async reconnect() {
+    const a = ADMIN_STR[this.state.lang];
+    this.toast(a.reconnecting, 'ph-duotone ph-plugs');
+    const ok = await API.health();
+    if (ok) {
+      this.loadEntity();
+      this.loadRefOptions();
+    } else {
+      this.toast(a.dbOffline, 'ph-duotone ph-warning-circle');
+    }
+  }
+
+  watchConnection() {
+    API.onStatus((next, err) => {
+      const a = ADMIN_STR[this.state.lang];
+      this.setState({ dbStatus: next });
+      if (next === 'offline') this.toast(err || a.dbOffline, 'ph-duotone ph-plugs-connected');
+      if (next === 'online' && this.sawOffline) this.toast(a.dbOnline, 'ph-duotone ph-check-circle');
+      this.sawOffline = next === 'offline';
+    });
+    API.health();
+    this.healthTimer = setInterval(() => API.health(), DB_CONFIG.HEALTH_EVERY_MS);
+  }
+
+  statusTone(value) {
+    const map = {
+      active: ['rgba(123,198,67,.14)', 'rgba(123,198,67,.4)', '#4e8b1f'],
+      suspended: ['rgba(226,86,86,.13)', 'rgba(226,86,86,.38)', '#c0392b'],
+      draft: ['rgba(0,153,222,.12)', 'rgba(0,153,222,.34)', '#0d7cb3']
+    };
+    return map[value] || map.draft;
+  }
+
+  visibilityChip(on) {
+    const yes = on === true || on === 'true';
+    const lang = this.state.lang;
+    const [bg, bd, fg] = this.statusTone(yes ? 'active' : 'suspended');
+    return {
+      label: yes ? (lang === 'en' ? 'Show' : 'ظاهر') : (lang === 'en' ? 'Hide' : 'مخفي'),
+      style: 'display: inline-block; padding: 6px 13px; border-radius: 999px; font-size: 11px; white-space: nowrap; background: ' + bg + '; border: 1px solid ' + bd + '; color: ' + fg + ';'
+    };
+  }
+
+  statusChip(entity, value) {
+    const lang = this.state.lang;
+    const fld = (SCHEMA[entity].fields || []).find((f) => f.key === 'status');
+    let label = value;
+    if (fld) {
+      const opt = (fld.options || []).find((o) => o.v === value);
+      if (opt) label = lang === 'en' ? opt.en : opt.ar;
+    } else {
+      const fallback = { active: lang === 'en' ? 'Info' : 'معلومة', draft: lang === 'en' ? 'Change' : 'تعديل', suspended: lang === 'en' ? 'Removal' : 'حذف' };
+      label = fallback[value] || value;
+    }
+    const [bg, bd, fg] = this.statusTone(value);
+    return {
+      label,
+      style: 'display: inline-block; padding: 6px 13px; border-radius: 999px; font-size: 11px; white-space: nowrap; background: ' + bg +
+             '; border: 1px solid ' + bd + '; color: ' + fg + ';'
+    };
+  }
+
+  optLabel(entity, fieldKey, value) {
+    const f = (SCHEMA[entity].fields || []).find((x) => x.key === fieldKey || x.readKey === fieldKey);
+    if (!f && fieldKey === 'sector') {
+      const s = SECTORS.find((o) => o.v === value);
+      return s ? (this.state.lang === 'en' ? s.en : s.ar) : value;
+    }
+    if (!f) return value;
+    const src = f.optionsFrom ? (this.refOpts && this.refOpts[f.optionsFrom] || []) : (f.options || []);
+    const hit = src.find((o) => o.v === value);
+    if (!hit) return value;
+    return this.state.lang === 'en' ? hit.en : hit.ar;
+  }
+
+  /* --- bindings for the generic entity screens ---------------------------- */
+  adminVals(t, st) {
+    const lang = st.lang;
+    const a = ADMIN_STR[lang];
+    const isEnt = this.isEntityView();
+    const entity = isEnt ? st.view : null;
+    const def = entity ? SCHEMA[entity] : null;
+    const data = st.entity || { rows: [], total: 0, loading: false, error: '' };
+
+    const navItems = VIEWS.map((v, i) => {
+      const on = st.view === v;
+      const legacy = LEGACY_NAV_IDX[v] != null;
+      const label = legacy ? t.nav[LEGACY_NAV_IDX[v]] : (lang === 'en' ? SCHEMA[v].en : SCHEMA[v].ar);
+      const icon = legacy ? NAV_ICONS[LEGACY_NAV_IDX[v]] : SCHEMA[v].icon;
+      return {
+        label, icon,
+        go: () => this.setState({ view: v, page: 0, query: '', sortKey: 'id', sortAsc: true }),
+        style: 'position: relative; display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 14px; font-family: inherit; text-align: start; border: 1px solid ' +
+          (on ? 'rgba(0,153,222,.34)' : 'transparent') + '; background: ' + (on ? 'rgba(0,153,222,.12)' : 'transparent') +
+          '; color: ' + (on ? '#0099de' : 'var(--muted)') + '; font-weight: ' + (on ? '700' : '500') + '; transition: background .25s ease, color .25s ease, border-color .25s ease;',
+        barStyle: 'position: absolute; inset-inline-end: 0; top: 22%; bottom: 22%; width: 3px; border-radius: 3px; background: ' +
+          (on ? 'linear-gradient(180deg, #0099de, #7bc643)' : 'transparent') + ';'
+      };
+    });
+
+    const viewIdx = VIEWS.indexOf(st.view);
+    const viewTitle = LEGACY_NAV_IDX[st.view] != null ? t.nav[LEGACY_NAV_IDX[st.view]] : (lang === 'en' ? SCHEMA[st.view].en : SCHEMA[st.view].ar);
+
+    const columns = def ? def.columns.map((c) => ({
+      label: lang === 'en' ? c.en : c.ar,
+      style: 'padding: 15px 16px; font-weight: 500; white-space: nowrap; cursor: ' + (c.sortable ? 'pointer' : 'default') +
+             '; color: ' + (st.sortKey === c.key ? '#0099de' : 'var(--muted)') + ';',
+      arrow: c.sortable ? (st.sortKey === c.key ? (st.sortAsc ? ' ↑' : ' ↓') : ' ↕') : '',
+      sort: c.sortable ? () => this.setState({ sortKey: c.key, sortAsc: st.sortKey === c.key ? !st.sortAsc : true, page: 0 }) : () => {}
+    })) : [];
+
+    const rows = def ? data.rows.map((r) => {
+      const cells = def.columns.map((c) => {
+        const isStatus = c.key === 'status' || c.key === 'visibility';
+        let text = r[c.key];
+        let sub = '';
+        if (c.key === 'name' && r.name != null) { text = r.name; sub = ''; }
+        else if (c.key === 'name') {
+          text = (lang === 'en' ? r.nameEn : r.nameAr) || r.nameAr || r.nameEn;
+          sub = (lang === 'en' ? r.nameAr : r.nameEn) || '';
+          if (sub === text) sub = '';
+        }
+        if (['plan', 'scope', 'sector', 'role'].indexOf(c.key) !== -1) text = this.optLabel(entity, c.key, r[c.key]);
+        if (c.key === 'at' && r.at) text = String(r.at).replace('T', ' ').slice(0, 16);
+        if (c.key === 'createdAt') text = r.createdAt ? String(r.createdAt).replace('T', ' ').slice(0, 16) : '—';
+        if (c.key === 'action') text = a.actions[r.action] || r.action;
+        if (c.key === 'status' && entity === 'logs') text = r.level;
+        const chip = c.key === 'visibility'
+          ? this.visibilityChip(r.isVisible != null ? r.isVisible : r.isActive)
+          : (isStatus ? this.statusChip(entity, entity === 'logs' ? r.level : r.status) : null);
+        return {
+          isBadge: !!isStatus, isText: !isStatus,
+          badgeLabel: chip ? chip.label : '', badgeStyle: chip ? chip.style : '',
+          text: text == null || text === '' ? '—' : String(text), sub: sub || '',
+          dir: c.ltr ? 'ltr' : 'auto',
+          tdStyle: 'padding: 12px 16px; vertical-align: middle;' + (c.key === 'name' ? '' : ' color: var(--muted);'),
+          mainStyle: c.key === 'name'
+            ? "font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 14px; color: var(--text);"
+            : 'font-size: 13.5px;'
+        };
+      });
+      return {
+        id: r.id, cells,
+        canEdit: !def.readOnly,
+        canToggle: !def.readOnly && (def.fields || []).some((x) => x.key === 'status' || x.key === 'is_visible' || x.key === 'is_active'),
+        toggleTitle: entity === 'stats' ? ((r.isVisible === true || r.isVisible === 'true') ? a.block : a.activate) : (r.status === 'active' ? a.block : a.activate),
+        toggleIcon: entity === 'stats' ? ((r.isVisible === true || r.isVisible === 'true') ? 'ph-duotone ph-eye-slash' : 'ph-duotone ph-eye') : (r.status === 'active' ? 'ph-duotone ph-prohibit' : 'ph-duotone ph-check-circle'),
+        edit: () => this.openEdit(entity, r),
+        toggle: () => this.toggleStatus(entity, r),
+        remove: () => this.askDelete(entity, r)
+      };
+    }) : [];
+
+    const per = 8;
+    const pages = Math.max(1, Math.ceil(data.total / per));
+    const page = Math.min(st.page, pages - 1);
+
+    const f = st.form;
+    const formFields = f ? (SCHEMA[f.entity].fields || []).map((fl) => {
+      const errored = (f.errors || []).some((e) => e.key === fl.key);
+      const base = 'padding: 12px 14px; border-radius: 11px; border: 1px solid ' + (errored ? 'rgba(226,86,86,.65)' : 'var(--line)') +
+                   '; background: var(--field); color: var(--text); font-size: 14px; outline: none; width: 100%; box-sizing: border-box;';
+      const dep = fl.dependsOn ? String(f.values[fl.dependsOn] || '') : '';
+      const scoped = !!fl.dependsOn;
+      const opts = fl.optionsFrom
+        ? (scoped ? (this.sectorClients || []) : (this.refOpts && this.refOpts[fl.optionsFrom] || []))
+        : (fl.options || []);
+      const waiting = scoped && !dep;
+      const loadingOpts = scoped && !!f.clientsLoading;
+      const failed = scoped && !!this.clientsError;
+      const placeholder = waiting ? a.pickSectorFirst
+        : (loadingOpts ? a.loadingCompanies
+        : (failed ? ('⚠ ' + this.clientsError)
+        : ((fl.optionsFrom && opts.length === 0) ? a.noCompanies : (lang === 'en' ? '— choose —' : '— اختر —'))));
+      return {
+        label: lang === 'en' ? fl.en : fl.ar,
+        hint: (lang === 'en' ? fl.hintEn : fl.hintAr) || '',
+        value: f.values[fl.key] == null ? '' : String(f.values[fl.key]),
+        dir: fl.ltr ? 'ltr' : 'auto',
+        isSelect: fl.type === 'select',
+        isArea: fl.type === 'textarea',
+        isImage: fl.type === 'image',
+        isInput: fl.type !== 'select' && fl.type !== 'textarea' && fl.type !== 'image',
+        autoComplete: fl.type === 'password' ? 'new-password' : 'off',
+        preview: fl.type === 'image' ? String(f.values[fl.key] || '') : '',
+        noPreview: fl.type === 'image' && !String(f.values[fl.key] || ''),
+        onPickFile: fl.type === 'image' ? (e) => this.readImageFile(fl.key, e) : null,
+        inputType: fl.type === 'number' ? 'number' : (fl.type === 'email' ? 'email' : (fl.type === 'password' ? 'password' : 'text')),
+        style: base,
+        selectStyle: base + (waiting || loadingOpts ? ' opacity: .55; cursor: not-allowed;' : ''),
+        disabled: waiting || loadingOpts,
+        options: [{ value: '', label: placeholder }].concat(
+          opts.map((o) => ({ value: o.v, label: lang === 'en' ? o.en : o.ar }))),
+        onInput: (e) => {
+          if (fl.type !== 'select') { this.setFormField(fl.key, e.target.value); return; }
+          // Resolve by position against the list we rendered, so the stored code
+          // is used even if the DOM reports the option's visible label.
+          const idx = e.target.selectedIndex;
+          const codes = [''].concat(opts.map((o) => String(o.v)));
+          this.setFormField(fl.key, idx >= 0 && idx < codes.length ? codes[idx] : e.target.value);
+        }
+      };
+    }) : [];
+
+    const c = st.confirm;
+
+    return {
+      navItems, viewTitle, a,
+      // --- auth gate --------------------------------------------------------
+      authChecking: !!st.authChecking,
+      showLogin: !st.authChecking && !st.authed,
+      shellStyle: (st.authed ? '' : 'visibility: hidden; pointer-events: none;'),
+      authEmail: st.authEmail,
+      authPassword: st.authPassword,
+      authError: st.authError || '',
+      authBusy: !!st.authBusy,
+      authIdle: !st.authBusy,
+      apiHost: API.BASE_URL,
+      loginButtonLabel: st.authBusy ? a.loginBusy : a.loginAction,
+      loginButtonStyle: 'width: 100%; display: inline-flex; align-items: center; justify-content: center; gap: 9px; padding: 14px 20px; border-radius: 12px; border: none; font-family: Cairo, sans-serif; font-weight: 700; font-size: 15px; color: #ffffff; cursor: ' +
+        (st.authBusy ? 'wait' : 'pointer') + '; opacity: ' + (st.authBusy ? '.75' : '1') +
+        '; background: linear-gradient(120deg, #0099de, #7bc643); box-shadow: 0 14px 30px rgba(0,153,222,.34);',
+      onAuthEmail: (e) => this.setState({ authEmail: e.target.value }),
+      onAuthPassword: (e) => this.setState({ authPassword: e.target.value }),
+      onLoginSubmit: (e) => this.doLogin(e),
+      onLogout: () => this.logout(),
+
+      // --- overview, counted live from the API ------------------------------
+      countsLoading: !!st.countsLoading,
+      overviewCards: ['clients', 'feedback', 'users', 'subscriptions', 'stats'].map((key) => {
+        const n = st.counts ? st.counts[key] : null;
+        return {
+          label: lang === 'en' ? SCHEMA[key].en : SCHEMA[key].ar,
+          icon: SCHEMA[key].icon,
+          value: n == null ? '—' : String(n),
+          go: () => this.setState({ view: key, page: 0, query: '' })
+        };
+      }),
+      isEntity: isEnt,
+      entIcon: def ? def.icon : '',
+      entTitle: def ? (lang === 'en' ? def.en : def.ar) : '',
+      entCount: (lang === 'en' ? 'Records: ' : 'عدد السجلات: ') + data.total,
+      entLoading: data.loading,
+      entError: data.error || '',
+      entEmpty: !data.loading && !data.error && rows.length === 0,
+      entReadOnly: def ? !!def.readOnly : false,
+      entColumns: columns,
+      entRows: rows,
+      entPageInfo: (lang === 'en' ? 'Page ' : 'صفحة ') + (page + 1) + (lang === 'en' ? ' of ' : ' من ') + pages,
+      entPrev: () => this.setState({ page: Math.max(0, page - 1) }),
+      entNext: () => this.setState({ page: Math.min(pages - 1, page + 1) }),
+      entRefresh: () => this.loadEntity(),
+      entReset: () => this.reconnect(),
+      entMock: st.dbStatus === 'offline',
+      entSource: API.BASE_URL,
+      addNew: isEnt ? () => this.openCreate(st.view) : () => this.setState({ modal: { kind: st.view, id: null, ar: '', en: '', body: '' } }),
+
+      entForm: !!f,
+      formTitle: f ? ((f.id == null ? a.newIn : a.editIn) + ' ' + (lang === 'en' ? SCHEMA[f.entity].en : SCHEMA[f.entity].ar)) : '',
+      formFields,
+      formErrors: f ? (f.errors || []).map((e) => ({ message: e.message })) : [],
+      formHasErrors: f ? (f.errors || []).length > 0 : false,
+      formSaving: f ? !!f.saving : false,
+      formSaveLabel: f && f.saving ? a.saving : a.save,
+      onFormSave: () => this.saveForm(),
+      onFormClose: () => this.setState({ form: null }),
+
+      onReconnect: () => this.reconnect(),
+      dbTitle: API.BASE_URL + (API.lastError ? ' — ' + API.lastError : ''),
+      dbLabel: a.db[st.dbStatus] || a.db.connecting,
+      dbBadgeStyle: 'flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; cursor: pointer; font-family: inherit; font-size: 12px; white-space: nowrap; transition: background .3s ease, border-color .3s ease, color .3s ease; border: 1px solid ' +
+        (st.dbStatus === 'online' ? 'rgba(123,198,67,.45)' : st.dbStatus === 'offline' ? 'rgba(226,86,86,.45)' : 'var(--line)') +
+        '; background: ' + (st.dbStatus === 'online' ? 'rgba(123,198,67,.12)' : st.dbStatus === 'offline' ? 'rgba(226,86,86,.11)' : 'var(--field)') +
+        '; color: ' + (st.dbStatus === 'online' ? '#4e8b1f' : st.dbStatus === 'offline' ? '#c0392b' : 'var(--muted)') + ';',
+      dbDotStyle: 'width: 8px; height: 8px; border-radius: 50%; flex: none; background: ' +
+        (st.dbStatus === 'online' ? '#7bc643' : st.dbStatus === 'offline' ? '#c0392b' : '#9db4c4') +
+        '; box-shadow: 0 0 9px ' + (st.dbStatus === 'online' ? '#7bc643' : st.dbStatus === 'offline' ? '#c0392b' : 'transparent') +
+        ';' + (st.dbStatus === 'connecting' ? ' animation: ad-pulse 1.1s ease-in-out infinite;' : ''),
+      entConfirm: !!c,
+      confirmLabel: c ? c.label : '',
+      confirmText: c ? (lang === 'en'
+        ? 'This permanently deletes the record and cannot be undone.'
+        : 'سيؤدي هذا إلى حذف السجل نهائياً ولا يمكن التراجع عن العملية.') : '',
+      onConfirmYes: () => this.runDelete(),
+      onConfirmNo: () => this.setState({ confirm: null }),
+      stopEvt: (e) => e.stopPropagation()
+    };
+  }
+
+  renderVals() {
+    const t = STR[this.state.lang];
+    const st = this.state;
+    const navItems = VIEWS.map((v, i) => {
+      const on = st.view === v;
+      return {
+        label: t.nav[i], icon: NAV_ICONS[i],
+        go: () => this.setState({ view: v, page: 0 }),
+        style: 'position: relative; display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 14px; font-family: inherit; text-align: right; border: 1px solid ' + (on ? 'rgba(0,153,222,.35)' : 'transparent') + '; background: ' + (on ? 'linear-gradient(90deg, rgba(0,153,222,.16), rgba(123,198,67,.08))' : 'transparent') + '; color: ' + (on ? '#0099de' : 'var(--muted)') + '; box-shadow: ' + (on ? '0 0 20px rgba(0,153,222,.18)' : 'none') + '; transition: background .3s ease, color .3s ease, box-shadow .3s ease;',
+        barStyle: 'position: absolute; inset-inline-end: 0; top: 22%; bottom: 22%; width: 3px; border-radius: 3px; background: ' + (on ? 'linear-gradient(180deg, #0099de, #7bc643)' : 'transparent') + '; box-shadow: ' + (on ? '0 0 12px #0099de' : 'none') + ';'
+      };
+    });
+
+    const m = st.modal;
+
+    return {
+      t, navItems,
+      sidebarWidth: st.collapsed ? '84px' : '264px',
+      labelOpacity: st.collapsed ? 0 : 1,
+      langLabel: st.lang === 'ar' ? 'English' : 'العربية',
+      query: st.query,
+      isOverview: st.view === 'overview',
+      onQuery: (e) => this.setState({ query: e.target.value, page: 0 }),
+      toggleSidebar: () => this.setState({ collapsed: !st.collapsed }),
+      toggleTheme: () => this.setState({ theme: st.theme === 'light' ? 'dark' : 'light' }),
+      toggleLang: () => this.setState({ lang: st.lang === 'ar' ? 'en' : 'ar' }),
+      ringBell: () => this.toast(t.notif, 'ph-duotone ph-bell-ringing'),
+      modal: !!m,
+      modalTitle: m ? (m.id == null ? t.newRecord : t.edit) : '',
+      modalAr: m ? m.ar : '', modalEn: m ? m.en : '', modalBody: m ? m.body : '',
+      onModalAr: (e) => this.setState({ modal: Object.assign({}, m, { ar: e.target.value }) }),
+      onModalEn: (e) => this.setState({ modal: Object.assign({}, m, { en: e.target.value }) }),
+      onModalBody: (e) => this.setState({ modal: Object.assign({}, m, { body: e.target.value }) }),
+      closeModal: () => this.setState({ modal: null }),
+      stop: (e) => e.stopPropagation(),
+      saveModal: () => this.setState({ modal: null }),
+      toasts: st.toasts.map((x) => ({
+        text: x.text, icon: x.icon,
+        style: 'display: flex; align-items: center; gap: 11px; padding: 14px 20px; border-radius: 14px; background: var(--card); border: 1px solid rgba(123,198,67,.4); box-shadow: 0 20px 44px rgba(8,20,28,.22); color: var(--text); animation: ad-toast 3.4s ease both;'
+      })),
+      ...this.adminVals(t, st)
+    };
+  }
+}
+</script>
+</body>
+</html>

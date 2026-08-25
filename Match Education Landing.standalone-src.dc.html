@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+<template id="__bundler_thumbnail" data-bg-color="#0a1128">
+  <svg viewBox="0 0 1200 800" xmlns="http://www.w3.org/2000/svg">
+    <rect width="1200" height="800" fill="#0a1128"/>
+    <circle cx="850" cy="260" r="300" fill="#0099de" opacity="0.16"/>
+    <circle cx="260" cy="620" r="220" fill="#7bc643" opacity="0.12"/>
+    <rect x="420" y="300" width="360" height="220" rx="18" fill="#333c46"/>
+    <rect x="440" y="320" width="320" height="180" rx="8" fill="#0d1730"/>
+    <rect x="470" y="440" width="30" height="40" rx="4" fill="#0099de"/>
+    <rect x="512" y="415" width="30" height="65" rx="4" fill="#0099de"/>
+    <rect x="554" y="395" width="30" height="85" rx="4" fill="#7bc643"/>
+    <rect x="596" y="425" width="30" height="55" rx="4" fill="#0099de"/>
+    <rect x="638" y="385" width="30" height="95" rx="4" fill="#0099de"/>
+    <rect x="680" y="405" width="30" height="75" rx="4" fill="#7bc643"/>
+    <rect x="380" y="530" width="440" height="16" rx="6" fill="#23292f"/>
+    <text x="600" y="640" font-family="serif" font-size="54" font-weight="700" fill="#ffffff" text-anchor="middle">Match Education</text>
+  </svg>
+</template>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+<style>
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: #0a1128; color: #223f4d; font-family: 'IBM Plex Sans Arabic', sans-serif; overflow-x: hidden; }
+  a { color: #0099de; text-decoration: none; }
+  a:hover { color: #4e8b1f; }
+  ::selection { background: rgba(0,153,222,.2); }
+  *:focus-visible { outline: 2px solid #0099de; outline-offset: 3px; }
+  @keyframes me-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
+  @keyframes me-pulse { 0%,100% { opacity: .35 } 50% { opacity: 1 } }
+  @keyframes me-sweep { 0% { transform: translateX(-120%) } 100% { transform: translateX(220%) } }
+  @keyframes me-grow { from { transform: scaleY(.05) } to { transform: scaleY(1) } }
+  @keyframes me-swap { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
+  @keyframes me-line { 0%,100% { opacity: .5 } 50% { opacity: 1 } }
+  @media (max-width: 760px) {
+    nav { padding: 14px 20px !important; }
+    nav > div { gap: 12px !important; }
+    nav > div > a:not(:last-child):not(.nav-home) { display: none !important; }
+    .timeline-spine { left: auto !important; inset-inline-start: 23px !important; transform: none !important; }
+    .timeline-item { grid-template-columns: 48px minmax(0, 1fr) !important; min-height: 170px !important; }
+    .timeline-item > div:first-child { grid-column: 2 !important; text-align: start !important; padding: 22px 0 !important; padding-inline: 4px 0 !important; }
+    .timeline-item > div:nth-child(2) { grid-column: 1 !important; }
+    #demo > div { grid-template-columns: 1fr !important; gap: 34px !important; }
+  }
+</style>
+</helmet>
+
+<div dir="rtl" style="position: relative; background: #0a1128; overflow-x: clip;">
+
+  <nav ref="{{ setNav }}" style="position: fixed; inset: 0 0 auto 0; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 15px 44px; background: rgba(10,17,40,.9); border-bottom: 1px solid rgba(0,153,222,.22); color: #dbe7f3; backdrop-filter: blur(20px); transition: background .5s ease, border-color .5s ease, color .5s ease;">
+    <a href="#top" style="display: flex; align-items: center; gap: 12px; color: inherit;">
+      <img src="uploads/pasted-1787471797548-0.png" alt="Match Education" style="width: 42px; height: 42px; object-fit: contain; filter: drop-shadow(0 0 12px rgba(0,153,222,.32));">
+      <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 18px;">Match<span style="color: #5ea82c;">Education</span></span>
+    </a>
+    <div style="display: flex; align-items: center; gap: 28px; font-size: 15px;">
+      <a class="nav-home" href="Match%20Systems%20Landing.dc.html" style="display: inline-flex; align-items: center; gap: 7px; color: inherit; font-family: 'Cairo', sans-serif; font-weight: 700;" style-hover="color: #0099de;"><i class="ph-duotone ph-house" style="font-size: 17px;"></i>الصفحة الرئيسية</a>
+      <a href="#roles" style="color: inherit;" style-hover="color: #0099de;">البوابات</a>
+      <a href="#modules" style="color: inherit;" style-hover="color: #0099de;">الركائز</a>
+      <a href="#demo" style="padding: 10px 20px; border-radius: 10px; background: #0099de; color: #ffffff; font-weight: 600; white-space: nowrap; box-shadow: 0 0 20px rgba(0,153,222,.35); transition: background .25s ease;" style-hover="background: #4e8b1f;">طلب عرض توضيحي</a>
+      <button type="button" onClick="{{ toggleLang }}" aria-label="تبديل اللغة" style="display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border: 1px solid #35b6f0; border-radius: 9px; background: #0099de; color: #ffffff; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 0 16px rgba(0,153,222,.3);" style-hover="background: #0d7cb3; border-color: #7bc643;"><i class="ph-duotone ph-translate" style="font-size: 17px;"></i>{{ langLabel }}</button>
+    </div>
+  </nav>
+
+  <section id="top" data-screen-label="Hero" style="position: sticky; top: 0; z-index: 0; box-sizing: border-box; height: 68vh; min-height: 100vh; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, .9fr); align-items: center; gap: 32px; padding: 76px 5vw 120px; padding-bottom: 120px !important; overflow: hidden;">
+    <div ref="{{ setHeroBg }}" style="position: absolute; inset: -8%; z-index: 0; background: #0a1128; will-change: transform, filter;">
+      <div style="position: absolute; inset: 0; background: radial-gradient(70% 55% at 72% 30%, rgba(0,153,222,.20), transparent 72%);"></div>
+      <div style="position: absolute; inset: 0; background: radial-gradient(50% 42% at 14% 78%, rgba(123,198,67,.10), transparent 74%);"></div>
+      <div style="position: absolute; inset: auto 0 0 0; height: 46%; background: linear-gradient(0deg, rgba(4,8,20,.75), transparent);"></div>
+    </div>
+
+    <div ref="{{ setHeroText }}" style="position: relative; z-index: 3; transform: translateY(-40px); will-change: transform, opacity, filter;">
+      <h1 style="font-family: 'Cairo', sans-serif; font-weight: 900; font-size: clamp(29px, 3.3vw, 52px); line-height: 1.26; margin: 0 0 0.75rem; color: #ffffff; text-wrap: pretty;">Match Education - المنظومة الرقمية الشاملة لإدارة <span style="color: #35b6f0;">المدارس الذكية</span></h1>
+      <p style="font-size: clamp(14px, 1.15vw, 17px); font-weight: 300; color: #9db4c4; line-height: 1.75; margin: 0 0 0.75rem; max-width: 520px;">منظومة واحدة تربط الإدارة والمعلمين والطلاب وأولياء الأمور — من الالتحاق حتى الشهادات.</p>
+      <div style="display: flex; justify-content: flex-start; gap: 12px; flex-wrap: nowrap; width: fit-content; margin: 20px 0 0 !important;">
+        <a href="#demo" style="flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 9px; padding: 14px 22px; border-radius: 10px; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 16px; color: #0f2733; background: #ffffff; transition: transform .3s cubic-bezier(.16,1,.3,1), background .25s ease;" style-hover="transform: translateY(-2px); background: #eaf4fa;" style-active="transform: translateY(0);">
+          <i class="ph-duotone ph-presentation-chart" style="font-size: 20px; color: #0099de;"></i>طلب عرض توضيحي
+        </a>
+        <a href="#roles" style="flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 9px; padding: 14px 22px; border-radius: 10px; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 16px; color: #ffffff; background: rgba(0,153,222,.14); border: 1px solid rgba(0,153,222,.55); backdrop-filter: blur(10px); transition: transform .3s cubic-bezier(.16,1,.3,1), background .25s ease;" style-hover="transform: translateY(-2px); background: rgba(0,153,222,.24);" style-active="transform: translateY(0);">
+          <i class="ph-duotone ph-arrow-up-right" style="font-size: 20px;"></i>استكشف الآن
+        </a>
+      </div>
+    </div>
+
+    <div ref="{{ setLaptop }}" style="position: relative; z-index: 2; perspective: 1400px; will-change: transform, opacity, filter;">
+      <div ref="{{ setLaptopTilt }}" style="transform-style: preserve-3d; animation: me-float 7s ease-in-out infinite; transition: transform .4s cubic-bezier(.16,1,.3,1);">
+        <div style="position: relative; border-radius: 13px 13px 5px 5px; padding: 11px 11px 20px; background: linear-gradient(158deg, #4a5560 0%, #333c46 34%, #262d36 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.22), inset 0 -1px 0 rgba(0,0,0,.5), 0 30px 60px rgba(0,0,0,.62);">
+          <div style="position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 66px; height: 5px; border-radius: 0 0 5px 5px; background: #1b2029;"></div>
+          <div style="position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%); font-size: 7px; letter-spacing: .16em; color: rgba(255,255,255,.28);">MATCH EDUCATION</div>
+          <div style="position: relative; border-radius: 6px; overflow: hidden; background: #0d1730; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); aspect-ratio: 1916 / 911;">
+            <img src="uploads/education.png" alt="لوحة تحكم Match Education" loading="lazy" decoding="async" style="display: block; width: 100%; max-width: 100%; height: 100%; object-fit: contain; object-position: center;">
+            <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 38%);"></div>
+          </div>
+        </div>
+        <div style="position: relative; height: 12px; margin: 0 -8%; border-radius: 0 0 4px 4px; background: linear-gradient(180deg, #545e69 0%, #3b434d 30%, #23292f 100%); box-shadow: 0 22px 44px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.2);">
+          <div style="position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 15%; height: 4px; border-radius: 0 0 4px 4px; background: rgba(0,0,0,.5);"></div>
+        </div>
+        <div style="height: 4px; margin: 0 -4%; border-radius: 0 0 10px 10px; background: linear-gradient(180deg, rgba(24,29,36,.9), transparent);"></div>
+        <div aria-hidden="true" style="margin: 5px -8% 0; height: 34px; border-radius: 0 0 10px 10px; opacity: .17; transform: scaleY(-1); background: linear-gradient(180deg, #3b434d, transparent 78%); filter: blur(5px);"></div>
+      </div>
+      <div style="position: absolute; inset: auto -14% -8% -14%; height: 130px; border-radius: 50%; background: radial-gradient(50% 50% at 50% 50%, rgba(0,153,222,.16), transparent 72%); filter: blur(14px); pointer-events: none;"></div>
+    </div>
+  </section>
+
+  <div ref="{{ setLight }}" style="position: relative; z-index: 1; margin-top: -13vh; border-radius: 44px 44px 0 0; background: #ffffff; box-shadow: 0 -30px 90px rgba(10,17,40,.55); overflow: hidden;">
+    <div style="height: 1px; background: linear-gradient(90deg, transparent, #0099de 30%, #7bc643 70%, transparent); box-shadow: 0 0 18px rgba(0,153,222,.55);"></div>
+
+    <section id="roles" data-screen-label="Roles" style="padding: clamp(84px, 8.5vw, 136px) 6vw clamp(78px, 8vw, 124px); background: #ffffff;">
+      <div style="max-width: 1280px; margin: 0 auto;">
+        <p style="font-size: 12px; letter-spacing: .3em; color: #0d7cb3; margin: 0 0 14px; font-weight: 600;">البوابات الخمس</p>
+        <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(27px, 2.9vw, 44px); margin: 0 0 12px; color: #14313c;">لكل مستخدم بوابته الخاصة</h2>
+        <p style="color: #55747f; font-size: 17px; font-weight: 300; line-height: 1.8; margin: 0 0 clamp(36px, 3.8vw, 56px); max-width: 560px;">اختر الدور لتظهر لمحة عن مساحة العمل المخصصة له.</p>
+
+        <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px;">
+          <sc-for list="{{ roleTabs }}" as="r" hint-placeholder-count="5">
+            <button type="button" onClick="{{ r.pick }}" style="{{ r.style }}">
+              <i class="{{ r.icon }}" style="font-size: 20px;"></i>
+              <span>{{ r.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+
+        <div style="padding: clamp(30px, 3vw, 44px); border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0; border-inline-start: 3px solid #0099de; transition: opacity .5s ease, transform .5s ease;">
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 18px;">
+            <span style="width: 56px; height: 56px; border-radius: 14px; flex: none; display: grid; place-items: center; background: #ffffff; border: 1px solid rgba(0,153,222,.28); box-shadow: 0 0 20px rgba(0,153,222,.16);">
+              <i class="{{ activeRole.icon }}" style="font-size: 28px; color: #0099de;"></i>
+            </span>
+            <div>
+              <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 24px; color: #14313c;">{{ activeRole.label }}</div>
+              <div style="font-size: 13px; color: #5c7a86; margin-top: 3px;">{{ activeRole.en }}</div>
+            </div>
+          </div>
+          <p style="color: #44646f; font-size: 17px; line-height: 1.9; font-weight: 300; margin: 0; max-width: 760px;">{{ activeRole.desc }}</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="modules" data-screen-label="Pillars" style="position: relative; padding: clamp(96px, 9vw, 152px) 6vw clamp(94px, 8.8vw, 148px); background: #ffffff; border-block: 1px solid #e2ebf0; overflow: hidden;">
+      <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,153,222,.07) 0%, rgba(0,153,222,.022) 46%, rgba(255,255,255,0) 80%), radial-gradient(58% 42% at 84% 4%, rgba(0,153,222,.10), transparent 70%), radial-gradient(50% 40% at 10% 96%, rgba(123,198,67,.075), transparent 72%);"></div>
+      <div style="position: relative; z-index: 1; max-width: 1240px; margin: 0 auto;">
+        <p style="font-size: 12px; letter-spacing: .3em; color: #4e8b1f; margin: 0 0 16px; font-weight: 600;">الركائز التنفيذية</p>
+        <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(28px, 3vw, 46px); margin: 0 0 14px; color: #0f172a; text-wrap: pretty;">أربع ركائز تُدار عليها المدرسة</h2>
+        <p style="color: #475569; font-size: 17px; font-weight: 300; line-height: 1.85; margin: 0 0 clamp(56px, 5.4vw, 84px); max-width: 560px;">أربع ركائز تنفيذية تلخص قيمة المنظومة للمدرسة الحديثة.</p>
+
+        <div style="position: relative; max-width: 1120px; margin: 0 auto;">
+          <div class="timeline-spine" aria-hidden="true" style="position: absolute; top: 10px; bottom: 10px; left: 50%; width: 2px; transform: translateX(-50%); border-radius: 2px; background: rgba(15,23,42,.10);">
+            <div ref="{{ setSpineFill }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 0; overflow: hidden; transition: height .16s linear;">
+              <div ref="{{ setSpineGradient }}" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 2px; background: linear-gradient(180deg, #0099de 0%, #35b6f0 38%, #7bc643 100%); box-shadow: 0 0 12px rgba(0,153,222,.45), 0 0 22px rgba(123,198,67,.28);"></div>
+            </div>
+            <span ref="{{ setSpineHead }}" style="position: absolute; top: 0; left: 50%; width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; opacity: 0; background: #7bc643; box-shadow: 0 0 0 5px rgba(123,198,67,.20), 0 0 16px rgba(123,198,67,.85); transition: top .16s linear, opacity .3s ease;"></span>
+          </div>
+
+          <div style="display: grid; gap: 0;">
+            <sc-for list="{{ pillars }}" as="p" hint-placeholder-count="4">
+              <div class="timeline-item" style="{{ p.itemStyle }}">
+                <div style="{{ p.contentStyle }}">
+                  <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 12px;">
+                    <i class="{{ p.icon }}" style="font-size: 30px; color: {{ p.accent }}; filter: drop-shadow(0 0 9px {{ p.softGlow }});"></i>
+                    <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(19px, 1.8vw, 26px); color: #0f172a;">{{ p.ar }}</span>
+                  </div>
+                  <div style="font-size: 13px; letter-spacing: .04em; font-weight: 500; color: {{ p.accentText }}; margin-bottom: 12px;">{{ p.en }}</div>
+                  <p style="color: #475569; font-size: 16px; line-height: 1.85; font-weight: 300; margin: 0; max-width: 430px;">{{ p.summary }}</p>
+                </div>
+                <div aria-hidden="true" style="{{ p.nodeWrapStyle }}">
+                  <span class="spine-node" data-accent="{{ p.accent }}" data-glow="{{ p.glow }}" style="{{ p.nodeStyle }}"><i class="{{ p.nodeIcon }}" style="font-size: 20px;"></i></span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <sc-if value="{{ hasStats }}" hint-placeholder-val="{{ true }}">
+      <section id="metrics" data-screen-label="Metrics" style="position: relative; padding: clamp(64px, 6vw, 96px) 6vw; background: #ffffff; border-top: 1px solid #e2ebf0; overflow: hidden;">
+        <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(50% 60% at 50% 0%, rgba(0,153,222,.07), transparent 72%);"></div>
+        <div style="position: relative; z-index: 1; max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 20px;">
+          <sc-for list="{{ eduStats }}" as="s" hint-placeholder-count="4">
+            <div class="metric-card" style="display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 26px 18px; border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0; text-align: center; transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 18px 38px rgba(15,23,42,.08);">
+              <i class="{{ s.icon }}" style="font-size: 30px; color: {{ s.accent }};"></i>
+              <div style="font-family: 'Cairo', sans-serif; font-weight: 900; font-size: clamp(30px, 3vw, 44px); color: #0f172a; line-height: 1.1;" dir="ltr">{{ s.display }}</div>
+              <div style="font-size: 14px; color: #475569; letter-spacing: .04em;">{{ s.label }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </section>
+    </sc-if>
+
+    <section id="clients" data-screen-label="Clients" style="position: relative; padding: clamp(92px, 8.8vw, 146px) 6vw clamp(88px, 8.4vw, 138px); background: #f5f9fb; border-block: 1px solid #e2ebf0; overflow: hidden;">
+      <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(52% 40% at 88% 8%, rgba(0,153,222,.07), transparent 70%), radial-gradient(46% 36% at 8% 92%, rgba(123,198,67,.06), transparent 72%);"></div>
+      <div style="position: relative; z-index: 1; max-width: 1240px; margin: 0 auto;">
+        <p style="font-size: 12px; letter-spacing: .3em; color: #0d7cb3; margin: 0 0 16px; font-weight: 600;">شركاء النجاح</p>
+        <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(28px, 3vw, 46px); margin: 0 0 14px; color: #0f172a; text-wrap: pretty;">عملاؤنا في قطاع التعليم</h2>
+        <p style="color: #475569; font-size: 17px; font-weight: 300; line-height: 1.85; margin: 0 0 clamp(44px, 4.4vw, 66px); max-width: 560px;">مدارس وأكاديميات تدير يومها الدراسي بالكامل على منظومة Match Education.</p>
+
+        <div ref="{{ setCarousel }}" style="position: relative; width: 100%; height: 380px; overflow: visible;">
+          <sc-for list="{{ eduClients }}" as="c" hint-placeholder-count="5">
+            <div class="client-card" style="position: absolute; top: 0; right: 50%; width: min(420px, 86vw); height: 300px; transform: translateX(50%); border-radius: 24px; padding: 22px; box-sizing: border-box; display: flex; flex-direction: column; background: #ffffff; border: 1px solid rgba(0,153,222,.28); box-shadow: 0 14px 34px rgba(15,23,42,.10); overflow: hidden; transition: transform .7s cubic-bezier(.16,1,.3,1), opacity .7s ease;">
+
+              <div style="flex: 1; width: 100%; min-height: 0; border-radius: 18px; background: linear-gradient(145deg, #f7fafc, #edf4f8); border: 1px solid rgba(0,153,222,.08); display: grid; place-items: center; overflow: hidden;">
+                <sc-if value="{{ c.hasLogo }}" hint-placeholder-val="{{ false }}">
+                  <img src="{{ c.logo }}" alt="" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: contain; padding: 5px; box-sizing: border-box;">
+                </sc-if>
+                <sc-if value="{{ c.noLogo }}" hint-placeholder-val="{{ true }}">
+                  <div style="{{ c.bigMarkStyle }}">{{ c.mark }}</div>
+                </sc-if>
+              </div>
+
+              <div style="flex: none; padding: 15px 4px 2px; text-align: center;">
+                <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 21px; line-height: 1.4; color: #0f172a;">{{ c.name }}</div>
+                <p style="margin: 5px 0 0; color: #475569; font-size: 14px; line-height: 1.6; font-weight: 300;">{{ c.sectorLabel }}</p>
+              </div>
+
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ siteLoading }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 26px; border-radius: 18px; background: #ffffff; border: 1px solid #e2ebf0; color: #64748b; font-size: 14px;">
+            <i class="ph-duotone ph-circle-notch" style="font-size: 20px; color: #0099de;"></i>جارٍ تحميل البيانات…
+          </div>
+        </sc-if>
+        <sc-if value="{{ siteError }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 26px; border-radius: 18px; background: #ffffff; border: 1px dashed #e6b4b4; color: #b4544c; font-size: 14px;">
+            <i class="ph-duotone ph-warning-circle" style="font-size: 20px;"></i>تعذّر تحميل البيانات من الخادم.
+          </div>
+        </sc-if>
+        <sc-if value="{{ noClients }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 26px; border-radius: 18px; background: #ffffff; border: 1px dashed #cbd8e0; color: #64748b; font-size: 14px;">
+            <i class="ph-duotone ph-buildings" style="font-size: 22px; color: #94a3b8;"></i>لا يوجد عملاء منشورون ضمن قطاع التعليم حالياً.
+          </div>
+        </sc-if>
+      </div>
+    </section>
+
+    <section id="voices" data-screen-label="Testimonials" style="position: relative; padding: clamp(92px, 8.8vw, 146px) 6vw clamp(88px, 8.4vw, 138px); background: #ffffff; border-bottom: 1px solid #e2ebf0; overflow: hidden;">
+      <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: linear-gradient(180deg, rgba(0,153,222,.05) 0%, rgba(255,255,255,0) 62%);"></div>
+      <div style="position: relative; z-index: 1; max-width: 1240px; margin: 0 auto;">
+        <p style="font-size: 12px; letter-spacing: .3em; color: #4e8b1f; margin: 0 0 16px; font-weight: 600;">آراء العملاء</p>
+        <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(28px, 3vw, 46px); margin: 0 0 14px; color: #0f172a; text-wrap: pretty;">ماذا تقول المدارس عن المنظومة</h2>
+        <p style="color: #475569; font-size: 17px; font-weight: 300; line-height: 1.85; margin: 0 0 clamp(44px, 4.4vw, 66px); max-width: 560px;">تجارب حقيقية من مدارس اعتمدت المنظومة في إدارتها اليومية.</p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 20px;">
+          <sc-for list="{{ eduVoices }}" as="v" hint-placeholder-count="3">
+            <div class="voice-card" style="position: relative; display: flex; flex-direction: column; gap: 18px; padding: 28px; border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0; border-inline-start: 3px solid {{ v.accent }}; transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 18px 40px rgba(15,23,42,.08);">
+              <i class="ph-duotone ph-quotes" style="font-size: 30px; color: {{ v.accent }}; opacity: .55;"></i>
+              <p style="margin: 0; color: #334155; font-size: 15.5px; line-height: 1.95; font-weight: 300; flex: 1;">{{ v.body }}</p>
+              <div style="font-size: 15px; letter-spacing: .16em; color: #f0a92b;">{{ v.stars }}</div>
+              <div style="display: flex; align-items: center; gap: 13px; padding-top: 16px; border-top: 1px solid #e2ebf0;">
+                <span style="{{ v.markStyle }}">{{ v.mark }}</span>
+                <div style="min-width: 0;">
+                  <div style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 14.5px; color: #0f172a;">{{ v.name }}</div>
+                  <div style="font-size: 12px; color: #64748b; margin-top: 2px;">{{ v.role }}</div>
+                </div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ siteLoading }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 26px; border-radius: 18px; background: #f5f9fb; border: 1px solid #e2ebf0; color: #64748b; font-size: 14px;">
+            <i class="ph-duotone ph-circle-notch" style="font-size: 20px; color: #0099de;"></i>جارٍ تحميل البيانات…
+          </div>
+        </sc-if>
+        <sc-if value="{{ siteError }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 26px; border-radius: 18px; background: #f5f9fb; border: 1px dashed #e6b4b4; color: #b4544c; font-size: 14px;">
+            <i class="ph-duotone ph-warning-circle" style="font-size: 20px;"></i>تعذّر تحميل البيانات من الخادم.
+          </div>
+        </sc-if>
+        <sc-if value="{{ noVoices }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; align-items: center; gap: 12px; padding: 26px; border-radius: 18px; background: #f5f9fb; border: 1px dashed #cbd8e0; color: #64748b; font-size: 14px;">
+            <i class="ph-duotone ph-chat-centered-text" style="font-size: 22px; color: #94a3b8;"></i>لا توجد آراء معتمدة ضمن قطاع التعليم حالياً.
+          </div>
+        </sc-if>
+      </div>
+    </section>
+
+    <section id="demo" data-screen-label="Demo" style="padding: clamp(84px, 8.5vw, 136px) 6vw clamp(68px, 7vw, 100px); background: #ffffff;">
+      <div style="max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.05fr; gap: 58px; align-items: start;">
+        <div>
+          <p style="font-size: 12px; letter-spacing: .3em; color: #0d7cb3; margin: 0 0 14px; font-weight: 600;">عرض توضيحي</p>
+          <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(26px, 2.7vw, 40px); margin: 0 0 18px; color: #14313c; line-height: 1.35;">شاهدوا النظام على بيانات مدرستكم</h2>
+          <p style="color: #55747f; font-size: 16px; line-height: 1.9; font-weight: 300; margin: 0 0 30px;">جلسة مدتها ثلاثون دقيقة نستعرض فيها البوابات الخمس والوحدات التي تحتاجونها.</p>
+          <div style="display: flex; flex-direction: column; gap: 14px; font-size: 15px; color: #44646f;">
+            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-envelope-simple" style="font-size: 21px; color: #0099de;"></i>education@matchsystems.com</div>
+            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-phone" style="font-size: 21px; color: #0099de;"></i>+970 000 000 000</div>
+            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-clock" style="font-size: 21px; color: #4e8b1f;"></i>رد خلال يوم عمل واحد</div>
+          </div>
+        </div>
+        <form onSubmit="{{ onSubmit }}" style="display: grid; gap: 16px; padding: 34px; border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0;">
+          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">اسم المدرسة
+            <input type="text" placeholder="اكتب اسم المدرسة" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; transition: border-color .25s ease, box-shadow .25s ease;" style-focus="border-color: #0099de; box-shadow: 0 0 16px rgba(0,153,222,.2);">
+          </label>
+          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">البريد الإلكتروني
+            <input type="email" placeholder="name@school.edu" dir="ltr" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; text-align: right; transition: border-color .25s ease, box-shadow .25s ease;" style-focus="border-color: #0099de; box-shadow: 0 0 16px rgba(0,153,222,.2);">
+          </label>
+          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">عدد الطلاب
+            <select style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none;" style-focus="border-color: #0099de;">
+              <option>أقل من 300</option>
+              <option>300 - 800</option>
+              <option>800 - 2000</option>
+              <option>أكثر من 2000</option>
+            </select>
+          </label>
+          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">الوحدات التي تهمكم
+            <textarea rows="3" placeholder="مثال: الحضور، العلامات، الرسوم المالية" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; resize: vertical; transition: border-color .25s ease, box-shadow .25s ease;" style-focus="border-color: #0099de; box-shadow: 0 0 16px rgba(0,153,222,.2);"></textarea>
+          </label>
+          <button type="submit" style="margin-top: 4px; padding: 15px 26px; border-radius: 11px; border: none; background: #7bc643; color: #0f2733; font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 0 24px rgba(123,198,67,.32); transition: transform .3s cubic-bezier(.16,1,.3,1), background .25s ease, box-shadow .3s ease;" style-hover="transform: translateY(-3px); background: #91d957; box-shadow: 0 0 32px rgba(123,198,67,.5);" style-active="transform: translateY(0);">{{ submitLabel }}</button>
+        </form>
+      </div>
+    </section>
+
+    <footer style="background: #f5f9fb; border-top: 1px solid #e2ebf0; padding: clamp(34px, 3.6vw, 52px) 6vw;">
+      <div style="max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 26px; flex-wrap: wrap;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <img src="uploads/pasted-1787471797548-0.png" alt="Match Education" style="width: 34px; height: 34px; object-fit: contain;">
+          <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 16px; color: #14313c;">Match Education</span>
+        </div>
+        <div style="display: flex; gap: 24px; font-size: 14px;">
+          <a href="#roles" style="color: #55747f;" style-hover="color: #0099de;">البوابات</a>
+          <a href="#modules" style="color: #55747f;" style-hover="color: #0099de;">الركائز</a>
+          <a href="#demo" style="color: #55747f;" style-hover="color: #0099de;">طلب عرض</a>
+        </div>
+        <div style="font-size: 13px; color: #5c7a86;">© 2026 Match Systems. جميع الحقوق محفوظة.</div>
+      </div>
+    </footer>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const ROLES = [
+  { key: 'admin', label: 'مدير المدرسة', en: 'Administrator', icon: 'ph-duotone ph-user-gear',
+    desc: 'صورة كاملة عن المدرسة في لوحة واحدة، مع صلاحية القرار على المسار الأكاديمي والمالي. يتابع الأداء العام ويتخذ قراراته بثقة من مساحة عمل مركزية.',
+  },
+  { key: 'teacher', label: 'المعلم', en: 'Teacher', icon: 'ph-duotone ph-chalkboard-teacher',
+    desc: 'يوم المعلم في مساحة عمل واحدة، من متابعة الصف حتى التقييم والتواصل مع الأسرة. يركز على التدريس بينما تبقى الصورة الأكاديمية واضحة أمامه.',
+  },
+  { key: 'student', label: 'الطالب', en: 'Student', icon: 'ph-duotone ph-student',
+    desc: 'يومه الدراسي ومساره الأكاديمي أمامه في تجربة بسيطة وواضحة. يحصل على التنبيهات والمصادر التي تساعده على التقدم باستقلالية.',
+  },
+  { key: 'parent', label: 'ولي الأمر', en: 'Parent', icon: 'ph-duotone ph-users-three',
+    desc: 'يتابع أبناءه لحظياً ويرى صورة واضحة عن تقدمهم الأكاديمي. يتواصل مباشرة مع المدرسة من قناة موثقة ومطمئنة.',
+  },
+  { key: 'secretary', label: 'السكرتيرة', en: 'Secretary', icon: 'ph-duotone ph-identification-card',
+    desc: 'واجهة العمل اليومي للمدرسة في مساحة منظمة وسريعة. تنجز الاستقبال والوثائق والإعلانات مع إبقاء الخدمات قيد المتابعة.',
+  }
+];
+
+
+const PILLARS = [
+  { ar: 'الإدارة الأكاديمية الذكية', en: 'Smart Academic Governance', icon: 'ph-duotone ph-buildings',
+    summary: 'تشغيل مدرسي منظم وحوكمة أكاديمية واضحة تساعد الإدارة على قيادة المدرسة بثقة.' },
+  { ar: 'المتابعة والتقييم الشامل', en: 'Daily Tracking & Analytics', icon: 'ph-duotone ph-clock-countdown',
+    summary: 'رؤية تنفيذية لحركة المدرسة وتقدم الطلاب، مع قرارات مبنية على قراءة مستمرة للأداء.' },
+  { ar: 'تجربة الطالب وتفاعل الأسرة', en: 'Student Experience & Parent Portal', icon: 'ph-duotone ph-heart',
+    summary: 'صلة أكثر سلاسة بين الطالب والأسرة والمدرسة تصنع تجربة تعليمية متكاملة ومطمئنة.' },
+  { ar: 'المالية والتواصل المباشر', en: 'Financial Suite & Communication', icon: 'ph-duotone ph-wallet',
+    summary: 'إدارة مالية واتصال مباشر في منظومة موحدة تمنح المدرسة وضوحاً أكبر واستجابة أسرع.' }
+];
+
+/* --------------------------------------------------------------------------
+   Education-sector content served by the Match Systems admin API.
+   Clients and testimonials are fetched live and filtered server-side to
+   sector=education. Drafts are rendered; only hidden records are withheld.
+   -------------------------------------------------------------------------- */
+const SITE_API = {
+  BASE_URL: 'http://localhost:8000/v1',   // FastAPI host (backend/README.md)
+  SECTOR: 'education',
+  TIMEOUT_MS: 9000,
+  REFRESH_MS: 15000
+};
+
+const SECTOR_LABELS = { education: { ar: 'تعليم', en: 'Education' }, distribution: { ar: 'توزيع', en: 'Distribution' }, general: { ar: 'عام', en: 'General' } };
+
+const toCamelKey = (s) => s.replace(/_([a-z0-9])/g, (m, c) => c.toUpperCase());
+function rowToCamel(row) {
+  const out = {};
+  Object.keys(row || {}).forEach((k) => { out[toCamelKey(k)] = row[k]; });
+  return out;
+}
+
+async function fetchSector(table) {
+  const url = SITE_API.BASE_URL + '/' + table +
+    '?sector=' + encodeURIComponent(SITE_API.SECTOR) + '&per=100&sort=id&dir=asc';
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => ctrl.abort(), SITE_API.TIMEOUT_MS) : null;
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' }, signal: ctrl ? ctrl.signal : undefined });
+    if (timer) clearTimeout(timer);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    return ((data && (data.items || data.rows)) || []).map(rowToCamel);
+  } catch (e) {
+    if (timer) clearTimeout(timer);
+    throw e;
+  }
+}
+
+async function fetchStats() {
+  const url = SITE_API.BASE_URL + '/stats?is_visible=true&per=50&sort=sort_order&dir=asc';
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => ctrl.abort(), SITE_API.TIMEOUT_MS) : null;
+  try {
+    const res = await fetch(url, { headers: { Accept: 'application/json' }, signal: ctrl ? ctrl.signal : undefined });
+    if (timer) clearTimeout(timer);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    return ((data && (data.items || data.rows)) || []).map(rowToCamel);
+  } catch (e) {
+    if (timer) clearTimeout(timer);
+    throw e;
+  }
+}
+
+function isPublishable(r) {
+  // Anything that is not deliberately hidden is rendered, drafts included.
+  return !!r && String(r.status || '').toLowerCase() !== 'suspended';
+}
+
+function initialsOf(text) {
+  const parts = String(text || '').trim().split(/\s+/).filter(Boolean);
+  if (!parts.length) return '—';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+const I18N = {
+  'الصفحة الرئيسية': 'Home Page',
+  'نظام إدارة المدارس': 'School Management System',
+  'Match Education - المنظومة الرقمية الشاملة لإدارة': 'Match Education - The complete digital system for',
+  'المدارس الذكية': 'smart schools',
+  'منظومة واحدة تربط الإدارة والمعلمين والطلاب وأولياء الأمور — من الالتحاق حتى الشهادات.': 'One platform connecting administrators, teachers, students, and parents, from enrollment to graduation.',
+  'البوابات': 'Portals',
+  'الركائز': 'Pillars',
+  'طلب عرض توضيحي': 'Request a Demo',
+  'استكشف الآن': 'Explore Now',
+  'البوابات الخمس': 'Five User Portals',
+  'لكل مستخدم بوابته الخاصة': 'Every user has a dedicated workspace',
+  'اختر الدور لتظهر لمحة عن مساحة العمل المخصصة له.': 'Select a role to preview its dedicated workspace.',
+  'مدير المدرسة': 'Administrator',
+  'المعلم': 'Teacher',
+  'الطالب': 'Student',
+  'ولي الأمر': 'Parent',
+  'السكرتيرة': 'Secretary',
+  'صورة كاملة عن المدرسة في لوحة واحدة، مع صلاحية القرار على المسار الأكاديمي والمالي. يتابع الأداء العام ويتخذ قراراته بثقة من مساحة عمل مركزية.': 'See the whole school in one workspace with control over academic and financial direction. Monitor performance and make confident decisions from a central command center.',
+  'يوم المعلم في مساحة عمل واحدة، من متابعة الصف حتى التقييم والتواصل مع الأسرة. يركز على التدريس بينما تبقى الصورة الأكاديمية واضحة أمامه.': 'The teacher manages the day in one workspace, from classroom progress to assessment and family communication. Stay focused on teaching with the academic picture always in view.',
+  'يومه الدراسي ومساره الأكاديمي أمامه في تجربة بسيطة وواضحة. يحصل على التنبيهات والمصادر التي تساعده على التقدم باستقلالية.': 'The student sees the school day and academic path in one clear experience. Timely alerts and resources help them move forward independently.',
+  'يتابع أبناءه لحظياً ويرى صورة واضحة عن تقدمهم الأكاديمي. يتواصل مباشرة مع المدرسة من قناة موثقة ومطمئنة.': 'Parents follow progress in real time and see a clear academic picture. A trusted direct channel keeps communication with the school simple and reassuring.',
+  'واجهة العمل اليومي للمدرسة في مساحة منظمة وسريعة. تنجز الاستقبال والوثائق والإعلانات مع إبقاء الخدمات قيد المتابعة.': 'The school secretary runs daily operations from a fast, organized workspace. Handle reception, documents, and announcements while keeping services on track.',
+  'الركائز التنفيذية': 'Executive Pillars',
+  'أربع ركائز تُدار عليها المدرسة': 'Four pillars for a smarter school',
+  'أربع ركائز تنفيذية تلخص قيمة المنظومة للمدرسة الحديثة.': 'Four executive pillars that define the platform value for a modern school.',
+  'الإدارة الأكاديمية الذكية': 'Smart Academic Governance',
+  'تشغيل مدرسي منظم وحوكمة أكاديمية واضحة تساعد الإدارة على قيادة المدرسة بثقة.': 'Structured school operations and clear academic governance help leadership guide the school with confidence.',
+  'المتابعة والتقييم الشامل': 'Daily Tracking & Analytics',
+  'رؤية تنفيذية لحركة المدرسة وتقدم الطلاب، مع قرارات مبنية على قراءة مستمرة للأداء.': 'Executive visibility into school activity and student progress, with decisions grounded in continuous performance insight.',
+  'تجربة الطالب وتفاعل الأسرة': 'Student Experience & Parent Portal',
+  'صلة أكثر سلاسة بين الطالب والأسرة والمدرسة تصنع تجربة تعليمية متكاملة ومطمئنة.': 'A smoother connection between students, families, and school creates a complete, reassuring education experience.',
+  'المالية والتواصل المباشر': 'Financial Suite & Communication',
+  'إدارة مالية واتصال مباشر في منظومة موحدة تمنح المدرسة وضوحاً أكبر واستجابة أسرع.': 'Unified financial management and direct communication give the school greater clarity and faster response.',
+  'شركاء النجاح': 'Success Partners',
+  'عملاؤنا في قطاع التعليم': 'Our clients in the education sector',
+  'مدارس وأكاديميات تدير يومها الدراسي بالكامل على منظومة Match Education.': 'Schools and academies running their entire school day on Match Education.',
+  'آراء العملاء': 'Client Feedback',
+  'ماذا تقول المدارس عن المنظومة': 'What schools say about the platform',
+  'تجارب حقيقية من مدارس اعتمدت المنظومة في إدارتها اليومية.': 'Real experiences from schools that adopted the platform for daily operations.',
+  'لا يوجد عملاء منشورون ضمن قطاع التعليم حالياً.': 'No published clients in the education sector yet.',
+  'لا توجد آراء معتمدة ضمن قطاع التعليم حالياً.': 'No approved feedback in the education sector yet.',
+  'عرض توضيحي': 'Demo Request',
+  'شاهدوا النظام على بيانات مدرستكم': 'See the system on your school data',
+  'جلسة مدتها ثلاثون دقيقة نستعرض فيها البوابات الخمس والوحدات التي تحتاجونها.': 'A guided 30-minute session showcasing all 5 portals and the modules you need.',
+  'اسم المدرسة': 'School Name',
+  'البريد الإلكتروني': 'Email',
+  'عدد الطلاب': 'Student Count',
+  'الوحدات التي تهمكم': 'Modules of Interest',
+  'رد خلال يوم عمل واحد': 'Responds within 1 business day',
+  'اكتب اسم المدرسة': 'School Name',
+  'مثال: الحضور، العلامات، الرسوم المالية': 'e.g. Attendance, grades, tuition fees',
+  'أقل من 300': 'Under 300',
+  '300 - 800': '300 - 800',
+  '800 - 2000': '800 - 2,000',
+  'أكثر من 2000': 'Over 2,000'
+};
+const I18N_REVERSE = Object.keys(I18N).reduce((map, ar) => { map[I18N[ar]] = ar; return map; }, {});
+
+class Component extends DCLogic {
+  state = { role: 'admin', group: 0, chunk: 0, submitted: false, lang: 'ar',
+    siteClients: [], siteVoices: [], siteStats: [], siteLoading: true, siteError: '' };
+
+  constructor(props) {
+    super(props);
+    this.els = {};
+    this.active = 0;
+    this.setCarousel = (el) => { this.els.carousel = el; this.layoutCarousel(); };
+    this.setHeroBg = (el) => { this.els.heroBg = el; };
+    this.setHeroText = (el) => { this.els.heroText = el; };
+    this.setLaptop = (el) => { this.els.laptop = el; };
+    this.setLaptopTilt = (el) => { this.els.tilt = el; };
+    this.setLight = (el) => { this.els.light = el; };
+    this.setNav = (el) => { this.els.nav = el; };
+    this.setSpineFill = (el) => { this.els.spineFill = el; };
+    this.setSpineGradient = (el) => { this.els.spineGradient = el; };
+    this.setSpineHead = (el) => { this.els.spineHead = el; };
+    this.applyLang = (next) => {
+      document.documentElement.lang = next;
+      document.documentElement.dir = next === 'en' ? 'ltr' : 'rtl';
+      document.body.dir = next === 'en' ? 'ltr' : 'rtl';
+      document.body.dataset.lang = next;
+      const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) nodes.push(walker.currentNode);
+      nodes.forEach((node) => {
+        if (node.parentElement && /^(SCRIPT|STYLE)$/.test(node.parentElement.tagName)) return;
+        const value = node.nodeValue.trim();
+        if (!value) return;
+        const translated = next === 'en' ? I18N[value] : I18N_REVERSE[value];
+        if (translated) node.nodeValue = node.nodeValue.replace(value, translated);
+      });
+      document.querySelectorAll('[placeholder]').forEach((field) => {
+        const value = field.getAttribute('placeholder');
+        const translated = next === 'en' ? I18N[value] : I18N_REVERSE[value];
+        if (translated) field.setAttribute('placeholder', translated);
+      });
+    };
+    this.toggleLang = () => {
+      const next = this.state.lang === 'ar' ? 'en' : 'ar';
+      this.applyLang(next);
+      this.setState({ lang: next });
+    };
+    this.onSubmit = (e) => {
+      e.preventDefault();
+      this.setState({ submitted: true });
+      setTimeout(() => this.setState({ submitted: false }), 3200);
+    };
+  }
+
+  componentDidMount() {
+    this.onScroll = () => {
+      if (this.raf) return;
+      this.raf = requestAnimationFrame(() => {
+        this.raf = null;
+        const h = (window.innerHeight || 1) * 0.68;
+        const q = Math.min(1, Math.max(0, window.scrollY / h));
+        if (this.els.heroBg) {
+          this.els.heroBg.style.transform = 'translateY(' + (q * 12) + 'vh) scale(' + (1 + q * 0.16) + ')';
+          this.els.heroBg.style.filter = 'blur(' + (q * 24) + 'px) brightness(' + (1 - q * 0.4) + ')';
+        }
+        if (this.els.heroText) {
+          this.els.heroText.style.transform = 'translateY(' + (-40 - q * 96) + 'px) scale(' + (1 - q * 0.05) + ')';
+          this.els.heroText.style.opacity = String(Math.max(0, 1 - q * 1.55));
+          this.els.heroText.style.filter = 'blur(' + (q * 14) + 'px)';
+        }
+        if (this.els.laptop) {
+          this.els.laptop.style.transform = 'translateY(' + (-q * 44) + 'px) rotateX(' + (7 - q * 9) + 'deg) rotateY(' + (-8 + q * 6) + 'deg)';
+          this.els.laptop.style.opacity = String(Math.max(0, 1 - q * 1.4));
+          this.els.laptop.style.filter = 'blur(' + (q * 12) + 'px)';
+        }
+        if (this.els.nav) {
+          const light = q > 0.7;
+          this.els.nav.style.background = light ? 'rgba(255,255,255,.94)' : 'rgba(10,17,40,.9)';
+          this.els.nav.style.borderBottomColor = light ? '#e2ebf0' : 'rgba(0,153,222,.22)';
+          this.els.nav.style.color = light ? '#14313c' : '#dbe7f3';
+        }
+        if (this.els.spineFill) {
+          const track = this.els.spineFill.parentElement;
+          const section = this.els.spineFill.closest('#modules');
+          if (section && track) {
+            const trackH = track.offsetHeight;
+            const bounds = section.getBoundingClientRect();
+            const start = window.innerHeight * 0.74;
+            const progress = Math.min(1, Math.max(0, (start - bounds.top) / Math.max(1, bounds.height * 0.80)));
+            this.els.spineFill.style.height = (progress * 100) + '%';
+            if (this.els.spineGradient) this.els.spineGradient.style.height = trackH + 'px';
+            if (this.els.spineHead) {
+              this.els.spineHead.style.top = (progress * 100) + '%';
+              this.els.spineHead.style.opacity = progress > 0.005 && progress < 0.999 ? '1' : '0';
+            }
+            const tip = track.getBoundingClientRect().top + trackH * progress;
+            section.querySelectorAll('.spine-node').forEach((node) => {
+              const box = node.getBoundingClientRect();
+              const on = box.top + box.height / 2 <= tip + 8;
+              const flag = on ? '1' : '0';
+              if (node.dataset.lit === flag) return;
+              node.dataset.lit = flag;
+              const accent = node.dataset.accent || '#0099de';
+              const glow = node.dataset.glow || 'rgba(0,153,222,.65)';
+              node.style.background = '#ffffff';
+              node.style.color = on ? accent : '#94a3b8';
+              node.style.boxShadow = on ? ('0 0 0 2px ' + accent + ', 0 0 22px ' + glow + ', 0 6px 18px rgba(15,23,42,.10)') : '0 0 0 1px #dbe7ee';
+              node.style.transform = on ? 'scale(1.06)' : 'scale(.94)';
+            });
+          }
+        }
+      });
+    };
+    window.addEventListener('scroll', this.onScroll, { passive: true });
+    this.onScroll();
+
+    this.onTilt = (e) => {
+      const el = this.els.tilt;
+      if (!el) return;
+      const x = (e.clientX / window.innerWidth - 0.5);
+      const y = (e.clientY / window.innerHeight - 0.5);
+      el.style.transform = 'rotateX(' + (-y * 6) + 'deg) rotateY(' + (x * 8) + 'deg)';
+    };
+    window.addEventListener('pointermove', this.onTilt, { passive: true });
+    this.setupReveals();
+    this.bindSiteSync();
+    this.startCarousel();
+  }
+
+  componentDidUpdate(prev) {
+    this.setupReveals();
+    if (this.onScroll) this.onScroll();
+    if (this.state.lang === 'en') this.applyLang('en');
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('scroll', this.onScroll);
+    window.removeEventListener('pointermove', this.onTilt);
+    this.unbindSiteSync();
+    clearInterval(this.carouselTimer);
+    if (this.io) this.io.disconnect();
+  }
+
+  setupReveals() {
+    if (!('IntersectionObserver' in window)) return;
+    if (!this.io) {
+      this.io = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (!en.isIntersecting) return;
+          const el = en.target;
+          setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'none';
+            el.style.filter = 'blur(0)';
+          }, parseInt(el.dataset.revDelay || '0', 10));
+          this.io.unobserve(el);
+        });
+      }, { threshold: 0.05, rootMargin: '0px 0px -50px 0px' });
+    }
+    const sel = '#roles > div > p, #roles > div > h2, #roles > div > div > div, #modules > div > p, #modules > div > h2, #modules .timeline-item, #metrics .metric-card, #clients > div > p, #clients > div > h2, #voices > div > p, #voices > div > h2, #voices .voice-card, #demo > div > div, footer > div > div';
+    const seen = new Map();
+    document.querySelectorAll(sel).forEach((el) => {
+      if (el.dataset.rev) return;
+      el.dataset.rev = '1';
+      const p = el.parentElement;
+      const i = seen.get(p) || 0;
+      seen.set(p, i + 1);
+      el.dataset.revDelay = String(Math.min(i, 8) * 85);
+      el.style.opacity = '0';
+      el.style.transform = 'translateY(30px)';
+      el.style.filter = 'blur(6px)';
+      el.style.transition = 'opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1), filter .9s ease';
+      this.io.observe(el);
+    });
+  }
+
+  /* --- education-sector content, read live from the API -------------------- */
+  /* --- clients carousel ----------------------------------------------------
+     Cards are absolutely stacked; this positions them by distance from the
+     active index, so any number of cards lays out and rotates. */
+  layoutCarousel() {
+    const c = this.els.carousel;
+    if (!c) return;
+    const kids = Array.prototype.slice.call(c.children);
+    const n = kids.length;
+    if (!n) return;
+    kids.forEach((el, i) => {
+      let d = (i - this.active + n) % n;
+      if (d > n / 2) d -= n;
+      const a = Math.abs(d);
+      el.style.transform = 'translateX(50%) translateX(' + (d * 340) + 'px) translateY(' + (a * 22) + 'px) scale(' + Math.max(0.6, 1 - a * 0.12) + ')';
+      el.style.opacity = String(a > 2 ? 0 : Math.max(0, 1 - a * 0.34));
+      el.style.zIndex = String(20 - a);
+      el.style.pointerEvents = a === 0 ? 'auto' : 'none';
+      el.setAttribute('aria-hidden', a === 0 ? 'false' : 'true');
+    });
+  }
+
+  startCarousel() {
+    if (this.carouselTimer) return;
+    const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+    this.carouselTimer = setInterval(() => {
+      if (document.hidden) return;
+      const n = this.els.carousel ? this.els.carousel.children.length : 0;
+      if (n > 1) { this.active = (this.active + 1) % n; this.layoutCarousel(); }
+    }, 4200);
+  }
+
+  async syncSiteContent() {
+    const seq = (this.siteSeq = (this.siteSeq || 0) + 1);
+
+    /* allSettled, not all: one slow endpoint must not discard the fresh data
+       the other two returned. */
+    const results = await Promise.allSettled([
+      fetchSector('clients'), fetchSector('feedback'), fetchStats()
+    ]);
+    if (seq !== this.siteSeq) return;
+
+    const [c, v, s] = results;
+
+    /* fulfilled -> render what came back, even when empty.
+       rejected  -> the network failed, not the data: hold what is on screen. */
+    const held = (r, current, keepIf) => {
+      if (r.status !== 'fulfilled') return current;
+      return keepIf ? r.value.filter(keepIf) : r.value;
+    };
+
+    // Draft records are shown; only records explicitly hidden are withheld.
+    const clients = held(c, this.state.siteClients || [], isPublishable);
+    const feedback = held(v, this.state.siteVoices || [], isPublishable);
+    const stats = held(s, this.state.siteStats || []);
+
+    const failed = results.filter((r) => r.status === 'rejected');
+    if (failed.length) {
+      console.warn('Background refresh failed, keeping existing data', failed[0].reason);
+    }
+
+    // Only a first load that produced nothing at all reports an error.
+    const showing = clients.length || feedback.length || stats.length;
+    const offline = failed.length === results.length && !showing;
+
+    const stamp = JSON.stringify([
+      clients.map((x) => x.id + ':' + x.updatedAt),
+      feedback.map((x) => x.id + ':' + x.updatedAt),
+      stats.map((x) => x.id + ':' + x.updatedAt),
+      offline
+    ]);
+    if (stamp === this.lastSiteStamp) return;
+    this.lastSiteStamp = stamp;
+
+    this.setState({
+      siteClients: clients,
+      siteVoices: feedback,
+      siteStats: stats,
+      siteLoading: false,
+      siteError: offline ? 'offline' : ''
+    });
+
+    // The carousel DOM was just replaced; re-lay it out from the first card.
+    setTimeout(() => { this.active = 0; this.layoutCarousel(); }, 60);
+  }
+
+  bindSiteSync() {
+    this.onSiteFocus = () => { if (!document.hidden) this.syncSiteContent(); };
+    window.addEventListener('focus', this.onSiteFocus);
+    document.addEventListener('visibilitychange', this.onSiteFocus);
+    this.siteTimer = setInterval(() => this.onSiteFocus(), SITE_API.REFRESH_MS);
+    this.syncSiteContent();
+  }
+
+  unbindSiteSync() {
+    window.removeEventListener('focus', this.onSiteFocus);
+    document.removeEventListener('visibilitychange', this.onSiteFocus);
+    clearInterval(this.siteTimer);
+  }
+
+  siteVals() {
+    const en = this.state.lang === 'en';
+    const clients = this.state.siteClients || [];
+    const voices = this.state.siteVoices || [];
+    const markBase = 'width: 46px; height: 46px; flex: none; border-radius: 13px; display: grid; place-items: center; font-family: Cairo, sans-serif; font-weight: 800; font-size: 15px; color: #ffffff; letter-spacing: .04em;';
+    return {
+      eduClients: clients.map((c, i) => ({
+        name: (en ? c.nameEn : c.nameAr) || c.nameAr || c.nameEn || "",
+        sub: ((en ? c.nameAr : c.nameEn) || "") === ((en ? c.nameEn : c.nameAr) || c.nameAr || "") ? "" : ((en ? c.nameAr : c.nameEn) || ""),
+        site: c.site || "",
+        logo: c.logoUrl || "",
+        hasLogo: !!c.logoUrl,
+        noLogo: !c.logoUrl,
+        logoBoxStyle: "width: 46px; height: 46px; flex: none; border-radius: 13px; display: grid; place-items: center; overflow: hidden; background: #ffffff; border: 1px solid #e2ebf0; padding: 5px; box-sizing: border-box;",
+        sectorLabel: (SECTOR_LABELS[c.sector] || SECTOR_LABELS.education)[en ? 'en' : 'ar'],
+        mark: initialsOf(c.nameEn || c.nameAr),
+        bigMarkStyle: 'width: 96px; height: 96px; border-radius: 24px; display: grid; place-items: center; font-family: Cairo, sans-serif; font-weight: 800; font-size: 30px; color: #ffffff; letter-spacing: .04em; background: linear-gradient(140deg, ' + (i % 2 ? '#7bc643, #0099de' : '#0099de, #35b6f0') + ');',
+        markStyle: markBase + ' background: linear-gradient(140deg, ' +
+          (i % 2 ? '#7bc643, #0099de' : '#0099de, #35b6f0') + '); box-shadow: 0 8px 20px ' +
+          (i % 2 ? 'rgba(123,198,67,.28)' : 'rgba(0,153,222,.28)') + ';'
+      })),
+      eduVoices: voices.map((v, i) => {
+        const r = Math.max(0, Math.min(5, parseInt(v.rating, 10) || 0));
+        return {
+          body: (en ? v.bodyEn : v.bodyAr) || v.bodyAr || v.bodyEn || "",
+          name: (en ? v.nameEn : v.nameAr) || v.nameAr || v.nameEn || "",
+          role: (en ? v.roleEn : v.roleAr) || v.roleAr || v.roleEn || "",
+          stars: '★★★★★'.slice(0, r) + '☆☆☆☆☆'.slice(0, 5 - r),
+          accent: i % 2 ? '#7bc643' : '#0099de',
+          mark: initialsOf(v.nameEn || v.nameAr),
+          markStyle: markBase + ' width: 42px; height: 42px; font-size: 14px; background: linear-gradient(140deg, ' +
+            (i % 2 ? '#7bc643, #4e8b1f' : '#0099de, #0d7cb3') + ');'
+        };
+      }),
+      eduStats: (this.state.siteStats || []).map((s, i) => ({
+        label: (en ? s.labelEn : s.labelAr) || s.labelAr || s.labelEn || '',
+        display: (s.value == null ? '' : String(s.value)) + (s.suffix || ''),
+        icon: s.icon || 'ph-duotone ph-chart-line-up',
+        accent: i % 2 ? '#7bc643' : '#0099de'
+      })),
+      hasStats: (this.state.siteStats || []).length > 0,
+      siteLoading: !!this.state.siteLoading,
+      siteError: this.state.siteError || '',
+      noClients: !this.state.siteLoading && !this.state.siteError && clients.length === 0,
+      noVoices: !this.state.siteLoading && !this.state.siteError && voices.length === 0
+    };
+  }
+
+  renderVals() {
+    return {
+      ...this.siteVals(),
+      setCarousel: this.setCarousel,
+      setHeroBg: this.setHeroBg,
+      setHeroText: this.setHeroText,
+      setLaptop: this.setLaptop,
+      setLaptopTilt: this.setLaptopTilt,
+      setLight: this.setLight,
+      setNav: this.setNav,
+      setSpineFill: this.setSpineFill,
+      setSpineGradient: this.setSpineGradient,
+      setSpineHead: this.setSpineHead,
+      toggleLang: this.toggleLang,
+      langLabel: this.state.lang === 'ar' ? 'EN' : 'عربي',
+      roleTabs: ROLES.map((r) => {
+        const on = r.key === this.state.role;
+        return {
+          label: r.label, icon: r.icon,
+          pick: () => this.setState({ role: r.key }),
+          style: 'display: inline-flex; align-items: center; gap: 10px; padding: 13px 21px; border-radius: 12px; cursor: pointer; font-family: Cairo, sans-serif; font-weight: 700; font-size: 15px; border: 1px solid ' + (on ? '#0099de' : '#e2ebf0') + '; background: ' + (on ? '#0099de' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#44646f') + '; box-shadow: ' + (on ? '0 0 24px rgba(0,153,222,.4)' : 'none') + '; transform: ' + (on ? 'translateY(-3px)' : 'none') + '; transition: transform .35s cubic-bezier(.16,1,.3,1), background .3s ease, box-shadow .3s ease, color .3s ease, border-color .3s ease;'
+        };
+      }),
+      activeRole: ROLES.find((r) => r.key === this.state.role) || ROLES[0],
+
+      steps: [].map((x, i) => {
+        const on = i === this.state.group;
+        return {
+          ar: x.ar, en: x.en, num: String(i + 1), count: x.items.length + ' وحدة',
+          pick: () => this.setState({ group: i, chunk: 0 }),
+          style: 'position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; padding: 15px 16px; border-radius: 14px; cursor: pointer; text-align: right; font-family: inherit; border: 1px solid ' + (on ? '#0099de' : 'transparent') + '; background: ' + (on ? '#ffffff' : 'transparent') + '; box-shadow: ' + (on ? '0 10px 26px rgba(0,153,222,.16), 0 0 20px rgba(0,153,222,.14)' : 'none') + '; transition: background .3s ease, border-color .3s ease, box-shadow .3s ease, transform .3s cubic-bezier(.16,1,.3,1); transform: ' + (on ? 'translateX(-4px)' : 'none') + ';',
+          nodeStyle: 'width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center; font-family: Cairo, sans-serif; font-weight: 800; font-size: 16px; border: 2px solid ' + (on ? '#0099de' : '#e2ebf0') + '; background: ' + (on ? '#0099de' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#5c7a86') + '; box-shadow: ' + (on ? '0 0 18px rgba(0,153,222,.5)' : 'none') + '; transition: all .3s ease;',
+          titleStyle: 'display: block; font-family: Cairo, sans-serif; font-weight: 700; font-size: 16px; color: ' + (on ? '#14313c' : '#44646f') + ';',
+          countStyle: 'flex: none; font-size: 11px; padding: 5px 10px; border-radius: 999px; background: ' + (on ? 'rgba(123,198,67,.16)' : '#eef4f7') + '; color: ' + (on ? '#4e8b1f' : '#5c7a86') + ';'
+        };
+      }),
+
+      pillars: PILLARS.map((p, i) => {
+        const on = i === this.state.group;
+        const accent = i % 2 ? '#7bc643' : '#0099de';
+        const glow = i % 2 ? 'rgba(123,198,67,.65)' : 'rgba(0,153,222,.65)';
+        const accentText = i % 2 ? '#4e8b1f' : '#0d7cb3';
+        const softGlow = i % 2 ? 'rgba(123,198,67,.42)' : 'rgba(0,153,222,.40)';
+        const side = i % 2 ? 1 : -1;
+        const nodeIcon = ['ph-bold ph-graduation-cap', 'ph-bold ph-chart-bar', 'ph-bold ph-users-three', 'ph-bold ph-wallet'][i];
+        return {
+          ar: p.ar, en: p.en, icon: p.icon, summary: p.summary, accent, glow, accentText, softGlow, nodeIcon,
+          pick: () => { if (!on) this.setState({ group: i }); },
+          itemStyle: 'display: grid; grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr); min-height: 190px; align-items: center; opacity: 0; filter: blur(8px); transform: translateX(' + (side * 42) + 'px); transition: opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1), filter .9s ease;',
+          contentStyle: 'grid-column: ' + (i % 2 ? '3' : '1') + '; grid-row: 1; padding: 26px 0; text-align: ' + (i % 2 ? 'left' : 'right') + '; ' + (i % 2 ? 'padding-left: clamp(18px, 3vw, 48px);' : 'padding-right: clamp(18px, 3vw, 48px);'),
+          nodeWrapStyle: 'grid-column: 2; grid-row: 1; display: grid; place-items: center; position: relative; z-index: 2;',
+          nodeStyle: 'display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; color: #94a3b8; background: #ffffff; border: 6px solid #ffffff; box-shadow: 0 0 0 1px #dbe7ee; transform: scale(.94); transition: transform .45s ease, box-shadow .45s ease, color .45s ease;'
+        };
+      }),
+
+      miniBars: [38, 56, 44, 70, 62, 82, 74, 91, 68, 96].map((h, i) => ({
+        style: 'flex: 1; height: ' + h + '%; border-radius: 3px 3px 1px 1px; transform-origin: bottom; background: ' + (i % 3 === 2 ? '#7bc643' : '#0099de') + '; opacity: ' + (0.55 + h / 260) + '; animation: me-grow 1.1s cubic-bezier(.16,1,.3,1) ' + (i * 0.06) + 's both;'
+      })),
+      onSubmit: this.onSubmit,
+      submitLabel: this.state.submitted ? 'تم إرسال طلبكم ✓' : 'احصل على العرض الكامل'
+    };
+  }
+}
+</script>
+</body>
+</html>
