@@ -36,12 +36,113 @@
   a:hover { color: #4e8b1f; }
   ::selection { background: rgba(0,153,222,.2); }
   *:focus-visible { outline: 2px solid #0099de; outline-offset: 3px; }
+  /* The accent half of the wordmark follows the navbar between its dark and
+     white states. Both tones clear WCAG AA against their own background. */
+  .brand-accent { color: var(--brand-accent, #5ea82c); transition: color .25s ease; }
   @keyframes me-float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-9px) } }
   @keyframes me-pulse { 0%,100% { opacity: .35 } 50% { opacity: 1 } }
   @keyframes me-sweep { 0% { transform: translateX(-120%) } 100% { transform: translateX(220%) } }
   @keyframes me-grow { from { transform: scaleY(.05) } to { transform: scaleY(1) } }
   @keyframes me-swap { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: none } }
   @keyframes me-line { 0%,100% { opacity: .5 } 50% { opacity: 1 } }
+
+  /* --- Role portal cards -------------------------------------------------
+     Five feature cards per portal. The stagger replays whenever the active
+     role changes, driven from componentDidUpdate. */
+  @keyframes rc-in { from { opacity: 0; transform: translateY(22px) scale(.97); filter: blur(5px) } to { opacity: 1; transform: none; filter: blur(0) } }
+
+  .rc-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+  .rc-card { position: relative; box-sizing: border-box; display: flex; flex-direction: column;
+    padding: 22px 18px 20px; border-radius: 18px; background: #ffffff; border: 1px solid #e2ebf0;
+    box-shadow: 0 10px 26px rgba(15,43,52,.06); overflow: hidden;
+    transition: transform .5s cubic-bezier(.16,1,.3,1), box-shadow .5s cubic-bezier(.16,1,.3,1), border-color .4s ease; }
+  .rc-card.rc-swap { animation: rc-in .62s cubic-bezier(.16,1,.3,1) both; }
+  /* Accent rail wipes down the inline-start edge on hover. */
+  .rc-card::before { content: ''; position: absolute; top: 0; bottom: 0; inset-inline-start: 0; width: 3px;
+    background: linear-gradient(180deg, #0099de, #5cbe3e);
+    transform: scaleY(0); transform-origin: top; transition: transform .5s cubic-bezier(.16,1,.3,1); }
+  .rc-card:hover { transform: translateY(-9px); border-color: rgba(0,153,222,.35);
+    box-shadow: 0 24px 48px rgba(15,43,52,.14), 0 0 0 1px rgba(0,153,222,.16), 0 0 26px -10px #0099de; }
+  .rc-card:hover::before { transform: scaleY(1); }
+
+  .rc-ico { position: relative; width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center;
+    background: linear-gradient(145deg, rgba(0,153,222,.11), #ffffff); border: 1px solid rgba(0,153,222,.2);
+    transition: transform .5s cubic-bezier(.16,1,.3,1); }
+  .rc-ico > i { font-size: 24px; color: #0d7cb3; transition: color .4s ease; }
+  .rc-card:hover .rc-ico { transform: scale(1.08) rotate(-4deg); }
+  .rc-card:hover .rc-ico > i { color: #0099de; }
+  .rc-num { position: absolute; top: 14px; inset-inline-end: 16px; font-family: Cairo, sans-serif;
+    font-weight: 800; font-size: 26px; line-height: 1; color: #eef4f8; transition: color .4s ease; }
+  .rc-card:hover .rc-num { color: rgba(0,153,222,.22); }
+
+  @media (max-width: 1100px) { .rc-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; } }
+  @media (max-width: 620px) { .rc-grid { grid-template-columns: 1fr !important; } }
+
+  /* --- Communication ecosystem ------------------------------------------ */
+  @keyframes cx-ripple { 0% { transform: scale(.55); opacity: .75 } 100% { transform: scale(1.5); opacity: 0 } }
+  @keyframes cx-travel { 0% { left: 4%; opacity: 0 } 12% { opacity: 1 } 88% { opacity: 1 } 100% { left: 92%; opacity: 0 } }
+  @keyframes cx-bob { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-7px) } }
+
+  .cx-wrap { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: clamp(34px, 4vw, 68px); align-items: center; }
+  .cx-orbit { position: relative; width: min(430px, 100%); aspect-ratio: 1 / 1; margin-inline: auto; }
+
+  .cx-hub { position: absolute; inset: 0; margin: auto; width: 138px; height: 138px; border-radius: 50%; z-index: 3;
+    box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-align: center;
+    background: linear-gradient(145deg, #0099de, #0d7cb3); color: #ffffff;
+    box-shadow: 0 18px 44px rgba(0,153,222,.34), 0 0 0 8px rgba(0,153,222,.08); }
+  .cx-hub > i { font-size: 30px; }
+  .cx-ripple { position: absolute; inset: 0; margin: auto; width: 138px; height: 138px; border-radius: 50%;
+    border: 1.5px solid rgba(0,153,222,.55); opacity: 0; z-index: 1; animation: cx-ripple 3.2s ease-out infinite; }
+  .cx-ripple.p2 { animation-delay: 1.06s; }
+  .cx-ripple.p3 { animation-delay: 2.12s; }
+
+  /* Four spokes radiating from the hub, each carrying a travelling packet. */
+  .cx-link { position: absolute; left: 50%; top: 50%; width: 33%; height: 2px; z-index: 1;
+    transform-origin: 0 50%; background: linear-gradient(90deg, rgba(0,153,222,.5), rgba(0,153,222,.06)); }
+  .cx-link.l-up { transform: rotate(-90deg); }
+  .cx-link.l-down { transform: rotate(90deg); }
+  .cx-link.l-right { transform: rotate(0deg); }
+  .cx-link.l-left { transform: rotate(180deg); }
+  .cx-packet { position: absolute; top: 50%; margin-top: -3px; width: 6px; height: 6px; border-radius: 50%;
+    background: #5cbe3e; box-shadow: 0 0 10px #5cbe3e; animation: cx-travel 2.9s linear infinite; }
+  .cx-link.l-down .cx-packet { animation-delay: .72s; }
+  .cx-link.l-left .cx-packet { animation-delay: 1.44s; }
+  .cx-link.l-right .cx-packet { animation-delay: 2.16s; }
+
+  .cx-node { position: absolute; z-index: 2; box-sizing: border-box; width: 112px; padding: 13px 10px; border-radius: 16px; text-align: center;
+    background: #ffffff; border: 1px solid #e2ebf0; box-shadow: 0 10px 26px rgba(15,43,52,.09);
+    animation: cx-bob 5.4s ease-in-out infinite;
+    transition: transform .5s cubic-bezier(.16,1,.3,1), box-shadow .5s ease, border-color .4s ease; }
+  .cx-node > i { font-size: 24px; color: var(--cx); }
+  .cx-node > span { display: block; margin-top: 6px; font-family: Cairo, sans-serif; font-weight: 700; font-size: 13.5px; color: #14313c; }
+  .cx-node:hover { transform: scale(1.07); border-color: var(--cx); box-shadow: 0 16px 36px rgba(15,43,52,.16), 0 0 22px -8px var(--cx); }
+  .cx-node.n-up { top: 0; left: 50%; margin-left: -56px; animation-delay: 0s; }
+  .cx-node.n-down { bottom: 0; left: 50%; margin-left: -56px; animation-delay: 1.35s; }
+  .cx-node.n-left { left: 0; top: 50%; margin-top: -38px; animation-delay: 2.7s; }
+  .cx-node.n-right { right: 0; top: 50%; margin-top: -38px; animation-delay: 4.05s; }
+
+  .cx-feat { display: flex; gap: 16px; padding: 19px 20px; border-radius: 16px; background: #ffffff;
+    border: 1px solid #e2ebf0; box-shadow: 0 8px 22px rgba(15,43,52,.05);
+    transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s ease, border-color .4s ease; }
+  .cx-feat:hover { transform: translateX(-8px); border-color: rgba(0,153,222,.32);
+    box-shadow: 0 18px 38px rgba(15,43,52,.12), 0 0 22px -10px #0099de; }
+  body[data-lang="en"] .cx-feat:hover { transform: translateX(8px); }
+  .cx-feat-ico { flex: none; width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center;
+    background: linear-gradient(145deg, rgba(0,153,222,.12), #ffffff); border: 1px solid rgba(0,153,222,.2);
+    transition: transform .45s cubic-bezier(.16,1,.3,1); }
+  .cx-feat-ico > i { font-size: 22px; color: #0d7cb3; }
+  .cx-feat:hover .cx-feat-ico { transform: rotate(-6deg) scale(1.07); }
+
+  @media (max-width: 940px) {
+    .cx-wrap { grid-template-columns: 1fr !important; gap: 44px !important; }
+    .cx-orbit { width: min(390px, 96%) !important; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cx-ripple, .cx-packet, .cx-node { animation: none; }
+    .cx-ripple { opacity: .25; }
+    .rc-card.rc-swap { animation: none; }
+    .rc-card:hover, .cx-feat:hover, .cx-node:hover { transform: none; }
+  }
   @media (max-width: 760px) {
     nav { padding: 14px 20px !important; }
     nav > div { gap: 12px !important; }
@@ -57,14 +158,15 @@
 
 <div dir="rtl" style="position: relative; background: #0a1128; overflow-x: clip;">
 
-  <nav ref="{{ setNav }}" style="position: fixed; inset: 0 0 auto 0; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 15px 44px; background: rgba(10,17,40,.9); border-bottom: 1px solid rgba(0,153,222,.22); color: #dbe7f3; backdrop-filter: blur(20px); transition: background .5s ease, border-color .5s ease, color .5s ease;">
-    <a href="#top" style="display: flex; align-items: center; gap: 12px; color: inherit;">
+  <nav ref="{{ setNav }}" style="--brand-accent: #5ea82c; position: fixed; inset: 0 0 auto 0; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 15px 44px; background: rgba(10,17,40,.9); border-bottom: 1px solid rgba(0,153,222,.22); color: #dbe7f3; backdrop-filter: blur(20px); transition: background .5s ease, border-color .5s ease, color .5s ease;">
+    <a href="Match%20Systems%20Landing.dc.html" title="الصفحة الرئيسية" style="display: flex; align-items: center; gap: 12px; color: inherit; cursor: pointer;">
       <img src="uploads/pasted-1787471797548-0.png" alt="Match Education" style="width: 42px; height: 42px; object-fit: contain; filter: drop-shadow(0 0 12px rgba(0,153,222,.32));">
-      <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 18px;">Match<span style="color: #5ea82c;">Education</span></span>
+      <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 18px;">Match<span class="brand-accent">Education</span></span>
     </a>
     <div style="display: flex; align-items: center; gap: 28px; font-size: 15px;">
       <a class="nav-home" href="Match%20Systems%20Landing.dc.html" style="display: inline-flex; align-items: center; gap: 7px; color: inherit; font-family: 'Cairo', sans-serif; font-weight: 700;" style-hover="color: #0099de;"><i class="ph-duotone ph-house" style="font-size: 17px;"></i>الصفحة الرئيسية</a>
       <a href="#roles" style="color: inherit;" style-hover="color: #0099de;">البوابات</a>
+      <a href="#connect" style="color: inherit;" style-hover="color: #0099de;">التواصل</a>
       <a href="#modules" style="color: inherit;" style-hover="color: #0099de;">الركائز</a>
       <a href="#demo" style="padding: 10px 20px; border-radius: 10px; background: #0099de; color: #ffffff; font-weight: 600; white-space: nowrap; box-shadow: 0 0 20px rgba(0,153,222,.35); transition: background .25s ease;" style-hover="background: #4e8b1f;">طلب عرض توضيحي</a>
       <button type="button" onClick="{{ toggleLang }}" aria-label="تبديل اللغة" style="display: inline-flex; align-items: center; gap: 7px; padding: 9px 12px; border: 1px solid #35b6f0; border-radius: 9px; background: #0099de; color: #ffffff; font-family: inherit; font-size: 13px; font-weight: 800; cursor: pointer; box-shadow: 0 0 16px rgba(0,153,222,.3);" style-hover="background: #0d7cb3; border-color: #7bc643;"><i class="ph-duotone ph-translate" style="font-size: 17px;"></i>{{ langLabel }}</button>
@@ -97,7 +199,7 @@
           <div style="position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 66px; height: 5px; border-radius: 0 0 5px 5px; background: #1b2029;"></div>
           <div style="position: absolute; bottom: 7px; left: 50%; transform: translateX(-50%); font-size: 7px; letter-spacing: .16em; color: rgba(255,255,255,.28);">MATCH EDUCATION</div>
           <div style="position: relative; border-radius: 6px; overflow: hidden; background: #0d1730; box-shadow: inset 0 0 0 1px rgba(255,255,255,.08); aspect-ratio: 1916 / 911;">
-            <img src="uploads/education.png" alt="لوحة تحكم Match Education" loading="lazy" decoding="async" style="display: block; width: 100%; max-width: 100%; height: 100%; object-fit: contain; object-position: center;">
+            <img data-slot="education.laptop_screen" src="uploads/education.png" alt="لوحة تحكم Match Education" loading="lazy" decoding="async" style="display: block; width: 100%; max-width: 100%; height: 100%; object-fit: contain; object-position: center;">
             <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: linear-gradient(115deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 38%);"></div>
           </div>
         </div>
@@ -118,7 +220,7 @@
       <div style="max-width: 1280px; margin: 0 auto;">
         <p style="font-size: 12px; letter-spacing: .3em; color: #0d7cb3; margin: 0 0 14px; font-weight: 600;">البوابات الخمس</p>
         <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(27px, 2.9vw, 44px); margin: 0 0 12px; color: #14313c;">لكل مستخدم بوابته الخاصة</h2>
-        <p style="color: #55747f; font-size: 17px; font-weight: 300; line-height: 1.8; margin: 0 0 clamp(36px, 3.8vw, 56px); max-width: 560px;">اختر الدور لتظهر لمحة عن مساحة العمل المخصصة له.</p>
+        <p style="color: #55747f; font-size: 17px; font-weight: 300; line-height: 1.8; margin: 0 0 clamp(36px, 3.8vw, 56px); max-width: 560px;">اختر الدور لتظهر أبرز خمس قدرات في مساحة عمله.</p>
 
         <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px;">
           <sc-for list="{{ roleTabs }}" as="r" hint-placeholder-count="5">
@@ -129,8 +231,8 @@
           </sc-for>
         </div>
 
-        <div style="padding: clamp(30px, 3vw, 44px); border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0; border-inline-start: 3px solid #0099de; transition: opacity .5s ease, transform .5s ease;">
-          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 18px;">
+        <div style="padding: clamp(26px, 2.6vw, 38px); border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0; border-inline-start: 3px solid #0099de;">
+          <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 26px;">
             <span style="width: 56px; height: 56px; border-radius: 14px; flex: none; display: grid; place-items: center; background: #ffffff; border: 1px solid rgba(0,153,222,.28); box-shadow: 0 0 20px rgba(0,153,222,.16);">
               <i class="{{ activeRole.icon }}" style="font-size: 28px; color: #0099de;"></i>
             </span>
@@ -139,7 +241,95 @@
               <div style="font-size: 13px; color: #5c7a86; margin-top: 3px;">{{ activeRole.en }}</div>
             </div>
           </div>
-          <p style="color: #44646f; font-size: 17px; line-height: 1.9; font-weight: 300; margin: 0; max-width: 760px;">{{ activeRole.desc }}</p>
+
+          <div class="rc-grid">
+            <sc-for list="{{ roleCards }}" as="c" hint-placeholder-count="5">
+              <div class="rc-card" style="{{ c.delayStyle }}">
+                <span class="rc-num" aria-hidden="true">{{ c.num }}</span>
+                <span class="rc-ico"><i class="{{ c.icon }}" aria-hidden="true"></i></span>
+                <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 15.5px; color: #14313c; margin-top: 16px; line-height: 1.5;">{{ c.title }}</div>
+                <div style="font-size: 11.5px; letter-spacing: .04em; color: #0d7cb3; margin-top: 4px;">{{ c.sub }}</div>
+                <p style="margin: 10px 0 0; color: #55747f; font-size: 13px; line-height: 1.8; font-weight: 300;">{{ c.note }}</p>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="connect" data-screen-label="Communication" style="position: relative; padding: clamp(90px, 8.8vw, 144px) 6vw clamp(86px, 8.4vw, 136px); background: #f5f9fb; border-block: 1px solid #e2ebf0; overflow: hidden;">
+      <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(52% 40% at 10% 6%, rgba(0,153,222,.10), transparent 68%), radial-gradient(46% 36% at 92% 90%, rgba(92,190,62,.10), transparent 70%);"></div>
+      <div style="position: relative; z-index: 1; max-width: 1240px; margin: 0 auto;">
+        <p style="font-size: 12px; letter-spacing: .3em; color: #0d7cb3; margin: 0 0 14px; font-weight: 600;">بيئة التواصل</p>
+        <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(27px, 2.9vw, 44px); margin: 0 0 12px; color: #14313c; text-wrap: pretty;">منظومة تواصل تربط المدرسة كلها</h2>
+        <p style="color: #55747f; font-size: 17px; font-weight: 300; line-height: 1.8; margin: 0 0 clamp(40px, 4.2vw, 62px); max-width: 620px;">قناة واحدة موثقة تصل الطالب بالمعلم وولي الأمر بالإدارة، فتنتقل الرسالة والواجب والإشعار داخل المنظومة نفسها دون وسيط خارجي.</p>
+
+        <div class="cx-wrap">
+
+          <div class="cx-orbit">
+            <span class="cx-link l-up" aria-hidden="true"><span class="cx-packet"></span></span>
+            <span class="cx-link l-down" aria-hidden="true"><span class="cx-packet"></span></span>
+            <span class="cx-link l-left" aria-hidden="true"><span class="cx-packet"></span></span>
+            <span class="cx-link l-right" aria-hidden="true"><span class="cx-packet"></span></span>
+
+            <span class="cx-ripple" aria-hidden="true"></span>
+            <span class="cx-ripple p2" aria-hidden="true"></span>
+            <span class="cx-ripple p3" aria-hidden="true"></span>
+
+            <span class="cx-hub">
+              <i class="ph-duotone ph-broadcast" aria-hidden="true"></i>
+              <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 14px;">منصة واحدة</span>
+            </span>
+
+            <span class="cx-node n-up" style="--cx: #0099de;">
+              <i class="ph-duotone ph-student" aria-hidden="true"></i><span>الطلاب</span>
+            </span>
+            <span class="cx-node n-right" style="--cx: #5cbe3e;">
+              <i class="ph-duotone ph-chalkboard-teacher" aria-hidden="true"></i><span>المعلمون</span>
+            </span>
+            <span class="cx-node n-down" style="--cx: #f0a92b;">
+              <i class="ph-duotone ph-users-three" aria-hidden="true"></i><span>أولياء الأمور</span>
+            </span>
+            <span class="cx-node n-left" style="--cx: #0d7cb3;">
+              <i class="ph-duotone ph-buildings" aria-hidden="true"></i><span>الإدارة</span>
+            </span>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+
+            <div class="cx-feat">
+              <span class="cx-feat-ico"><i class="ph-duotone ph-chats-circle" aria-hidden="true"></i></span>
+              <div style="min-width: 0;">
+                <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 16.5px; color: #14313c;">رسائل وإعلانات فورية</div>
+                <p style="margin: 7px 0 0; color: #55747f; font-size: 14px; line-height: 1.8; font-weight: 300;">محادثات مباشرة وتعميمات تصل الفئة المستهدفة لحظة إرسالها، مع سجل محفوظ لكل رسالة.</p>
+              </div>
+            </div>
+
+            <div class="cx-feat">
+              <span class="cx-feat-ico"><i class="ph-duotone ph-paper-plane-tilt" aria-hidden="true"></i></span>
+              <div style="min-width: 0;">
+                <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 16.5px; color: #14313c;">مشاركة الواجبات والتغذية الراجعة</div>
+                <p style="margin: 7px 0 0; color: #55747f; font-size: 14px; line-height: 1.8; font-weight: 300;">تسليم الواجب وملاحظات المعلم عليه في المسار نفسه، فيبقى التقييم مرتبطاً بالعمل الأصلي.</p>
+              </div>
+            </div>
+
+            <div class="cx-feat">
+              <span class="cx-feat-ico"><i class="ph-duotone ph-bell-ringing" aria-hidden="true"></i></span>
+              <div style="min-width: 0;">
+                <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 16.5px; color: #14313c;">مركز إشعارات موحّد</div>
+                <p style="margin: 7px 0 0; color: #55747f; font-size: 14px; line-height: 1.8; font-weight: 300;">تنبيه واحد يجمع الغياب والدرجات والمواعيد والرسوم، بلا تشتت بين قنوات متفرقة.</p>
+              </div>
+            </div>
+
+            <div class="cx-feat">
+              <span class="cx-feat-ico"><i class="ph-duotone ph-presentation-chart" aria-hidden="true"></i></span>
+              <div style="min-width: 0;">
+                <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 16.5px; color: #14313c;">مساحات تعليمية تفاعلية</div>
+                <p style="margin: 7px 0 0; color: #55747f; font-size: 14px; line-height: 1.8; font-weight: 300;">غرف صفية رقمية ومصادر ونقاشات تدعم خدمات المدرسة كافة داخل المنظومة نفسها.</p>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
     </section>
@@ -179,7 +369,7 @@
         </div>
       </div>
     </section>
-
+<!-- 
     <sc-if value="{{ hasStats }}" hint-placeholder-val="{{ true }}">
       <section id="metrics" data-screen-label="Metrics" style="position: relative; padding: clamp(64px, 6vw, 96px) 6vw; background: #ffffff; border-top: 1px solid #e2ebf0; overflow: hidden;">
         <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(50% 60% at 50% 0%, rgba(0,153,222,.07), transparent 72%);"></div>
@@ -193,7 +383,7 @@
           </sc-for>
         </div>
       </section>
-    </sc-if>
+    </sc-if> -->
 
     <section id="clients" data-screen-label="Clients" style="position: relative; padding: clamp(92px, 8.8vw, 146px) 6vw clamp(88px, 8.4vw, 138px); background: #f5f9fb; border-block: 1px solid #e2ebf0; overflow: hidden;">
       <div aria-hidden="true" style="position: absolute; inset: 0; pointer-events: none; background: radial-gradient(52% 40% at 88% 8%, rgba(0,153,222,.07), transparent 70%), radial-gradient(46% 36% at 8% 92%, rgba(123,198,67,.06), transparent 72%);"></div>
@@ -288,11 +478,11 @@
       <div style="max-width: 1080px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1.05fr; gap: 58px; align-items: start;">
         <div>
           <p style="font-size: 12px; letter-spacing: .3em; color: #0d7cb3; margin: 0 0 14px; font-weight: 600;">عرض توضيحي</p>
-          <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(26px, 2.7vw, 40px); margin: 0 0 18px; color: #14313c; line-height: 1.35;">شاهدوا النظام على بيانات مدرستكم</h2>
+          <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(26px, 2.7vw, 40px); margin: 0 0 18px; color: #14313c; line-height: 1.35;">شاهدوا بياناتكم في على النظام </h2>
           <p style="color: #55747f; font-size: 16px; line-height: 1.9; font-weight: 300; margin: 0 0 30px;">جلسة مدتها ثلاثون دقيقة نستعرض فيها البوابات الخمس والوحدات التي تحتاجونها.</p>
           <div style="display: flex; flex-direction: column; gap: 14px; font-size: 15px; color: #44646f;">
-            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-envelope-simple" style="font-size: 21px; color: #0099de;"></i>education@matchsystems.com</div>
-            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-phone" style="font-size: 21px; color: #0099de;"></i>+970 000 000 000</div>
+            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-envelope-simple" style="font-size: 21px; color: #0099de;"></i>info@matchprosys.com</div>
+            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-phone" style="font-size: 21px; color: #0099de;"></i>+970 593 081 003</div>
             <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-clock" style="font-size: 21px; color: #4e8b1f;"></i>رد خلال يوم عمل واحد</div>
           </div>
         </div>
@@ -327,6 +517,7 @@
         </div>
         <div style="display: flex; gap: 24px; font-size: 14px;">
           <a href="#roles" style="color: #55747f;" style-hover="color: #0099de;">البوابات</a>
+          <a href="#connect" style="color: #55747f;" style-hover="color: #0099de;">التواصل</a>
           <a href="#modules" style="color: #55747f;" style-hover="color: #0099de;">الركائز</a>
           <a href="#demo" style="color: #55747f;" style-hover="color: #0099de;">طلب عرض</a>
         </div>
@@ -355,6 +546,72 @@ const ROLES = [
   }
 ];
 
+/* Five headline capabilities per portal. Both languages live here so the
+   cards stay correct when the role is switched while the page is in EN --
+   the DOM text-walker only runs on toggle, not on every re-render. */
+const ROLE_FEATURES = {
+  admin: [
+    { ar: 'تحليلات أداء المدرسة', en: 'Performance Analytics', icon: 'ph-duotone ph-chart-donut',
+      noteAr: 'مؤشرات أكاديمية وتشغيلية محدّثة في لوحة واحدة.', noteEn: 'Academic and operational indicators on one live board.' },
+    { ar: 'إدارة الكوادر والمعلمين', en: 'Staff Management', icon: 'ph-duotone ph-users-four',
+      noteAr: 'ملفات الكادر والأنصبة والتقييم الوظيفي.', noteEn: 'Staff files, teaching loads and appraisals.' },
+    { ar: 'الصورة المالية الشاملة', en: 'Financial Overview', icon: 'ph-duotone ph-wallet',
+      noteAr: 'الرسوم والتحصيل والمصروفات في مكان واحد.', noteEn: 'Fees, collection and expenses in one place.' },
+    { ar: 'التقارير الآلية', en: 'Automated Reports', icon: 'ph-duotone ph-files',
+      noteAr: 'تقارير دورية تُبنى وتُرسل دون تدخل يدوي.', noteEn: 'Scheduled reports built and sent without manual work.' },
+    { ar: 'الإعدادات والصلاحيات', en: 'System & Permissions', icon: 'ph-duotone ph-sliders-horizontal',
+      noteAr: 'ضبط الأدوار وصلاحيات الوصول لكل مستخدم.', noteEn: 'Roles and access control for every user.' }
+  ],
+  teacher: [
+    { ar: 'إدارة الصف والحضور', en: 'Class & Attendance', icon: 'ph-duotone ph-chalkboard-teacher',
+      noteAr: 'رصد الحضور والسلوك من شاشة الحصة مباشرة.', noteEn: 'Attendance and behaviour logged from the lesson screen.' },
+    { ar: 'الواجبات والتكليفات', en: 'Assignments', icon: 'ph-duotone ph-notebook',
+      noteAr: 'إنشاء الواجبات ومتابعة التسليم لحظياً.', noteEn: 'Create assignments and track submissions live.' },
+    { ar: 'رصد الدرجات والتقييم', en: 'Grading & Assessment', icon: 'ph-duotone ph-exam',
+      noteAr: 'تقييم مستمر وكشوف درجات تُحتسب تلقائياً.', noteEn: 'Continuous assessment with auto-calculated marks.' },
+    { ar: 'خطط الدروس والمصادر', en: 'Lesson Plans & Resources', icon: 'ph-duotone ph-books',
+      noteAr: 'خطة أسبوعية ومصادر تعليمية مرتبطة بالمنهج.', noteEn: 'Weekly plans and resources mapped to the curriculum.' },
+    { ar: 'التواصل مع الأسرة', en: 'Parent Communication', icon: 'ph-duotone ph-chats-circle',
+      noteAr: 'ملاحظات وتنبيهات تصل ولي الأمر مباشرة.', noteEn: 'Notes and alerts delivered straight to parents.' }
+  ],
+  student: [
+    { ar: 'الجدول الدراسي اليومي', en: 'Daily Timetable', icon: 'ph-duotone ph-calendar-check',
+      noteAr: 'حصص اليوم والقاعات والمواعيد أمامه دائماً.', noteEn: 'Today\'s lessons, rooms and timings always in view.' },
+    { ar: 'الواجبات والتسليم', en: 'Homework & Submissions', icon: 'ph-duotone ph-paper-plane-tilt',
+      noteAr: 'استلام الواجب وتسليمه ومتابعة الموعد النهائي.', noteEn: 'Receive, submit and track every deadline.' },
+    { ar: 'النتائج والتقدم الأكاديمي', en: 'Grades & Progress', icon: 'ph-duotone ph-trend-up',
+      noteAr: 'مسار الدرجات وتطوره عبر الفصل الدراسي.', noteEn: 'Grade history and progress across the term.' },
+    { ar: 'المكتبة الرقمية', en: 'Digital Library', icon: 'ph-duotone ph-book-open-text',
+      noteAr: 'مصادر ومراجع الحصة متاحة في أي وقت.', noteEn: 'Lesson resources and references available anytime.' },
+    { ar: 'التنبيهات والإشعارات', en: 'Alerts & Notifications', icon: 'ph-duotone ph-bell-ringing',
+      noteAr: 'تذكير بالمواعيد والاختبارات والإعلانات.', noteEn: 'Reminders for deadlines, exams and announcements.' }
+  ],
+  parent: [
+    { ar: 'متابعة الأبناء لحظياً', en: 'Live Child Tracking', icon: 'ph-duotone ph-user-focus',
+      noteAr: 'صورة يومية عن حضور الابن ومستواه.', noteEn: 'A daily picture of attendance and performance.' },
+    { ar: 'سجل الحضور والغياب', en: 'Attendance Record', icon: 'ph-duotone ph-calendar-dots',
+      noteAr: 'إشعار فوري عند الغياب أو التأخر.', noteEn: 'Instant notice on absence or late arrival.' },
+    { ar: 'كشوف الدرجات والتقارير', en: 'Report Cards', icon: 'ph-duotone ph-certificate',
+      noteAr: 'نتائج معتمدة وتقارير فصلية جاهزة للتحميل.', noteEn: 'Approved results and term reports ready to download.' },
+    { ar: 'الرسوم والمدفوعات', en: 'Fees & Payments', icon: 'ph-duotone ph-credit-card',
+      noteAr: 'كشف الرسوم والدفعات وسندات القبض.', noteEn: 'Fee statements, payments and receipts.' },
+    { ar: 'قناة تواصل موثقة', en: 'Direct School Channel', icon: 'ph-duotone ph-chat-teardrop-text',
+      noteAr: 'مراسلة المدرسة وحفظ سجل كامل للمحادثة.', noteEn: 'Message the school with a full conversation record.' }
+  ],
+  secretary: [
+    { ar: 'التسجيل والالتحاق', en: 'Admissions & Enrollment', icon: 'ph-duotone ph-user-plus',
+      noteAr: 'ملف الطالب الجديد من الطلب حتى القبول.', noteEn: 'The new student file from application to acceptance.' },
+    { ar: 'أرشيف الوثائق', en: 'Document Archive', icon: 'ph-duotone ph-folders',
+      noteAr: 'حفظ الوثائق واسترجاعها في ثوانٍ.', noteEn: 'Store and retrieve documents in seconds.' },
+    { ar: 'الإعلانات والتعميمات', en: 'Announcements', icon: 'ph-duotone ph-megaphone',
+      noteAr: 'تعميم واحد يصل الفئة المستهدفة فوراً.', noteEn: 'One circular reaching the right audience instantly.' },
+    { ar: 'الاستقبال والمواعيد', en: 'Front Desk & Appointments', icon: 'ph-duotone ph-calendar-plus',
+      noteAr: 'تنظيم الزيارات ومواعيد أولياء الأمور.', noteEn: 'Organised visits and parent appointment slots.' },
+    { ar: 'متابعة الخدمات الطلابية', en: 'Student Services', icon: 'ph-duotone ph-lifebuoy',
+      noteAr: 'طلبات الطلاب والخدمات المدرسية قيد المتابعة.', noteEn: 'Student requests and school services kept on track.' }
+  ]
+};
+
 
 const PILLARS = [
   { ar: 'الإدارة الأكاديمية الذكية', en: 'Smart Academic Governance', icon: 'ph-duotone ph-buildings',
@@ -373,9 +630,12 @@ const PILLARS = [
    sector=education. Drafts are rendered; only hidden records are withheld.
    -------------------------------------------------------------------------- */
 const SITE_API = {
-  BASE_URL: 'http://localhost:8000/v1',   // FastAPI host (backend/README.md)
+  /* Follow the page's own host: serving on 127.0.0.1 while calling localhost
+     is a cross-origin request the browser blocks, even though the server
+     logs 200 OK. */
+  BASE_URL: 'http://' + (window.location.hostname || 'localhost') + ':8000/v1',
   SECTOR: 'education',
-  TIMEOUT_MS: 9000,
+  TIMEOUT_MS: 15000,
   REFRESH_MS: 15000
 };
 
@@ -426,6 +686,57 @@ function isPublishable(r) {
   return !!r && String(r.status || '').toLowerCase() !== 'suspended';
 }
 
+/* --------------------------------------------------------------------------
+   Central image slots. Every <img data-slot="..."> and every container with
+   data-slot-bg="..." is filled from GET /v1/images. A slot whose image_url is
+   NULL stays empty: the <img> is hidden and the frame keeps its own neutral
+   background rather than showing a broken-image icon.
+   -------------------------------------------------------------------------- */
+async function applyImageSlots(baseUrl, timeoutMs) {
+  const targets = document.querySelectorAll('[data-slot], [data-slot-bg]');
+  if (!targets.length) return;
+
+  const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+  const timer = ctrl ? setTimeout(() => ctrl.abort(), timeoutMs || 8000) : null;
+
+  let rows = [];
+  try {
+    const res = await fetch(baseUrl + '/images?per=100&is_visible=true&sort=sort_order&dir=asc',
+      { headers: { Accept: 'application/json' }, signal: ctrl ? ctrl.signal : undefined });
+    if (timer) clearTimeout(timer);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    rows = (data && (data.items || data.rows)) || [];
+    console.log('Images:', data);
+  } catch (e) {
+    if (timer) clearTimeout(timer);
+    console.warn('Image slots unavailable, keeping current markup', e);
+    return;   // leave whatever the page already shows
+  }
+
+  const bySlot = {};
+  rows.forEach((r) => { if (r && r.slot) bySlot[r.slot] = r; });
+
+  targets.forEach((el) => {
+    const key = el.getAttribute('data-slot') || el.getAttribute('data-slot-bg');
+    const row = bySlot[key];
+    const url = row && row.image_url ? String(row.image_url).trim() : '';
+
+    if (el.hasAttribute('data-slot-bg')) {
+      if (url) el.style.backgroundImage = 'url("' + url + '")';
+      return;
+    }
+    if (!url) {
+      // No override configured. Keep a shipped src; hide only an empty frame.
+      if (!el.getAttribute('src')) el.style.display = 'none';
+      return;
+    }
+    el.src = url;
+    el.style.display = '';
+    if (row.alt_text) el.alt = row.alt_text;
+  });
+}
+
 function initialsOf(text) {
   const parts = String(text || '').trim().split(/\s+/).filter(Boolean);
   if (!parts.length) return '—';
@@ -434,6 +745,30 @@ function initialsOf(text) {
 }
 
 const I18N = {
+  /* added so the language toggle covers every rendered string */
+  'طلب عرض': 'Request a Demo',
+  '© 2026 Match Systems. جميع الحقوق محفوظة.': '© 2026 Match Systems. All rights reserved.',
+  'جارٍ تحميل البيانات…': 'Loading data…',
+  'تعذّر تحميل البيانات من الخادم.': 'Could not load data from the server.',
+  'شاهدوا بياناتكم في على النظام': 'See your data on the system',
+  /* communication ecosystem */
+  'بيئة التواصل': 'Communication',
+  'منظومة تواصل تربط المدرسة كلها': 'One communication layer across the whole school',
+  'قناة واحدة موثقة تصل الطالب بالمعلم وولي الأمر بالإدارة، فتنتقل الرسالة والواجب والإشعار داخل المنظومة نفسها دون وسيط خارجي.': 'A single verified channel links students, teachers, parents and management, so every message, assignment and alert stays inside the system with no outside tool.',
+  'منصة واحدة': 'One Platform',
+  'الطلاب': 'Students',
+  'المعلمون': 'Teachers',
+  'أولياء الأمور': 'Parents',
+  'الإدارة': 'Management',
+  'رسائل وإعلانات فورية': 'Real-time Messaging & Announcements',
+  'محادثات مباشرة وتعميمات تصل الفئة المستهدفة لحظة إرسالها، مع سجل محفوظ لكل رسالة.': 'Direct conversations and circulars reach their audience the moment they are sent, with every message on record.',
+  'مشاركة الواجبات والتغذية الراجعة': 'Assignment & Feedback Sharing',
+  'تسليم الواجب وملاحظات المعلم عليه في المسار نفسه، فيبقى التقييم مرتبطاً بالعمل الأصلي.': 'Submissions and teacher feedback share one thread, so assessment stays attached to the original work.',
+  'مركز إشعارات موحّد': 'Unified Notification Center',
+  'تنبيه واحد يجمع الغياب والدرجات والمواعيد والرسوم، بلا تشتت بين قنوات متفرقة.': 'One feed gathers absences, grades, deadlines and fees instead of scattering them across channels.',
+  'مساحات تعليمية تفاعلية': 'Interactive Learning Spaces',
+  'غرف صفية رقمية ومصادر ونقاشات تدعم خدمات المدرسة كافة داخل المنظومة نفسها.': 'Digital classrooms, resources and discussions supporting every school service in the same place.',
+  'التواصل': 'Connect',
   'الصفحة الرئيسية': 'Home Page',
   'نظام إدارة المدارس': 'School Management System',
   'Match Education - المنظومة الرقمية الشاملة لإدارة': 'Match Education - The complete digital system for',
@@ -445,7 +780,7 @@ const I18N = {
   'استكشف الآن': 'Explore Now',
   'البوابات الخمس': 'Five User Portals',
   'لكل مستخدم بوابته الخاصة': 'Every user has a dedicated workspace',
-  'اختر الدور لتظهر لمحة عن مساحة العمل المخصصة له.': 'Select a role to preview its dedicated workspace.',
+  'اختر الدور لتظهر أبرز خمس قدرات في مساحة عمله.': 'Select a role to see the five headline capabilities in its workspace.',
   'مدير المدرسة': 'Administrator',
   'المعلم': 'Teacher',
   'الطالب': 'Student',
@@ -569,6 +904,7 @@ class Component extends DCLogic {
           this.els.nav.style.background = light ? 'rgba(255,255,255,.94)' : 'rgba(10,17,40,.9)';
           this.els.nav.style.borderBottomColor = light ? '#e2ebf0' : 'rgba(0,153,222,.22)';
           this.els.nav.style.color = light ? '#14313c' : '#dbe7f3';
+          this.els.nav.style.setProperty('--brand-accent', light ? '#357010' : '#5ea82c');
         }
         if (this.els.spineFill) {
           const track = this.els.spineFill.parentElement;
@@ -614,7 +950,11 @@ class Component extends DCLogic {
     };
     window.addEventListener('pointermove', this.onTilt, { passive: true });
     this.setupReveals();
+    // The default portal animates in once here; every later play is a real
+    // role change routed through componentDidUpdate.
+    this.replayRoleCards();
     this.bindSiteSync();
+    applyImageSlots(SITE_API.BASE_URL, SITE_API.TIMEOUT_MS);
     this.startCarousel();
   }
 
@@ -622,6 +962,21 @@ class Component extends DCLogic {
     this.setupReveals();
     if (this.onScroll) this.onScroll();
     if (this.state.lang === 'en') this.applyLang('en');
+    if (prev && prev.role !== this.state.role) this.replayRoleCards();
+  }
+
+  /* The portal cards are reused DOM nodes, so switching role does not restart
+     their entrance animation on its own. Drop the class, force a reflow, then
+     put it back -- each card already carries its own animation-delay. */
+  replayRoleCards() {
+    const cards = document.querySelectorAll('#roles .rc-card');
+    if (!cards.length) return;
+    cards.forEach((el) => {
+      el.classList.remove('rc-swap');
+      // Reading offsetWidth flushes the pending style change.
+      void el.offsetWidth;
+      el.classList.add('rc-swap');
+    });
   }
 
   componentWillUnmount() {
@@ -648,7 +1003,7 @@ class Component extends DCLogic {
         });
       }, { threshold: 0.05, rootMargin: '0px 0px -50px 0px' });
     }
-    const sel = '#roles > div > p, #roles > div > h2, #roles > div > div > div, #modules > div > p, #modules > div > h2, #modules .timeline-item, #metrics .metric-card, #clients > div > p, #clients > div > h2, #voices > div > p, #voices > div > h2, #voices .voice-card, #demo > div > div, footer > div > div';
+    const sel = '#roles > div > p, #roles > div > h2, #roles > div > div > div:not(.rc-grid), #connect > div > p, #connect > div > h2, #connect .cx-orbit, #connect .cx-feat, #modules > div > p, #modules > div > h2, #modules .timeline-item, #metrics .metric-card, #clients > div > p, #clients > div > h2, #voices > div > p, #voices > div > h2, #voices .voice-card, #demo > div > div, footer > div > div';
     const seen = new Map();
     document.querySelectorAll(sel).forEach((el) => {
       if (el.dataset.rev) return;
@@ -838,6 +1193,15 @@ class Component extends DCLogic {
         };
       }),
       activeRole: ROLES.find((r) => r.key === this.state.role) || ROLES[0],
+      roleCards: (ROLE_FEATURES[this.state.role] || ROLE_FEATURES.admin).map((c, i) => ({
+        title: this.state.lang === 'en' ? c.en : c.ar,
+        sub: this.state.lang === 'en' ? c.ar : c.en,
+        note: this.state.lang === 'en' ? c.noteEn : c.noteAr,
+        icon: c.icon,
+        num: '0' + (i + 1),
+        // Each card carries its own stagger offset for the swap replay.
+        delayStyle: 'animation-delay: ' + (i * 70) + 'ms;'
+      })),
 
       steps: [].map((x, i) => {
         const on = i === this.state.group;

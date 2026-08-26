@@ -43,6 +43,10 @@ class Settings:
         self.auto_migrate = _bool("AUTO_MIGRATE", True)
 
         self.schema_sql = SQL_DIR / "schema.sql"
+        # Uploaded media lands next to the landing pages so the static server
+        # and the API both serve it from the same folder.
+        self.upload_dir = PROJECT_DIR / "uploads"
+        self.max_upload_mb = int(os.getenv("MAX_UPLOAD_MB", "8"))
 
     @property
     def sqlalchemy_url(self) -> str:

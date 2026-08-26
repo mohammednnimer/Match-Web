@@ -12,6 +12,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.exceptions import RequestValidationError
 
 from .config import get_settings
@@ -52,8 +53,11 @@ app.add_middleware(
     allow_origins=settings.cors_origins or ["*"],
     allow_origin_regex=r"http://(localhost|127\.0\.0\.1)(:\d+)?",
     allow_credentials=False,
-    allow_methods=["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
-    allow_headers=["Authorization", "Content-Type", "Accept"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    # "*" covers the multipart Content-Type with its generated boundary as well
+    # as Authorization on the preflight for uploads.
+    allow_headers=["*"],
+    expose_headers=["*"],
 )
 
 
@@ -88,5 +92,9 @@ async def validation_error(_request, exc: RequestValidationError):
 async def root() -> dict:
     return {"service": "Match Systems Admin API", "prefix": settings.api_prefix, "docs": "/docs"}
 
+
+# Uploaded media is served straight from disk: /uploads/<file>
+settings.upload_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(settings.upload_dir)), name="uploads")
 
 app.include_router(router, prefix=settings.api_prefix)

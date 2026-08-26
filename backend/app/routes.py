@@ -2,9 +2,13 @@
 from __future__ import annotations
 
 import logging
+import re
+import uuid
+from pathlib import Path
 from typing import Any, Dict
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
+from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, UploadFile
+from fastapi import Path as PathParam
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -122,6 +126,69 @@ async def _write_audit(
 
 
 # ---------------------------------------------------------------------------
+# file upload
+# ---------------------------------------------------------------------------
+ALLOWED_IMAGE_TYPES = {
+    "image/png": ".png",
+    "image/jpeg": ".jpg",
+    "image/jpg": ".jpg",
+    "image/webp": ".webp",
+    "image/gif": ".gif",
+    "image/svg+xml": ".svg",
+}
+
+
+def _safe_stem(name: str) -> str:
+    """A short, predictable slug from the original filename."""
+    stem = Path(name or "image").stem.lower()
+    cleaned = re.sub(r"[^a-z0-9]+", "_", stem).strip("_")
+    return (cleaned or "image")[:40]
+
+
+@router.post("/upload")
+async def upload_file(
+    file: UploadFile = File(...),
+    prefix: str = Form("upload"),
+    actor: str = Depends(current_actor),
+) -> dict:
+    """Store an uploaded image on disk and return its relative URL.
+
+    Only the returned path is written to the database; the binary never goes
+    into Postgres. Base64 in a text column inflates every row and every API
+    response that touches it.
+    """
+    ext = ALLOWED_IMAGE_TYPES.get((file.content_type or "").lower())
+    if ext is None:
+        raise HTTPException(
+            status_code=415,
+            detail=f"Unsupported file type '{file.content_type}'. Allowed: PNG, JPEG, WebP, GIF, SVG.",
+        )
+
+    limit = settings.max_upload_mb * 1024 * 1024
+    body = await file.read(limit + 1)
+    if len(body) > limit:
+        raise HTTPException(status_code=413, detail=f"File exceeds {settings.max_upload_mb} MB.")
+    if not body:
+        raise HTTPException(status_code=422, detail="The uploaded file is empty.")
+
+    target_dir = settings.upload_dir
+    target_dir.mkdir(parents=True, exist_ok=True)
+
+    slug = re.sub(r"[^a-z0-9]+", "_", (prefix or "upload").lower()).strip("_") or "upload"
+    name = f"{slug}_{_safe_stem(file.filename)}_{uuid.uuid4().hex[:8]}{ext}"
+    path = target_dir / name
+
+    try:
+        path.write_bytes(body)
+    except OSError as exc:
+        log.exception("Could not write upload to %s", path)
+        raise HTTPException(status_code=500, detail="Could not save the file on the server.") from exc
+
+    url = f"/uploads/{name}"
+    log.info("upload by %s -> %s (%d bytes)", actor, url, len(body))
+    return {"url": url, "filename": name, "size": len(body), "content_type": file.content_type}
+
+# ---------------------------------------------------------------------------
 # health + auth
 # ---------------------------------------------------------------------------
 @router.get("/health")
@@ -168,7 +235,7 @@ async def login(
 # ---------------------------------------------------------------------------
 @router.get("/{table}")
 async def list_rows(
-    table: str = Path(...),
+    table: str = PathParam(...),
     q: str = Query("", description="Free-text search across the table's text columns"),
     page: int = Query(0, ge=0),
     per: int = Query(8, ge=1, le=MAX_PER_PAGE),
@@ -217,7 +284,7 @@ async def list_rows(
 
 @router.post("/{table}", status_code=201)
 async def create_row(
-    table: str = Path(...),
+    table: str = PathParam(...),
     body: Dict[str, Any] = Body(...),
     session: AsyncSession = Depends(get_session),
     actor: str = Depends(current_actor),
@@ -257,8 +324,8 @@ async def create_row(
 @router.put("/{table}/{row_id}")
 @router.patch("/{table}/{row_id}")
 async def update_row(
-    table: str = Path(...),
-    row_id: int = Path(..., ge=1),
+    table: str = PathParam(...),
+    row_id: int = PathParam(..., ge=1),
     body: Dict[str, Any] = Body(...),
     session: AsyncSession = Depends(get_session),
     actor: str = Depends(current_actor),
@@ -297,8 +364,8 @@ async def update_row(
 
 @router.delete("/{table}/{row_id}")
 async def delete_row(
-    table: str = Path(...),
-    row_id: int = Path(..., ge=1),
+    table: str = PathParam(...),
+    row_id: int = PathParam(..., ge=1),
     session: AsyncSession = Depends(get_session),
     actor: str = Depends(current_actor),
 ) -> dict:

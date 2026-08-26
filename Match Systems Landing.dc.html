@@ -33,6 +33,30 @@
   @keyframes ms-scan { 0% { transform: translateY(0) } 100% { transform: translateY(-50%) } }
 
   /* Metrics row: four counters side by side, degrading cleanly on narrow screens. */
+  /* Sector dials: circular nodes with a gradient ring and a centred icon. */
+  .sector-dial {
+    width: clamp(96px, 9vw, 132px); height: clamp(96px, 9vw, 132px);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    box-sizing: border-box; overflow: hidden;
+    background:
+      linear-gradient(#ffffff, #ffffff) padding-box,
+      linear-gradient(140deg, var(--ring), var(--ring2)) border-box;
+    border: 3px solid transparent;
+    box-shadow: 0 14px 34px rgba(15,43,52,.10);
+    transition: transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s ease;
+  }
+  /* Logo sits optically centred inside the ring, never clipped or stretched. */
+  .sector-dial img {
+    width: 75%; height: 75%; object-fit: contain; object-position: center; margin: auto;
+    display: block; transition: transform .35s cubic-bezier(.16,1,.3,1);
+  }
+  .sector-card:hover .sector-dial img { transform: scale(1.05); }
+  .sector-card:hover .sector-dial { transform: translateY(-8px) scale(1.05); box-shadow: 0 24px 48px rgba(15,43,52,.18); }
+  .sector-card:hover span:last-child { color: var(--ring); }
+
+  @media (max-width: 980px) { .ms-sectors-row { grid-template-columns: repeat(3, minmax(0,1fr)) !important; row-gap: 34px !important; } }
+  @media (max-width: 560px) { .ms-sectors-row { grid-template-columns: repeat(2, minmax(0,1fr)) !important; } }
+
   .metrics-row > div { min-width: 0; width: 100%; }
   @media (max-width: 980px) {
     .metrics-row { grid-template-columns: repeat(2, 1fr) !important; gap: 22px !important; }
@@ -72,9 +96,9 @@
 <div dir="rtl" style="position: relative; background: #ffffff; min-height: 100vh; overflow-x: clip;">
 
   <nav class="ms-nav" style="position: fixed; inset: 0 0 auto 0; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 18px 48px; backdrop-filter: blur(18px); background: linear-gradient(180deg, rgba(255,255,255,.93), rgba(255,255,255,.62)); border-bottom: 1px solid rgba(26,158,219,.14);">
-    <a href="#hero" style="display: flex; align-items: center; gap: 14px;">
+    <a href="Match%20Systems%20Landing.dc.html" title="الصفحة الرئيسية" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
       <img src="assets/ms-logo.png" alt="Match Systems" width="44" height="44" style="height: 44px; width: auto; animation: ms-glow 4.5s ease-in-out infinite;">
-      <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 19px; letter-spacing: .04em; color: #0f2b34;">Match<span style="color: #5cbe3e;">Systems</span></span>
+      <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 19px; letter-spacing: .04em; color: #0f2b34;">Match<span style="color: #357010;">Systems</span></span>
     </a>
     <div class="ms-nav-links" style="display: flex; align-items: center; gap: 34px; font-size: 15px; font-weight: 400;">
       <a href="#services" style="color: #3b5b67;" style-hover="color: #1a9edb;">خدماتنا</a>
@@ -204,176 +228,78 @@
         <p class="reveal-item" style="max-width: 600px; margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">حلول تقنية متخصصة مصممة لتناسب احتياجات مختلف القطاعات.</p>
       </div>
 
-      <div class="ms-sectors-grid" style="display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px;">
-        <!-- Spaces in the filename are percent-encoded: strict servers reject the raw form. -->
+      <div class="ms-sectors-row" style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: clamp(18px, 2.4vw, 34px); align-items: start; justify-items: center; max-width: 1180px; margin: 0 auto;">
 
-        <a class="sector-card" href="Match%20Distribution%20Landing.standalone-src.dc.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(26,158,219,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
-          <image-slot id="sector-dist" shape="rect" placeholder="مستودع توزيع"></image-slot>
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
-          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
-            <div>
-              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">01</div>
-              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">التوزيع</h3>
-            </div>
-            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
-          </div>
+        <a class="sector-card" href="Match%20Distribution%20Landing.standalone-src.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 16px; text-decoration: none; text-align: center;">
+          <span class="sector-dial" style="--ring: #1a9edb; --ring2: #5cbe3e;">
+            <img src="uploads/Dist.png" alt="قطاع التوزيع" loading="eager" fetchpriority="high" decoding="async">
+          </span>
+          <span style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px; color: #0f2b34;">التوزيع</span>
         </a>
 
-        <!-- FIX: the space in this filename was breaking the link on strict servers. -->
-        <a class="sector-card" href="Match%20Education%20Landing.standalone-src.dc.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(92,190,62,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
-          <image-slot id="sector-edu" shape="rect" placeholder="قاعة دراسية"></image-slot>
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
-          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
-            <div>
-              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">02</div>
-              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">التعليم</h3>
-            </div>
-            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
-          </div>
+        <a class="sector-card" href="Match%20Education%20Landing.standalone-src.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 16px; text-decoration: none; text-align: center;">
+          <span class="sector-dial" style="--ring: #0099de; --ring2: #35b6f0;">
+            <img src="uploads/edu.png" alt="قطاع التعليم" loading="eager" fetchpriority="high" decoding="async">
+          </span>
+          <span style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px; color: #0f2b34;">التعليم</span>
         </a>
 
-        <a class="sector-card" href="hr.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(26,158,219,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
-          <image-slot id="sector-hr" shape="rect" placeholder="فريق عمل"></image-slot>
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
-          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
-            <div>
-              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">03</div>
-              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">الموارد البشرية</h3>
-            </div>
-            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
-          </div>
+        <a class="sector-card" href="Match%20HR%20Landing.standalone-src.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 16px; text-decoration: none; text-align: center;">
+          <span class="sector-dial" style="--ring: #4f46e5; --ring2: #7c3aed;">
+            <img src="uploads/hr.png" alt="قطاع الموارد البشرية" loading="eager" fetchpriority="high" decoding="async">
+          </span>
+          <span style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px; color: #0f2b34;">الموارد البشرية</span>
         </a>
 
-        <a class="sector-card" href="healthcare.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(92,190,62,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
-          <image-slot id="sector-health" shape="rect" placeholder="مستشفى حديث"></image-slot>
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
-          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
-            <div>
-              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">04</div>
-              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">القطاع الصحي</h3>
-            </div>
-            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
-          </div>
+        <a class="sector-card" href="Match%20Health%20Landing.standalone-src.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 16px; text-decoration: none; text-align: center;">
+          <span class="sector-dial" style="--ring: #0d9488; --ring2: #059669;">
+            <img src="uploads/health.png" alt="القطاع الصحي" loading="eager" fetchpriority="high" decoding="async">
+          </span>
+          <span style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px; color: #0f2b34;">القطاع الصحي</span>
         </a>
 
-        <a class="sector-card" href="accounting.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(26,158,219,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
-          <image-slot id="sector-acc" shape="rect" placeholder="مكتب محاسبة"></image-slot>
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
-          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
-            <div>
-              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">05</div>
-              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">المحاسبة</h3>
-            </div>
-            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
-          </div>
+        <a class="sector-card" href="Match%20Accounting%20Landing.standalone-src.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 16px; text-decoration: none; text-align: center;">
+          <span class="sector-dial" style="--ring: #1e3a8a; --ring2: #2563eb;">
+            <img src="uploads/account.png" alt="قطاع المحاسبة" loading="eager" fetchpriority="high" decoding="async">
+          </span>
+          <span style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px; color: #0f2b34;">المحاسبة</span>
         </a>
 
-        <a class="sector-card" href="inventory.html" style="position: relative; height: 220px; display: block; overflow: hidden; border-radius: 20px; text-decoration: none; border: 1px solid rgba(92,190,62,.15); background: #eef5f8; box-shadow: 0 10px 35px rgba(15,43,52,.06); transition: transform .3s ease, box-shadow .3s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 20px 45px rgba(15,43,52,.12);">
-          <image-slot id="sector-inv" shape="rect" placeholder="رفوف مخزون"></image-slot>
-          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15,43,52,0) 20%, rgba(15,43,52,.82) 100%);"></div>
-          <div style="position: absolute; right: 20px; bottom: 18px; left: 20px; display: flex; align-items: center; justify-content: space-between; color: white;">
-            <div>
-              <div style="font-size: 12px; opacity: .7; margin-bottom: 4px;">06</div>
-              <h3 style="font-family: 'Cairo', sans-serif; font-size: 22px; font-weight: 700; margin: 0;">إدارة المخزون</h3>
-            </div>
-            <span style="width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.9); color: #0f2b34;"><i class="ph-bold ph-arrow-up-left"></i></span>
-          </div>
+        <a class="sector-card" href="Match%20Inventory%20Landing.standalone-src.dc.html" style="display: flex; flex-direction: column; align-items: center; gap: 16px; text-decoration: none; text-align: center;">
+          <span class="sector-dial" style="--ring: #d97706; --ring2: #ea580c;">
+            <img src="uploads/Stoke.png" alt="إدارة المخزون" loading="eager" fetchpriority="high" decoding="async">
+          </span>
+          <span style="font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px; color: #0f2b34;">إدارة المخزون</span>
         </a>
 
       </div>
     </div>
   </section>
 <sc-if value="{{ hasStats }}" hint-placeholder-val="{{ false }}">
- <div
-  class="metrics-row"
-  style="
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: clamp(35px, 5vw, 75px);
-    align-items: stretch;
-    max-width: 1150px;
-    margin: 0 auto;
-  "
->
+  <section ref="{{ setStats }}" data-screen-label="Numbers" style="position: relative; z-index: 2; padding: clamp(64px, 6vw, 96px) 6vw clamp(56px, 5.4vw, 88px); background: linear-gradient(180deg, #ffffff 0%, #f4f9fc 100%); border-block: 1px solid #dfe9ef;">
+    <div style="max-width: 1150px; margin: 0 auto;">
 
-  <sc-for list="{{ siteStats }}" as="s" hint-placeholder-count="3">
+      <p class="reveal-item" style="margin: 0 0 10px; text-align: center; color: #1a9edb; font-size: 13px; font-weight: 700; letter-spacing: .18em;">أرقامنا</p>
+      <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(28px, 3.1vw, 46px); line-height: 1.25; margin: 0 0 12px; text-align: center; color: #0f2b34;">أرقام تتحدث عنّا</h2>
+      <p class="reveal-item" style="max-width: 560px; margin: 0 auto clamp(40px, 4.4vw, 64px); text-align: center; color: #46626e; font-size: 17px; line-height: 1.8; font-weight: 300;">حصيلة عمل نفخر بها مع عملائنا في مختلف القطاعات.</p>
 
-    <div
-      class="metric-card"
-      style="
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
-        padding: 30px 24px;
-        min-height: 200px;
-        border-radius: 22px;
-        background: #f5f9fb;
-        border: 1px solid #e2ebf0;
-        text-align: center;
-        transition: transform .45s cubic-bezier(.16,1,.3,1),
-                    box-shadow .45s ease;
-      "
-      style-hover="
-        transform: translateY(-7px);
-        box-shadow: 0 18px 38px rgba(15,43,52,.10);
-      "
-    >
+      <div class="metrics-row" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(22px, 2.6vw, 34px); align-items: stretch; max-width: 1150px; margin: 0 auto;">
+        <sc-for list="{{ siteStats }}" as="s" hint-placeholder-count="3">
+          <div class="metric-card" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 34px 24px; min-height: 210px; box-sizing: border-box; border-radius: 22px; background: #ffffff; border: 1px solid #dbe7ee; box-shadow: 0 14px 34px rgba(15,43,52,.10); transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s ease;" style-hover="transform: translateY(-7px); box-shadow: 0 24px 50px rgba(15,43,52,.16);">
 
-      <!-- Different Logo for each card -->
-      <div
-        style="
-          width: 62px;
-          height: 62px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          border-radius: 18px;
-          background: rgba(26,158,219,.09);
-        "
-      >
-        <i
-          class="{{ s.icon }}"
-          style="
-            font-size: 28px;
-            color: {{ s.accent }};
-          "
-        ></i>
-      </div>
+            <span style="{{ s.iconWrapStyle }}">
+              <i class="{{ s.icon }}" style="font-size: 30px; color: #ffffff;"></i>
+            </span>
 
-      <!-- Number -->
-      <div
-        data-count="{{ s.count }}"
-        data-suffix="{{ s.suffix }}"
-        style="
-          font-family: 'Cairo', sans-serif;
-          font-weight: 900;
-          font-size: clamp(30px, 3vw, 44px);
-          line-height: 1.1;
-          color: #0f2b34;
-        "
-        dir="ltr"
-      >
-        {{ s.display }}
-      </div>
+            <div data-count="{{ s.count }}" data-suffix="{{ s.suffix }}" style="font-family: 'Cairo', sans-serif; font-weight: 900; font-size: clamp(34px, 3.2vw, 48px); line-height: 1.05; color: #0f172a; letter-spacing: -.01em;" dir="ltr">{{ s.display }}</div>
 
-      <!-- Label -->
-      <div
-        style="
-          font-size: 14px;
-          color: #4b6b78;
-          letter-spacing: .04em;
-        "
-      >
-        {{ s.label }}
+            <div style="font-size: 15px; font-weight: 600; color: #1e293b; letter-spacing: .02em;">{{ s.label }}</div>
+          </div>
+        </sc-for>
       </div>
 
     </div>
-
-  </sc-for>
-
-</div>
+  </section>
 </sc-if>
 
   <section id="clients" data-screen-label="Clients" dir="rtl" style="position: relative; z-index: 2; background: #ffffff; padding: clamp(70px, 7vw, 110px) 0; overflow: hidden;">
@@ -390,7 +316,7 @@
 
           <div style="flex: 1; width: 100%; min-height: 0; border-radius: 18px; background: linear-gradient(145deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.08); display: flex; align-items: center; justify-content: center; overflow: hidden;">
             <sc-if value="{{ c.hasLogo }}" hint-placeholder-val="{{ false }}">
-              <img src="{{ c.logo }}" alt="" loading="lazy" decoding="async" style="width: 100%; height: 100%; object-fit: contain; padding: 5px; box-sizing: border-box; transform: scale(1.25);">
+              <img src="{{ c.logo }}" alt="" loading="eager" fetchpriority="high" decoding="async" style="width: 100%; height: 100%; object-fit: contain; padding: 5px; box-sizing: border-box; transform: scale(1.25);">
             </sc-if>
             <sc-if value="{{ c.noLogo }}" hint-placeholder-val="{{ true }}">
               <div style="{{ c.markStyle }}">{{ c.mark }}</div>
@@ -405,6 +331,9 @@
         </div>
       </sc-for>
     </div>
+    <sc-if value="{{ noClients }}" hint-placeholder-val="{{ false }}">
+      <p style="max-width: 620px; margin: 0 auto; padding: 26px; text-align: center; border-radius: 18px; background: #f7fafc; border: 1px dashed #cbd8e0; color: #7a949e; font-size: 15px;">{{ emptyText }}</p>
+    </sc-if>
 
   </section>
 
@@ -428,6 +357,9 @@
         </div>
         </sc-for>
       </div>
+      <sc-if value="{{ noVoices }}" hint-placeholder-val="{{ false }}">
+        <p style="margin: 0; padding: 26px; text-align: center; border-radius: 18px; background: #f7fafc; border: 1px dashed #cbd8e0; color: #7a949e; font-size: 15px;">{{ emptyText }}</p>
+      </sc-if>
     </div>
   </section>
 
@@ -438,8 +370,8 @@
         <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.2vw, 46px); margin: 0 0 24px; color: #0f2b34; line-height: 1.3;">لنبدأ الحديث عن مشروعكم</h2>
         <p class="reveal-item" style="color: #54727e; font-size: 17px; line-height: 1.9; font-weight: 300; margin: 0 0 40px;">أرسلوا لنا تفاصيل احتياجكم وسنعود إليكم خلال يوم عمل واحد.</p>
         <div class="reveal-item" style="display: flex; flex-direction: column; gap: 18px; font-size: 16px; color: #3b5b67;">
-          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-envelope-simple" style="font-size: 24px; color: #1a9edb;"></i>info@matchsystems.com</div>
-          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-phone" style="font-size: 24px; color: #1a9edb;"></i>+970 000 000 000</div>
+          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-envelope-simple" style="font-size: 24px; color: #1a9edb;"></i>info@matchprosys.com</div>
+          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-phone" style="font-size: 24px; color: #1a9edb;"></i>+970 593 081 003</div>
           <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-map-pin" style="font-size: 24px; color: #1a9edb;"></i>رام الله، فلسطين</div>
         </div>
       </div>
@@ -456,6 +388,8 @@
             <option>الموارد البشرية</option>
             <option>إدارة المخزون</option>
             <option>تطوير المواقع والاستضافة</option>
+            <option>القطاع التعليمي </option>
+            <option>القطاع الصحي</option>
             <option>حلول السحابة والنسخ الاحتياطي</option>
           </select>
         </label>
@@ -499,9 +433,14 @@
    ========================================================================== */
 
 const SITE_API = {
-  BASE_URL: 'http://localhost:8000/v1',
-  TIMEOUT_MS: 4000,     // FIX: was 9000 — a visitor should never wait that long
-  REFRESH_MS: 60000     // FIX: was 20000 — polling every 20s re-rendered the page constantly
+  /* Follow the host the page itself was opened from. Serving the page on
+     127.0.0.1 while calling localhost (or the reverse) is a different origin
+     to the browser: the server still logs 200, but the response is blocked
+     and the fetch rejects. Deriving the host removes that mismatch entirely. */
+  BASE_URL: 'http://' + (window.location.hostname || 'localhost') + ':8000/v1',
+  TIMEOUT_MS: 15000,    // a cold dev server + several MB of images can exceed 4s
+  RETRY_MS: 900,        // one quick retry instead of waiting for the 60s poll
+  REFRESH_MS: 60000
 };
 
 const SECTOR_LABELS = {
@@ -509,42 +448,6 @@ const SECTOR_LABELS = {
   distribution: { ar: 'قطاع التوزيع', en: 'Distribution sector' },
   general: { ar: 'قطاع عام', en: 'General sector' }
 };
-
-/* Seed content for the client and testimonial rails only. The statistics
-   section is strictly API-driven: it stays hidden until /v1/stats answers.
-   The API overwrites these when it answers; if it never answers, the page
-   still looks finished instead of blank. */
-const SEED_CLIENTS = [
-  { id: 'seed-c1', nameAr: 'مجموعة الأمل التجارية', nameEn: 'Al Amal Trading Group', sector: 'distribution' },
-  { id: 'seed-c2', nameAr: 'مستشفى المدينة', nameEn: 'Al Madina Hospital', sector: 'general' },
-  { id: 'seed-c3', nameAr: 'أكاديمية النور', nameEn: 'Al Noor Academy', sector: 'education' },
-  { id: 'seed-c4', nameAr: 'شركة البيان للمقاولات', nameEn: 'Al Bayan Contracting', sector: 'general' },
-  { id: 'seed-c5', nameAr: 'وادي الخير للتجارة', nameEn: 'Wadi Al Khair Trading', sector: 'distribution' }
-];
-
-const SEED_VOICES = [
-  {
-    id: 'seed-v1', rating: 5,
-    bodyAr: '«انتقلنا إلى نظام واحد للمحاسبة والمخزون، وأصبح إغلاق الشهر يستغرق يومين بدل أسبوعين.»',
-    bodyEn: '“We moved accounting and inventory onto one system, and monthly close now takes two days instead of two weeks.”',
-    nameAr: 'سامر الخطيب', nameEn: 'Samer Al Khatib',
-    roleAr: 'المدير المالي، مجموعة الأمل التجارية', roleEn: 'CFO, Al Amal Trading Group'
-  },
-  {
-    id: 'seed-v2', rating: 5,
-    bodyAr: '«فريق Match Systems فهم طبيعة العمل الطبي قبل أن يكتب سطراً واحداً. التنفيذ كان دقيقاً وفي الموعد.»',
-    bodyEn: '“The Match Systems team understood clinical work before writing a single line. Delivery was precise and on time.”',
-    nameAr: 'د. رشا عبد الله', nameEn: 'Dr. Rasha Abdullah',
-    roleAr: 'مديرة العمليات، مستشفى المدينة', roleEn: 'Operations Director, Al Madina Hospital'
-  },
-  {
-    id: 'seed-v3', rating: 5,
-    bodyAr: '«الدعم متاح فعلاً. أي ملاحظة من الإدارة أو أولياء الأمور تُعالج في نفس اليوم.»',
-    bodyEn: '“Support is genuinely there. Any note from staff or parents is handled the same day.”',
-    nameAr: 'مروان قاسم', nameEn: 'Marwan Qasim',
-    roleAr: 'مدير النظم، أكاديمية النور', roleEn: 'Systems Manager, Al Noor Academy'
-  }
-];
 
 const REDUCE_MOTION = typeof window !== 'undefined' && window.matchMedia
   ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -565,6 +468,7 @@ function isPublishable(r) {
   return !!r && String(r.status || '').toLowerCase() !== 'suspended';
 }
 
+
 function initialsOf(text) {
   const parts = String(text || '').trim().split(/\s+/).filter(Boolean);
   if (!parts.length) return '—';
@@ -572,23 +476,79 @@ function initialsOf(text) {
   return (parts[0][0] + parts[1][0]).toUpperCase();
 }
 
-async function apiList(table, extra) {
+async function apiFetchOnce(table, extra) {
   const url = SITE_API.BASE_URL + '/' + table + '?per=60&' + (extra || 'sort=id&dir=asc');
   const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
   const timer = ctrl ? setTimeout(() => ctrl.abort(), SITE_API.TIMEOUT_MS) : null;
   try {
     const res = await fetch(url, { headers: { Accept: 'application/json' }, signal: ctrl ? ctrl.signal : undefined });
     if (timer) clearTimeout(timer);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    return ((data && (data.items || data.rows)) || []).map(rowToCamel);
+    if (!res.ok) throw new Error('HTTP ' + res.status + ' from ' + url);
+    return { data: await res.json(), url: url };
   } catch (e) {
     if (timer) clearTimeout(timer);
+    e.requestUrl = url;
     throw e;
   }
 }
 
+/* One retry before giving up. A single slow or aborted request used to blank
+   the whole section until the next 60s poll, which is why the cards appeared
+   only some of the time while the server logged 200 every time. */
+async function apiList(table, extra) {
+  const tag = table.charAt(0).toUpperCase() + table.slice(1);
+  let out;
+  try {
+    out = await apiFetchOnce(table, extra);
+  } catch (first) {
+    console.warn(tag + ': attempt 1 failed (' + first.message + ') — retrying once…');
+    await new Promise((r) => setTimeout(r, SITE_API.RETRY_MS));
+    try {
+      out = await apiFetchOnce(table, extra);
+    } catch (second) {
+      console.error(tag + ': both attempts failed for ' + (second.requestUrl || '') +
+        '. A 200 in the server log with a failure here means the browser blocked or aborted the response (origin mismatch, or slower than ' +
+        SITE_API.TIMEOUT_MS + 'ms).', second);
+      throw second;
+    }
+  }
+  const data = out.data;
+  const rows = (data && (data.items || data.rows || (Array.isArray(data) ? data : []))) || [];
+  const mapped = rows.map(rowToCamel);
+  console.log(tag + ' Received:', data);
+  console.log(tag + ': ' + rows.length + ' rows -> ' + mapped.length + ' mapped');
+  return mapped;
+}
+
 const AR_EN = {
+  /* added so the language toggle covers every rendered string */
+  'القطاعات': 'Sectors',
+  'عملاؤنا': 'Our Clients',
+  'تواصل معنا': 'Contact Us',
+  'استكشف خدماتنا': 'Explore Our Services',
+  'دورة مالية كاملة: القيود، الفواتير، الضرائب والتقارير.': 'A complete financial cycle: entries, invoices, taxes and reports.',
+  'الرواتب، الحضور، الإجازات وملفات الموظفين في مكان واحد.': 'Payroll, attendance, leave and employee files in one place.',
+  'إدارة المناديب والمسارات والتحصيل ميدانياً.': 'Manage reps, routes and field collection.',
+  'أنظمة للمدارس والمعاهد: الطلاب، الرسوم والنتائج.': 'Systems for schools and institutes: students, fees and results.',
+  'حركة الأصناف والمستودعات والجرد بدقة لحظية.': 'Item movement, warehouses and stock counts with live accuracy.',
+  'ملفات المرضى، المواعيد والفوترة الطبية.': 'Patient files, appointments and medical billing.',
+  'مواقع ومتاجر وتطبيقات ويب مبنية على قياس أعمالكم.': 'Websites, stores and web apps built to fit your business.',
+  'نسخ احتياطي مجدول واستعادة سريعة وبيانات محمية.': 'Scheduled backups, fast restore and protected data.',
+  'استضافة سريعة ومستقرة مع مراقبة ودعم متواصل.': 'Fast, stable hosting with monitoring and continuous support.',
+  'الموارد البشرية': 'Human Resources',
+  'القطاع الصحي': 'Healthcare',
+  'أرقام تتحدث عنّا': 'Numbers That Speak for Us',
+  'حصيلة عمل نفخر بها مع عملائنا في مختلف القطاعات.': 'Work we are proud of, with clients across every sector.',
+  'ما يقوله شركاؤنا': 'What Our Partners Say',
+  'البريد الإلكتروني': 'Email',
+  'الخدمة المطلوبة': 'Service Needed',
+  'القطاع التعليمي': 'Education Sector',
+  'الرسالة': 'Message',
+  'الخدمات': 'Services',
+  'تواصل': 'Contact',
+  'أخبرنا عن احتياجكم': 'Tell us what you need',
+  'قطاع التعليم': 'Education',
+  'قطاع عام': 'Public Sector',
   'خدماتنا': 'Services', 'القطاعات': 'Sectors', 'عملاؤنا': 'Clients', 'تواصل معنا': 'Contact Us', 'تواصل': 'Contact', 'الخدمات': 'Services',
   'احجز عرضاً': 'Book a Demo', 'استكشف خدماتنا': 'Explore Our Services', 'مرّر للأسفل': 'Scroll',
   'أهلاً بكم في عالم الحلول الذكية مع Match Systems': 'Welcome to the world of smart solutions with Match Systems',
@@ -640,9 +600,11 @@ class Component extends DCLogic {
   state = {
     submitted: false,
     lang: 'ar',
-    siteClients: SEED_CLIENTS,
-    siteVoices: SEED_VOICES,
-    siteStats: []
+    siteClients: [],
+    siteVoices: [],
+    siteStats: [],
+    dataLoading: true,
+    dataError: ''
   };
 
   constructor(props) {
@@ -920,27 +882,37 @@ class Component extends DCLogic {
     ]);
     if (seq !== this.siteSeq) return;
 
-    const next = {};
     const [c, v, s] = results;
 
-    if (c.status === 'fulfilled') {
-      const clients = c.value.filter(isPublishable);
-      if (clients.length) next.siteClients = clients;
-    }
-    if (v.status === 'fulfilled') {
-      const voices = v.value.filter(isPublishable);
-      if (voices.length) next.siteVoices = voices;
-    }
-    if (s.status === 'fulfilled' && s.value.length) {
-      next.siteStats = s.value;
-    }
+    /* fulfilled -> render exactly what came back, even when empty.
+       rejected  -> the network failed, not the data: hold what is on screen.
+       Nothing is ever substituted from a hardcoded array. */
+    const held = (r, current, keepIf) => {
+      if (r.status !== 'fulfilled') return current;
+      return keepIf ? r.value.filter(keepIf) : r.value;
+    };
 
-    if (!Object.keys(next).length) return;   // nothing usable — keep what's showing
+    const clients = held(c, this.state.siteClients || [], isPublishable);
+    const voices = held(v, this.state.siteVoices || [], isPublishable);
+    const stats = held(s, this.state.siteStats || []);
 
-    /* FIX: the old stamp only compared array *lengths*, so editing a client's
-       name in the admin never reached the page. Compare the payload itself. */
+    const failed = results.filter((r) => r.status === 'rejected');
+    if (failed.length) console.warn('Refresh failed, keeping existing data', failed[0].reason);
+
+    const showing = clients.length || voices.length || stats.length;
+
+    const next = {
+      siteClients: clients,
+      siteVoices: voices,
+      siteStats: stats,
+      dataLoading: false,
+      // Any failed request marks the error state, so an empty section caused by
+      // a blocked request never reads as 'no records'.
+      dataError: failed.length ? 'unreachable' : ''
+    };
+
     const stamp = JSON.stringify(next);
-    if (stamp === this.siteStamp) return;
+    if (stamp === this.siteStamp) return;   // unchanged -> no re-render at all
     this.siteStamp = stamp;
 
     this.setState(next);
@@ -953,16 +925,19 @@ class Component extends DCLogic {
   }
 
   bindSiteSync() {
+    /* The first fetch fires immediately. It used to be deferred to
+       requestIdleCallback(timeout: 1500) back when the page shipped with seed
+       arrays and the network was only a background refresh. With the seeds
+       gone the page has nothing to show until this resolves, so any delay is
+       dead time the visitor sees as an empty section. */
+    console.log('Immediate startup fetch initiated for all site resources.');
+    this.loadSiteContent();
+
+    // Keep-fresh only: refresh on return to the tab and on a slow poll.
     this.onSiteFocus = () => { if (!document.hidden) this.loadSiteContent(); };
     window.addEventListener('focus', this.onSiteFocus);
     document.addEventListener('visibilitychange', this.onSiteFocus);
     this.siteTimer = setInterval(this.onSiteFocus, SITE_API.REFRESH_MS);
-
-    /* The first fetch is deliberately deferred to an idle moment: the page is
-       already complete, so this is a background refresh, not a dependency. */
-    const kick = () => this.loadSiteContent();
-    if ('requestIdleCallback' in window) requestIdleCallback(kick, { timeout: 1500 });
-    else setTimeout(kick, 400);
   }
 
   siteVals() {
@@ -970,16 +945,32 @@ class Component extends DCLogic {
     const markBase = 'width: 56px; height: 56px; flex: none; border-radius: 14px; display: grid; place-items: center; font-family: Cairo, sans-serif; font-weight: 800; font-size: 18px; color: #ffffff;';
 
     return {
+      dataLoading: !!this.state.dataLoading,
       hasStats: (this.state.siteStats || []).length > 0,
-      siteClients: (this.state.siteClients || []).map((c, i) => ({
-        name: (en ? c.nameEn : c.nameAr) || c.nameAr || c.nameEn || '',
-        sectorLabel: (SECTOR_LABELS[c.sector] || SECTOR_LABELS.general)[en ? 'en' : 'ar'],
-        logo: c.logoUrl || '',
-        hasLogo: !!c.logoUrl,
-        noLogo: !c.logoUrl,
-        mark: initialsOf(c.nameEn || c.nameAr),
-        markStyle: markBase + ' background: linear-gradient(140deg, ' + (i % 2 ? '#5cbe3e, #1a9edb' : '#1a9edb, #5cbe3e') + ');'
-      })),
+      hasClients: (this.state.siteClients || []).length > 0,
+      hasVoices: (this.state.siteVoices || []).length > 0,
+      noClients: !this.state.dataLoading && (this.state.siteClients || []).length === 0,
+      noVoices: !this.state.dataLoading && (this.state.siteVoices || []).length === 0,
+      emptyText: this.state.dataError
+        ? (en ? 'Could not reach the server.' : 'تعذّر الاتصال بالخادم.')
+        : (en ? 'No records to display yet.' : 'لا توجد بيانات للعرض حالياً.'),
+      loadingText: en ? 'Loading…' : 'جارٍ التحميل…',
+      siteClients: (this.state.siteClients || []).map((c, i) => {
+        // Accept either camelCase (post rowToCamel) or the raw snake_case keys.
+        const nameAr = c.nameAr || c.name_ar || '';
+        const nameEn = c.nameEn || c.name_en || '';
+        const logo = c.logoUrl || c.logo_url || '';
+        const label = (en ? nameEn : nameAr) || nameAr || nameEn || '';
+        return {
+          name: label,
+          sectorLabel: (SECTOR_LABELS[c.sector] || SECTOR_LABELS.general)[en ? 'en' : 'ar'],
+          logo: logo,
+          hasLogo: !!logo,
+          noLogo: !logo,                       // falls back to the initials avatar
+          mark: initialsOf(nameEn || nameAr),
+          markStyle: markBase + ' background: linear-gradient(140deg, ' + (i % 2 ? '#5cbe3e, #1a9edb' : '#1a9edb, #5cbe3e') + ');'
+        };
+      }),
 
       siteVoices: (this.state.siteVoices || []).map((v, i) => {
         const r = Math.max(0, Math.min(5, parseInt(v.rating, 10) || 0));
@@ -1003,6 +994,7 @@ class Component extends DCLogic {
           suffix: m ? m[2].trim() : raw,
           display: raw,
           label: (en ? s.labelEn : s.labelAr) || s.labelAr || s.labelEn || '',
+          iconWrapStyle: 'width: 62px; height: 62px; flex: none; border-radius: 18px; display: grid; place-items: center; background: linear-gradient(140deg, ' + (i % 2 ? '#5cbe3e, #1a9edb' : '#1a9edb, #5cbe3e') + '); box-shadow: 0 10px 24px rgba(26,158,219,.30);',
           icon: s.icon || 'ph-duotone ph-chart-line-up',
           accent: i % 2 ? '#5cbe3e' : '#1a9edb'
         };

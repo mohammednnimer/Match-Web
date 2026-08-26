@@ -131,6 +131,15 @@ ENTITIES: Dict[str, Entity] = {
         sortable=("id", "key", "label_ar", "value", "sort_order", "status", "created_at"),
         label_column="key",
     ),
+    "images": Entity(
+        table="site_images",
+        writable=("slot", "title", "category", "image_url", "alt_text", "sort_order", "is_visible"),
+        aliases={"url": "image_url", "alt": "alt_text"},
+        search=("slot", "title", "category", "image_url"),
+        sortable=("id", "slot", "title", "category", "sort_order", "created_at"),
+        filterable=("category", "is_visible"),
+        label_column="title",
+    ),
     "logs": Entity(
         table="logs",
         writable=(),

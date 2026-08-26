@@ -34,10 +34,10 @@
 <div dir="rtl" style="{{ shellStyle }} display: grid; grid-template-columns: auto 1fr; min-height: 100vh; background: var(--bg); color: var(--text); transition: background .5s ease, color .5s ease;">
 
   <aside style="width: {{ sidebarWidth }}; position: sticky; top: 0; height: 100vh; box-sizing: border-box; padding: 22px 14px; display: flex; flex-direction: column; gap: 8px; background: var(--panel); border-left: 1px solid var(--line); backdrop-filter: blur(20px); transition: width .42s cubic-bezier(.16,1,.3,1);">
-    <div style="display: flex; align-items: center; gap: 12px; padding: 6px 10px 20px;">
+    <a href="Match%20Systems%20Landing.dc.html" title="الصفحة الرئيسية" style="display: flex; align-items: center; gap: 12px; padding: 6px 10px 20px; color: inherit; text-decoration: none; cursor: pointer;">
       <img src="assets/ms-logo.png" alt="Match Systems" style="height: 32px; width: auto; flex: none; filter: drop-shadow(0 0 12px rgba(0,153,222,.5));">
       <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 15px; white-space: nowrap; opacity: {{ labelOpacity }}; transition: opacity .3s ease;">Match Systems</span>
-    </div>
+    </a>
     <div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; gap: 6px;">
     <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="8">
       <button type="button" onClick="{{ item.go }}" title="{{ item.label }}" style="{{ item.style }}">
@@ -173,6 +173,9 @@
                             <div style="font-size: 11.5px; color: var(--muted); margin-top: 3px;" dir="{{ cell.dir }}">{{ cell.sub }}</div>
                           </sc-if>
                         </sc-if>
+                        <sc-if value="{{ cell.isThumb }}" hint-placeholder-val="{{ false }}">
+                          <img src="{{ cell.thumbUrl }}" alt="" loading="lazy" style="{{ cell.thumbStyle }}">
+                        </sc-if>
                         <sc-if value="{{ cell.isBadge }}" hint-placeholder-val="{{ false }}">
                           <span style="{{ cell.badgeStyle }}">{{ cell.badgeLabel }}</span>
                         </sc-if>
@@ -278,6 +281,15 @@
                       <i class="ph-duotone ph-upload-simple" style="font-size: 16px;"></i>{{ a.chooseImage }}
                       <input type="file" accept="image/*" onChange="{{ fld.onPickFile }}" style="display: none;">
                     </label>
+                    <sc-if value="{{ fld.staged }}" hint-placeholder-val="{{ false }}">
+                      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 11.5px;">
+                        <span style="display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; background: rgba(0,153,222,.14); border: 1px solid rgba(0,153,222,.35); color: #38bdf8; font-weight: 600;">
+                          <i class="ph-duotone ph-clock-countdown" style="font-size: 13px;"></i>{{ a.stagedTag }}
+                        </span>
+                        <span dir="ltr" style="color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 190px;">{{ fld.stagedName }}</span>
+                        <button type="button" onClick="{{ fld.onClearPick }}" style="padding: 3px 9px; border-radius: 8px; border: 1px solid var(--line); background: transparent; color: var(--muted); font-size: 11.5px; cursor: pointer;">{{ a.removePick }}</button>
+                      </div>
+                    </sc-if>
                   </div>
                 </div>
               </sc-if>
@@ -457,8 +469,8 @@ const ADMIN_STR = {
     loginTitle: 'لوحة تحكم Match Systems', loginSub: 'سجّل الدخول للمتابعة', loginEmail: 'البريد الإلكتروني', loginPassword: 'كلمة المرور',
     loginAction: 'تسجيل الدخول', loginBusy: 'جارٍ التحقق…', loginOk: 'تم تسجيل الدخول بنجاح', loggedOut: 'تم تسجيل الخروج', logout: 'خروج',
     pickSectorFirst: '— اختر القطاع أولاً —', loadingCompanies: '— جارٍ تحميل الشركات… —',
-    checking: 'جارٍ التحقق من الجلسة…', noCompanies: '— لا توجد شركات، أضف شركة أولاً —', sessionGone: 'انتهت الجلسة، يرجى تسجيل الدخول مجدداً.', loginInvalid: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.', loginFailed: 'تعذّر تسجيل الدخول. تحقق من اتصال الخادم.', loginMissing: 'يرجى إدخال البريد الإلكتروني وكلمة المرور.',
-    chooseImage: 'اختيار صورة', logoType: 'الملف المختار ليس صورة.', logoSize: 'حجم الشعار يتجاوز 512 كيلوبايت.', logoRead: 'تعذّرت قراءة الملف.',
+    checking: 'جارٍ التحقق من الجلسة…', noCompanies: '— لا توجد شركات، أضف شركة أولاً —', sessionGone: 'انتهت صلاحية الجلسة، يرجى إعادة تسجيل الدخول', loginInvalid: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.', loginFailed: 'تعذّر تسجيل الدخول. تحقق من اتصال الخادم.', loginMissing: 'يرجى إدخال البريد الإلكتروني وكلمة المرور.',
+    chooseImage: 'اختيار صورة', imageStaged: 'تم اختيار الصورة، سيتم رفعها عند الحفظ', stagedTag: 'بانتظار الحفظ', removePick: 'إزالة', logoType: 'الملف المختار ليس صورة.', logoSize: 'حجم الملف يتجاوز 8 ميغابايت.', uploading: 'جارٍ رفع الصورة…', uploaded: 'تم رفع الصورة بنجاح', logoRead: 'تعذّر رفع الملف.',
     reconnecting: 'إعادة محاولة الاتصال…', dbOnline: 'تم الاتصال بقاعدة البيانات بنجاح', dbOffline: 'تعذّر الوصول إلى قاعدة البيانات'
   },
   en: {
@@ -477,8 +489,8 @@ const ADMIN_STR = {
     loginTitle: 'Match Systems Admin', loginSub: 'Sign in to continue', loginEmail: 'Email', loginPassword: 'Password',
     loginAction: 'Sign in', loginBusy: 'Verifying…', loginOk: 'Signed in successfully', loggedOut: 'Signed out', logout: 'Log out',
     pickSectorFirst: '— Choose a sector first —', loadingCompanies: '— Loading companies… —',
-    checking: 'Checking your session…', noCompanies: '— No companies yet, add one first —', sessionGone: 'Your session expired. Please sign in again.', loginInvalid: 'Invalid email or password.', loginFailed: 'Sign-in failed. Check the server connection.', loginMissing: 'Enter both email and password.',
-    chooseImage: 'Choose image', logoType: 'The selected file is not an image.', logoSize: 'Logo exceeds 512 KB.', logoRead: 'Could not read the file.',
+    checking: 'Checking your session…', noCompanies: '— No companies yet, add one first —', sessionGone: 'Session expired, please log in again', loginInvalid: 'Invalid email or password.', loginFailed: 'Sign-in failed. Check the server connection.', loginMissing: 'Enter both email and password.',
+    chooseImage: 'Choose image', imageStaged: 'Image selected, it will upload when you save', stagedTag: 'Pending save', removePick: 'Remove', logoType: 'The selected file is not an image.', logoSize: 'File exceeds 8 MB.', uploading: 'Uploading image…', uploaded: 'Image uploaded', logoRead: 'Could not upload the file.',
     reconnecting: 'Retrying connection…', dbOnline: 'Connected to the database', dbOffline: 'Cannot reach the database'
   }
 };
@@ -505,6 +517,10 @@ function apiError(status, message, fields) {
 const SECTORS = [
   { v: 'education', ar: 'تعليم', en: 'Education' },
   { v: 'distribution', ar: 'توزيع', en: 'Distribution' },
+  { v: 'health', ar: 'صحي', en: 'Health' },
+  { v: 'accounting', ar: 'محاسبة', en: 'Accounting' },
+  { v: 'inventory', ar: 'مخزون', en: 'Inventory' },
+  { v: 'hr', ar: 'موارد بشرية', en: 'Human Resources' },
   { v: 'general', ar: 'عام', en: 'General' }
 ];
 
@@ -612,6 +628,44 @@ const SCHEMA = {
         options: [{ v: 'true', ar: 'ظاهر', en: 'Show' }, { v: 'false', ar: 'مخفي', en: 'Hide' }] }
     ]
   },
+  images: {
+    path: '/images', icon: 'ph-duotone ph-images-square', ar: 'مكتبة الصور', en: 'Image Library',
+    columns: [
+      { key: 'preview', ar: 'الصورة', en: 'Image' },
+      { key: 'title', ar: 'الموقع على الموقع', en: 'Where it appears', sortable: true },
+      { key: 'slot', ar: 'المفتاح', en: 'Slot', ltr: true },
+      { key: 'category', ar: 'التصنيف', en: 'Category' },
+      { key: 'sortOrder', ar: 'الترتيب', en: 'Order', sortable: true },
+      { key: 'visibility', ar: 'الظهور', en: 'Visibility' }
+    ],
+    // Payload: { title, category, url, alt, sort_order, is_visible }
+    fields: [
+      { key: 'slot', readKey: 'slot', ar: 'مفتاح الموقع', en: 'Slot key', type: 'text', required: true, ltr: true,
+        hintAr: 'مثال health.phone_screen — لا تغيّره إن كان مرتبطاً بالموقع', hintEn: 'e.g. health.phone_screen — do not change once bound' },
+      { key: 'title', readKey: 'title', ar: 'وصف الموقع', en: 'Where it appears',
+        type: 'text', required: true, max: 100 },
+      { key: 'category', readKey: 'category', ar: 'التصنيف', en: 'Category',
+        type: 'select', required: true, fallback: 'general',
+        options: [
+          { v: 'sector_logo', ar: 'شعار قطاع', en: 'Sector logo' },
+          { v: 'client_logo', ar: 'شعار عميل', en: 'Client logo' },
+          { v: 'hero_bg', ar: 'خلفية رئيسية', en: 'Hero background' },
+          { v: 'app_screen', ar: 'شاشة تطبيق', en: 'App screen' },
+          { v: 'general', ar: 'عام', en: 'General' }
+        ] },
+      { key: 'url', readKey: 'imageUrl', ar: 'الصورة', en: 'Image',
+        type: 'image', required: true,
+        hintAr: 'ارفع صورة من جهازك أو الصق رابطاً مباشراً',
+        hintEn: 'Upload a file or paste a direct link' },
+      { key: 'alt', readKey: 'altText', ar: 'النص البديل', en: 'Alt text',
+        type: 'text', max: 160 },
+      { key: 'sort_order', readKey: 'sortOrder', ar: 'ترتيب العرض', en: 'Display order',
+        type: 'number', min: 0, max: 999 },
+      { key: 'is_visible', readKey: 'isVisible', ar: 'الظهور على الموقع', en: 'Visible on site',
+        type: 'select', required: true, fallback: 'true',
+        options: [{ v: 'true', ar: 'ظاهر', en: 'Show' }, { v: 'false', ar: 'مخفي', en: 'Hide' }] }
+    ]
+  },
   clients: {
     path: '/clients', icon: 'ph-duotone ph-briefcase', ar: 'محفظة العملاء', en: 'Client Portfolio',
     columns: [
@@ -678,7 +732,7 @@ const SCHEMA = {
 };
 
 const SECTOR_KEYS = SECTORS.map((s) => s.v);
-const ENTITY_KEYS = ['stats', 'clients', 'feedback', 'users', 'portals', 'subscriptions', 'modules', 'logs'];
+const ENTITY_KEYS = ['stats', 'images', 'clients', 'feedback', 'users', 'portals', 'subscriptions', 'modules', 'logs'];
 
 /* --- Validation, shared by the client form and the mock server ------------ */
 function validateRecord(entity, values, lang) {
@@ -836,9 +890,13 @@ const API = {
     if (timer) clearTimeout(timer);
     let data = null;
     try { data = await res.json(); } catch (e) { /* empty body */ }
-    if (res.status === 401 || res.status === 403) {
+    if (res.status === 401) {
+      /* Only a 401 means the session is gone. 403 is "authenticated but not
+         allowed" and must never sign the admin out. */
       this.setStatus('online');
-      throw apiError(res.status, 'Not authorised. Sign in again.');
+      const err401 = apiError(401, 'SESSION_EXPIRED');
+      if (typeof this.onUnauthorized === 'function') this.onUnauthorized();
+      throw err401;
     }
     if (!res.ok) {
       this.setStatus('online');
@@ -979,7 +1037,7 @@ class Component extends DCLogic {
       this.setState({ authed: true, authChecking: false });
       return true;
     } catch (err) {
-      if (err && (err.status === 401 || err.status === 403)) {
+      if (err && err.status === 401) {
         API.clearToken();
         this.setState({ authed: false, authChecking: false });
         return false;
@@ -1014,11 +1072,19 @@ class Component extends DCLogic {
     }
   }
 
+  /* Single place that ends a session. Called only for a real 401, either from
+     API.onUnauthorized or from an explicit check before an upload. */
   sessionExpired() {
+    if (!this.state.authed && !this.state.authChecking) return;   // already on the login screen
     const a = ADMIN_STR[this.state.lang];
     API.clearToken();
     clearInterval(this.healthTimer);
-    this.setState({ authed: false, authChecking: false, authError: a.sessionGone, entity: { rows: [], total: 0, loading: false, error: '' } });
+    this.releasePreviews();
+    this.setState({
+      authed: false, authChecking: false, authError: a.sessionGone, form: null, confirm: null,
+      entity: { rows: [], total: 0, loading: false, error: '' }
+    });
+    this.toast(a.sessionGone, 'ph-duotone ph-sign-out');
   }
 
   logout() {
@@ -1057,6 +1123,7 @@ class Component extends DCLogic {
   }
 
   adminBoot() {
+    API.onUnauthorized = () => this.sessionExpired();   // one global 401 handler
     API.ensureSession();
     this.lastSig = this.adminSig();
     this.watchConnection();
@@ -1099,7 +1166,8 @@ class Component extends DCLogic {
       this.setState({ entity: { rows: res.items, total: res.total, loading: false, error: '' } });
     } catch (err) {
       if (seq !== this.reqSeq) return;
-      if (err && (err.status === 401 || err.status === 403)) { this.sessionExpired(); return; }
+      // Only 401 ends the session; every other failure keeps the admin in place.
+      if (err && err.status === 401) return;   // sessionExpired() already ran via API.onUnauthorized
       this.setState({ entity: { rows: [], total: 0, loading: false, error: err.message } });
       this.toast(err.message, 'ph-duotone ph-warning-circle');
     }
@@ -1114,7 +1182,7 @@ class Component extends DCLogic {
   openCreate(entity) {
     if (SCHEMA[entity].readOnly) return;
     this.sectorClients = [];
-    this.setState({ form: { entity, id: null, values: this.blankValues(entity), errors: [], saving: false, clientsLoading: false } });
+    this.setState({ form: { entity, id: null, values: this.blankValues(entity), errors: [], saving: false, clientsLoading: false, pending: {}, previews: {} } });
   }
 
   openEdit(entity, row) {
@@ -1125,20 +1193,97 @@ class Component extends DCLogic {
     });
     this.sectorClients = [];
     const hasSector = entity === 'feedback' && values.sector;
-    this.setState({ form: { entity, id: row.id, values, errors: [], saving: false, clientsLoading: !!hasSector } });
+    this.setState({ form: { entity, id: row.id, values, errors: [], saving: false, clientsLoading: !!hasSector, pending: {}, previews: {} } });
     if (hasSector) this.loadClientsBySector(values.sector);
   }
 
-  readImageFile(key, e) {
-    const file = e && e.target && e.target.files && e.target.files[0];
+  /* Uploads the file to the API and stores only the returned path.
+     The old version read the file into a base64 data URL and wrote that whole
+     string into the column, which bloated every row and every response that
+     selected it. */
+  /* Picking a file does NOT talk to the network. The raw File is parked in
+     form.pending and a local object URL drives the thumbnail. The bytes only
+     leave the browser when the user presses Save. */
+  pickImageFile(key, e) {
+    const input = e && e.target;
+    const file = input && input.files && input.files[0];
+    const clearInput = () => { if (input) input.value = ''; };
     if (!file) return;
+
     const a = ADMIN_STR[this.state.lang];
-    if (!/^image\//.test(file.type)) { this.toast(a.logoType, 'ph-duotone ph-warning-circle'); return; }
-    if (file.size > 512 * 1024) { this.toast(a.logoSize, 'ph-duotone ph-warning-circle'); return; }
-    const reader = new FileReader();
-    reader.onload = () => this.setFormField(key, String(reader.result || ''));
-    reader.onerror = () => this.toast(a.logoRead, 'ph-duotone ph-warning-circle');
-    reader.readAsDataURL(file);
+    if (!/^image\//.test(file.type)) { this.toast(a.logoType, 'ph-duotone ph-warning-circle'); clearInput(); return; }
+    if (file.size > 8 * 1024 * 1024) { this.toast(a.logoSize, 'ph-duotone ph-warning-circle'); clearInput(); return; }
+
+    const f = this.state.form;
+    if (!f) { clearInput(); return; }
+
+    // Replacing an earlier pick: release the previous preview URL first.
+    const previews = Object.assign({}, f.previews);
+    if (previews[key]) { try { URL.revokeObjectURL(previews[key]); } catch (err) {} }
+    try { previews[key] = URL.createObjectURL(file); } catch (err) { previews[key] = ''; }
+
+    const pending = Object.assign({}, f.pending);
+    pending[key] = file;
+
+    console.log('Image staged for upload on save:', key, file.name, file.size + ' bytes');
+    this.setState({ form: Object.assign({}, f, { pending: pending, previews: previews }) });
+    this.toast(a.imageStaged, 'ph-duotone ph-image-square');
+    clearInput();
+  }
+
+  /* Drop a staged file without saving. */
+  clearPickedImage(key) {
+    const f = this.state.form;
+    if (!f) return;
+    const previews = Object.assign({}, f.previews);
+    if (previews[key]) { try { URL.revokeObjectURL(previews[key]); } catch (err) {} }
+    delete previews[key];
+    const pending = Object.assign({}, f.pending);
+    delete pending[key];
+    this.setState({ form: Object.assign({}, f, { pending: pending, previews: previews }) });
+  }
+
+  /* Release every staged preview URL. Called whenever the modal goes away. */
+  releasePreviews() {
+    const f = this.state.form;
+    if (!f || !f.previews) return;
+    Object.keys(f.previews).forEach((k) => {
+      if (f.previews[k]) { try { URL.revokeObjectURL(f.previews[k]); } catch (err) {} }
+    });
+  }
+
+  closeForm() {
+    this.releasePreviews();
+    this.setState({ form: null });
+  }
+
+  /* POST one staged file and hand back its /uploads/... path. Throws on
+     failure so the caller can abort the save and keep the modal open. */
+  async uploadOne(file, entity) {
+    const a = ADMIN_STR[this.state.lang];
+    const tk = String(API.token() || '').trim();
+    if (!tk) throw apiError(401, a.sessionGone);
+
+    const body = new FormData();
+    body.append('file', file, file.name);
+    body.append('prefix', entity || 'upload');
+
+    // Authorization only: the browser must set the multipart Content-Type
+    // itself so the boundary matches the body it builds.
+    const res = await fetch(API.BASE_URL + '/upload', {
+      method: 'POST',
+      headers: { Authorization: 'Bearer ' + tk },
+      body: body
+    });
+
+    let data = null;
+    try { data = await res.json(); } catch (err) { /* empty body */ }
+    console.log('Upload response:', res.status, data);
+
+    if (res.status === 401) throw apiError(401, a.sessionGone);
+    if (!res.ok) throw apiError(res.status, (data && (data.message || data.detail)) || ('HTTP ' + res.status));
+    if (!data || !data.url) throw apiError(500, a.logoRead);
+    return data.url;
   }
 
   /* Companies for one sector, fetched on demand when the sector changes.
@@ -1216,31 +1361,76 @@ class Component extends DCLogic {
     this.setState({ form: Object.assign({}, f, { values: values }) });
   }
 
-  async saveForm() {
+  async saveForm(e) {
+    // Nothing here may ever hand control back to the browser's default
+    // submit/navigation behaviour.
+    if (e) {
+      if (e.preventDefault) e.preventDefault();
+      if (e.stopPropagation) e.stopPropagation();
+    }
+
     const f = this.state.form;
     if (!f || f.saving) return;
     const a = ADMIN_STR[this.state.lang];
     const errs = validateRecord(f.entity, f.values, this.state.lang);
     if (errs.length) { this.setState({ form: Object.assign({}, f, { errors: errs }) }); return; }
     this.setState({ form: Object.assign({}, f, { saving: true, errors: [] }) });
-    const payload = Object.assign({}, f.values, { __lang: this.state.lang });
+
+    const values = Object.assign({}, f.values);
+    const pending = f.pending || {};
+    const pendingKeys = Object.keys(pending).filter((k) => pending[k]);
+
+    /* Step 1 - upload whatever the user staged, in order. A field with no
+       staged file keeps whatever is in the text input: a pasted URL, or
+       nothing at all. Images are optional, so no file means no request. */
+    if (pendingKeys.length) {
+      this.setState({ form: Object.assign({}, this.state.form, { uploading: true }) });
+      this.toast(a.uploading, 'ph-duotone ph-cloud-arrow-up');
+      for (let i = 0; i < pendingKeys.length; i += 1) {
+        const key = pendingKeys[i];
+        try {
+          values[key] = await this.uploadOne(pending[key], f.entity);
+        } catch (err) {
+          // Abort the save. The modal stays open with every field intact so
+          // the user can retry without re-entering anything.
+          if (err && err.status === 401) { this.sessionExpired(); return; }
+          this.setState({ form: Object.assign({}, this.state.form, { saving: false, uploading: false }) });
+          this.toast((err && err.message) || a.logoRead, 'ph-duotone ph-warning-circle');
+          return;
+        }
+      }
+      // Uploads are done: keep the returned paths and drop the staged files
+      // so a retry after a DB error never re-uploads the same bytes.
+      if (!this.state.form) return;   // modal was torn down mid-upload
+      this.releasePreviews();
+      this.setState({ form: Object.assign({}, this.state.form, {
+        values: Object.assign({}, this.state.form.values, values),
+        pending: {}, previews: {}, uploading: false
+      }) });
+    }
+
+    /* Step 2 - write the row. */
+    const payload = Object.assign({}, values, { __lang: this.state.lang });
     (SCHEMA[f.entity].fields || []).forEach((fl) => {
       if (fl.type === 'number') payload[fl.key] = Number(payload[fl.key]);
     });
     if (payload.rating != null && payload.rating !== '') payload.rating = Number(payload.rating);
     if (payload.client_id != null && payload.client_id !== '') payload.client_id = Number(payload.client_id);
     if (payload.is_visible != null) payload.is_visible = payload.is_visible === 'true' || payload.is_visible === true;
+    if (payload.sort_order != null && payload.sort_order !== '') payload.sort_order = Number(payload.sort_order);
     if (payload.is_active != null) payload.is_active = payload.is_active === 'true' || payload.is_active === true;
     // An empty password on edit means "keep the current one".
     if (payload.password != null && String(payload.password).trim() === '') delete payload.password;
     try {
       if (f.id == null) await API.create(f.entity, payload);
       else await API.update(f.entity, f.id, payload);
+      this.releasePreviews();
       this.setState({ form: null, page: f.id == null ? 0 : this.state.page });
       this.toast(f.id == null ? a.created : a.updated, f.id == null ? 'ph-duotone ph-plus-circle' : 'ph-duotone ph-check-circle');
       this.loadEntity();
       if (f.entity === 'clients') this.loadRefOptions();
     } catch (err) {
+      if (err && err.status === 401) { this.sessionExpired(); return; }
       this.setState({ form: Object.assign({}, this.state.form, { saving: false, errors: err.fields && err.fields.length ? err.fields : [{ key: '', message: err.message }] }) });
     }
   }
@@ -1409,16 +1599,20 @@ class Component extends DCLogic {
           sub = (lang === 'en' ? r.nameAr : r.nameEn) || '';
           if (sub === text) sub = '';
         }
-        if (['plan', 'scope', 'sector', 'role'].indexOf(c.key) !== -1) text = this.optLabel(entity, c.key, r[c.key]);
+        if (['plan', 'scope', 'sector', 'role', 'category'].indexOf(c.key) !== -1) text = this.optLabel(entity, c.key, r[c.key]);
         if (c.key === 'at' && r.at) text = String(r.at).replace('T', ' ').slice(0, 16);
         if (c.key === 'createdAt') text = r.createdAt ? String(r.createdAt).replace('T', ' ').slice(0, 16) : '—';
+        if (c.key === 'category') text = this.optLabel(entity, 'category', r.category);
         if (c.key === 'action') text = a.actions[r.action] || r.action;
         if (c.key === 'status' && entity === 'logs') text = r.level;
         const chip = c.key === 'visibility'
           ? this.visibilityChip(r.isVisible != null ? r.isVisible : r.isActive)
           : (isStatus ? this.statusChip(entity, entity === 'logs' ? r.level : r.status) : null);
         return {
-          isBadge: !!isStatus, isText: !isStatus,
+          isBadge: !!isStatus, isText: !isStatus && c.key !== 'preview',
+          isThumb: c.key === 'preview',
+          thumbUrl: c.key === 'preview' ? (r.imageUrl || '') : '',
+          thumbStyle: 'width: 54px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid var(--line); background: var(--field);',
           badgeLabel: chip ? chip.label : '', badgeStyle: chip ? chip.style : '',
           text: text == null || text === '' ? '—' : String(text), sub: sub || '',
           dir: c.ltr ? 'ltr' : 'auto',
@@ -1471,9 +1665,12 @@ class Component extends DCLogic {
         isImage: fl.type === 'image',
         isInput: fl.type !== 'select' && fl.type !== 'textarea' && fl.type !== 'image',
         autoComplete: fl.type === 'password' ? 'new-password' : 'off',
-        preview: fl.type === 'image' ? String(f.values[fl.key] || '') : '',
-        noPreview: fl.type === 'image' && !String(f.values[fl.key] || ''),
-        onPickFile: fl.type === 'image' ? (e) => this.readImageFile(fl.key, e) : null,
+        preview: fl.type === 'image' ? (((f.previews || {})[fl.key]) || String(f.values[fl.key] || '')) : '',
+        noPreview: fl.type === 'image' && !((f.previews || {})[fl.key]) && !String(f.values[fl.key] || ''),
+        staged: fl.type === 'image' && !!((f.pending || {})[fl.key]),
+        stagedName: fl.type === 'image' && (f.pending || {})[fl.key] ? (f.pending[fl.key].name || '') : '',
+        onPickFile: fl.type === 'image' ? (e) => this.pickImageFile(fl.key, e) : null,
+        onClearPick: fl.type === 'image' ? () => this.clearPickedImage(fl.key) : null,
         inputType: fl.type === 'number' ? 'number' : (fl.type === 'email' ? 'email' : (fl.type === 'password' ? 'password' : 'text')),
         style: base,
         selectStyle: base + (waiting || loadingOpts ? ' opacity: .55; cursor: not-allowed;' : ''),
@@ -1550,9 +1747,9 @@ class Component extends DCLogic {
       formErrors: f ? (f.errors || []).map((e) => ({ message: e.message })) : [],
       formHasErrors: f ? (f.errors || []).length > 0 : false,
       formSaving: f ? !!f.saving : false,
-      formSaveLabel: f && f.saving ? a.saving : a.save,
-      onFormSave: () => this.saveForm(),
-      onFormClose: () => this.setState({ form: null }),
+      formSaveLabel: f && f.uploading ? a.uploading : (f && f.saving ? a.saving : a.save),
+      onFormSave: (e) => this.saveForm(e),
+      onFormClose: () => this.closeForm(),
 
       onReconnect: () => this.reconnect(),
       dbTitle: API.BASE_URL + (API.lastError ? ' — ' + API.lastError : ''),

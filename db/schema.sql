@@ -242,6 +242,75 @@ DROP TRIGGER IF EXISTS stats_touch ON stats;
 CREATE TRIGGER stats_touch BEFORE UPDATE ON stats
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
 
+-- --------------------------------------------------------------------------
+-- site_images  (central media library managed from the admin panel)
+-- --------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS site_images (
+  id         bigserial   PRIMARY KEY,
+  slot       text        NOT NULL UNIQUE,
+  title      text        NOT NULL CHECK (length(btrim(title)) BETWEEN 1 AND 100),
+  category   text        NOT NULL DEFAULT 'general'
+               CHECK (category IN ('sector_logo', 'client_logo', 'hero_bg', 'app_screen', 'brand', 'general')),
+  image_url  text,
+  alt_text   text,
+  sort_order smallint    NOT NULL DEFAULT 0,
+  is_visible boolean     NOT NULL DEFAULT true,
+  created_by text        NOT NULL DEFAULT 'system@matchsystems.com',
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS site_images_category_idx ON site_images (category, is_visible, sort_order);
+
+DROP TRIGGER IF EXISTS site_images_touch ON site_images;
+CREATE TRIGGER site_images_touch BEFORE UPDATE ON site_images
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- --------------------------------------------------------------------------
+-- site_images slots
+-- One row per image position in the site. These are structural placeholders,
+-- not sample content: image_url starts NULL for anything with no asset yet,
+-- and admins fill them from the Image Library. Re-running never duplicates or
+-- overwrites a URL an admin has already set.
+-- --------------------------------------------------------------------------
+INSERT INTO site_images (slot, title, category, image_url, alt_text, sort_order) VALUES
+  -- brand
+  ('brand.logo',                 'شعار Match Systems',                  'brand',       'assets/ms-logo.png',  'Match Systems', 1),
+
+  -- main landing page
+  ('landing.hero_bg',            'خلفية الواجهة - الصفحة الرئيسية',      'hero_bg',     NULL, NULL, 10),
+  ('landing.sector.distribution','أيقونة قطاع التوزيع',                  'sector_logo', 'uploads/Dist.png', 'قطاع التوزيع', 11),
+  ('landing.sector.education',   'أيقونة قطاع التعليم',                  'sector_logo', 'uploads/edu.png', 'قطاع التعليم', 12),
+  ('landing.sector.hr',          'أيقونة قطاع الموارد البشرية',          'sector_logo', 'uploads/hr.png', 'قطاع الموارد البشرية', 13),
+  ('landing.sector.health',      'أيقونة القطاع الصحي',                  'sector_logo', 'uploads/health.png', 'القطاع الصحي', 14),
+  ('landing.sector.accounting',  'أيقونة قطاع المحاسبة',                 'sector_logo', 'uploads/account.png', 'قطاع المحاسبة', 15),
+  ('landing.sector.inventory',   'أيقونة قطاع إدارة المخزون',            'sector_logo', 'uploads/Stoke.png', 'إدارة المخزون', 16),
+
+  -- education sector page
+  ('education.hero_bg',          'خلفية الواجهة - قطاع التعليم',         'hero_bg',     NULL, NULL, 20),
+  ('education.laptop_screen',    'شاشة اللابتوب - قطاع التعليم',         'app_screen',  'uploads/education.png', 'لوحة تحكم Match Education', 21),
+
+  -- distribution sector page
+  ('distribution.hero_bg',       'خلفية الواجهة - قطاع التوزيع',         'hero_bg',     NULL, NULL, 30),
+  ('distribution.phone_screen',  'شاشة الجوال - قطاع التوزيع',           'app_screen',  'uploads/Home.jpeg', 'تطبيق Match Distribution', 31),
+
+  -- health sector page
+  ('health.hero_bg',             'خلفية الواجهة - القطاع الصحي',         'hero_bg',     NULL, NULL, 40),
+  ('health.phone_screen',        'شاشة الجوال - القطاع الصحي',           'app_screen',  NULL, NULL, 41),
+
+  -- accounting sector page
+  ('accounting.hero_bg',         'خلفية الواجهة - قطاع المحاسبة',        'hero_bg',     NULL, NULL, 50),
+  ('accounting.phone_screen',    'شاشة الجوال - قطاع المحاسبة',          'app_screen',  NULL, NULL, 51),
+
+  -- inventory sector page
+  ('inventory.hero_bg',          'خلفية الواجهة - قطاع المخزون',         'hero_bg',     NULL, NULL, 60),
+  ('inventory.phone_screen',     'شاشة الجوال - قطاع المخزون',           'app_screen',  NULL, NULL, 61),
+
+  -- hr sector page
+  ('hr.hero_bg',                 'خلفية الواجهة - الموارد البشرية',      'hero_bg',     NULL, NULL, 70),
+  ('hr.phone_screen',            'شاشة الجوال - الموارد البشرية',        'app_screen',  'uploads/hr.jpg', 'تطبيق Match HR', 71)
+ON CONFLICT (slot) DO NOTHING;
+
 -- Forward migrations
 -- Applied to databases created before the portfolio/testimonial forms were
 -- simplified. Every statement is idempotent, so this runs on every boot.
@@ -327,5 +396,13 @@ CREATE UNIQUE INDEX IF NOT EXISTS subscriptions_client_year_key ON subscriptions
 DO $$ BEGIN
   DROP TYPE IF EXISTS portal_kind;
 EXCEPTION WHEN others THEN NULL; END $$;
+
+-- Sector landing pages added for health, accounting, inventory and HR.
+-- ADD VALUE cannot run inside a transaction block on older servers, so each
+-- is guarded and skipped when it already exists.
+DO $$ BEGIN ALTER TYPE sector_kind ADD VALUE IF NOT EXISTS 'health';     EXCEPTION WHEN others THEN NULL; END $$;
+DO $$ BEGIN ALTER TYPE sector_kind ADD VALUE IF NOT EXISTS 'accounting'; EXCEPTION WHEN others THEN NULL; END $$;
+DO $$ BEGIN ALTER TYPE sector_kind ADD VALUE IF NOT EXISTS 'inventory';  EXCEPTION WHEN others THEN NULL; END $$;
+DO $$ BEGIN ALTER TYPE sector_kind ADD VALUE IF NOT EXISTS 'hr';         EXCEPTION WHEN others THEN NULL; END $$;
 
 COMMIT;
