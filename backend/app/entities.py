@@ -140,6 +140,17 @@ ENTITIES: Dict[str, Entity] = {
         filterable=("category", "is_visible"),
         label_column="title",
     ),
+    "demo_requests": Entity(
+        table="demo_requests",
+        writable=("full_name", "email", "phone_number", "company_name",
+                  "sector", "message", "status", "handled_by"),
+        aliases={"name": "full_name", "phone": "phone_number", "company": "company_name"},
+        search=("full_name", "email", "phone_number", "company_name", "sector", "message"),
+        sortable=("id", "full_name", "email", "company_name", "sector", "status", "created_at"),
+        filterable=("status", "sector"),
+        label_column="full_name",
+        stamps_creator=False,
+    ),
     "logs": Entity(
         table="logs",
         writable=(),
@@ -154,3 +165,8 @@ ENTITIES: Dict[str, Entity] = {
 
 def get_entity(name: str) -> Entity | None:
     return ENTITIES.get(name)
+
+
+# Tables holding personal data: excluded from the public list route and
+# reachable only through their own authenticated endpoints.
+PRIVATE_TABLES = frozenset({"demo_requests", "users", "logs"})

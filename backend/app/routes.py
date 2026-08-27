@@ -9,14 +9,15 @@ from typing import Any, Dict
 
 from fastapi import APIRouter, Body, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi import Path as PathParam
+from fastapi.security import HTTPAuthorizationCredentials
 from sqlalchemy import text
 from sqlalchemy.exc import DBAPIError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .config import get_settings
 from .db import get_session, ping
-from .entities import ENTITIES, Entity, get_entity
-from .security import create_token, current_actor, hash_password, verify_password
+from .entities import ENTITIES, Entity, get_entity, PRIVATE_TABLES
+from .security import bearer, create_token, current_actor, hash_password, verify_password
 
 log = logging.getLogger("matchsystems.api")
 settings = get_settings()
@@ -233,6 +234,129 @@ async def login(
 # ---------------------------------------------------------------------------
 # CRUD
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# demo requests
+# ---------------------------------------------------------------------------
+DEMO_SECTORS = {"education", "distribution", "health", "accounting", "inventory", "hr", "general", ""}
+DEMO_STATUSES = ("pending", "contacted", "completed", "cancelled")
+EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[A-Za-z]{2,}$")
+
+
+def _clean(value, limit: int) -> str:
+    return (str(value or "").strip())[:limit]
+
+
+@router.post("/demo-requests", status_code=201)
+async def create_demo_request(
+    payload: dict = Body(...),
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    """Public: accept a Book-a-Demo submission.
+
+    Unauthenticated, so nothing from the payload is trusted. Only the six
+    known fields are read, each is length-capped, and status is never taken
+    from the caller - a new lead is always 'pending'.
+    """
+    full_name = _clean(payload.get("full_name") or payload.get("name"), 120)
+    email = _clean(payload.get("email"), 160).lower()
+    phone = _clean(payload.get("phone_number") or payload.get("phone"), 32)
+    company = _clean(payload.get("company_name") or payload.get("company"), 160)
+    sector = _clean(payload.get("sector"), 40).lower()
+    message = _clean(payload.get("message"), 4000)
+
+    errors = []
+    if len(full_name) < 2:
+        errors.append({"key": "full_name", "message": "Full name is required."})
+    if not EMAIL_RE.match(email):
+        errors.append({"key": "email", "message": "A valid e-mail address is required."})
+    if len(phone) < 5:
+        errors.append({"key": "phone_number", "message": "A phone number is required."})
+    if sector and sector not in DEMO_SECTORS:
+        errors.append({"key": "sector", "message": "Unknown sector."})
+    if errors:
+        raise HTTPException(status_code=422, detail={"message": "Invalid submission.", "fields": errors})
+
+    row = (await session.execute(
+        text("""
+            INSERT INTO demo_requests (full_name, email, phone_number, company_name, sector, message)
+            VALUES (:full_name, :email, :phone, :company, :sector, :message)
+            RETURNING id, created_at
+        """),
+        {"full_name": full_name, "email": email, "phone": phone,
+         "company": company or None, "sector": sector or None, "message": message or None},
+    )).mappings().first()
+    await session.commit()
+
+    log.info("demo request %s from %s", row["id"], email)
+    # Deliberately thin: the public form gets an acknowledgement, not the row.
+    return {"id": row["id"], "status": "pending", "created_at": row["created_at"]}
+
+
+@router.get("/demo-requests")
+async def list_demo_requests(
+    q: str = Query("", description="Search name, e-mail, phone, company or message"),
+    page: int = Query(0, ge=0),
+    per: int = Query(20, ge=1, le=MAX_PER_PAGE),
+    status: str = Query("", description="Filter by status"),
+    sort: str = Query("created_at"),
+    dir: str = Query("desc", pattern="^(asc|desc)$"),
+    actor: str = Depends(current_actor),
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    """Authenticated: newest first by default."""
+    ent = ENTITIES["demo_requests"]
+    column = sort if sort in ent.sortable else "created_at"
+    where, params = [], {}
+    if status:
+        if status not in DEMO_STATUSES:
+            raise HTTPException(status_code=422, detail=f"Unknown status '{status}'.")
+        where.append("status = :status")
+        params["status"] = status
+    if q:
+        where.append("(" + " OR ".join(f"{c} ILIKE :q" for c in ent.search) + ")")
+        params["q"] = f"%{q}%"
+    clause = (" WHERE " + " AND ".join(where)) if where else ""
+
+    total = (await session.execute(
+        text(f"SELECT count(*) FROM demo_requests{clause}"), params)).scalar_one()
+    params.update({"limit": per, "offset": page * per})
+    rows = (await session.execute(
+        text(f"SELECT * FROM demo_requests{clause} "
+             f"ORDER BY {column} {dir.upper()}, id DESC LIMIT :limit OFFSET :offset"),
+        params)).mappings().all()
+    return {"items": [dict(r) for r in rows], "total": total, "page": page, "per": per}
+
+
+@router.patch("/demo-requests/{row_id}")
+async def update_demo_request(
+    row_id: int = PathParam(..., ge=1),
+    payload: dict = Body(...),
+    actor: str = Depends(current_actor),
+    session: AsyncSession = Depends(get_session),
+) -> dict:
+    """Authenticated: move a lead through the pipeline.
+
+    Status is the only mutable field - the contact details are the customer's
+    own words and must not be edited from the dashboard.
+    """
+    status = _clean(payload.get("status"), 20).lower()
+    if status not in DEMO_STATUSES:
+        raise HTTPException(
+            status_code=422,
+            detail=f"status must be one of {', '.join(DEMO_STATUSES)}.")
+
+    row = (await session.execute(
+        text("""UPDATE demo_requests SET status = CAST(:status AS demo_status), handled_by = :actor
+                WHERE id = :id RETURNING *"""),
+        {"status": status, "actor": actor, "id": row_id},
+    )).mappings().first()
+    if row is None:
+        raise HTTPException(status_code=404, detail=f"No demo request with id {row_id}.")
+    await session.commit()
+    log.info("demo request %s -> %s by %s", row_id, status, actor)
+    return dict(row)
+
+
 @router.get("/{table}")
 async def list_rows(
     table: str = PathParam(...),
@@ -245,9 +369,15 @@ async def list_rows(
     status: str = Query("", description="Filter by status column"),
     level: str = Query("", description="Filter logs by level"),
     is_visible: str = Query("", description="Filter by the visibility flag (true/false)"),
+    creds: HTTPAuthorizationCredentials | None = Depends(bearer),
     session: AsyncSession = Depends(get_session),
 ) -> dict:
     ent = _entity_or_404(table)
+    if table in PRIVATE_TABLES:
+        # This route is public so the landing pages can read clients, feedback
+        # and stats. Tables holding personal data stay on it for the admin, but
+        # only for a caller that presents a valid token.
+        await current_actor(creds)
 
     sort_column = sort if sort in ent.sortable else "id"
     direction = "DESC" if dir.lower() == "desc" else "ASC"
