@@ -34,7 +34,7 @@
 <div dir="rtl" style="{{ shellStyle }} display: grid; grid-template-columns: auto 1fr; min-height: 100vh; background: var(--bg); color: var(--text); transition: background .5s ease, color .5s ease;">
 
   <aside style="width: {{ sidebarWidth }}; position: sticky; top: 0; height: 100vh; box-sizing: border-box; padding: 22px 14px; display: flex; flex-direction: column; gap: 8px; background: var(--panel); border-left: 1px solid var(--line); backdrop-filter: blur(20px); transition: width .42s cubic-bezier(.16,1,.3,1);">
-    <a href="Match%20Systems%20Landing.dc.html" title="الصفحة الرئيسية" style="display: flex; align-items: center; gap: 12px; padding: 6px 10px 20px; color: inherit; text-decoration: none; cursor: pointer;">
+    <a href="index.html" onClick="{{ onLeaveAdmin }}" title="الصفحة الرئيسية" style="display: flex; align-items: center; gap: 12px; padding: 6px 10px 20px; color: inherit; text-decoration: none; cursor: pointer;">
       <img src="assets/ms-logo.png" alt="Match Systems" style="height: 32px; width: auto; flex: none; filter: drop-shadow(0 0 12px rgba(0,153,222,.5));">
       <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 15px; white-space: nowrap; opacity: {{ labelOpacity }}; transition: opacity .3s ease;">Match Systems</span>
     </a>
@@ -69,9 +69,11 @@
         <i class="ph-duotone ph-magnifying-glass" style="font-size: 18px; color: var(--muted);"></i>
         <input value="{{ query }}" onInput="{{ onQuery }}" placeholder="{{ t.search }}" style="flex: 1; min-width: 0; border: none; background: transparent; color: var(--text); font-size: 14px; outline: none;">
       </label>
+      <sc-if value="{{ entCanCreate }}" hint-placeholder-val="{{ true }}">
       <button type="button" onClick="{{ addNew }}" style="flex: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 8px; padding: 11px 18px; border-radius: 12px; border: none; background: linear-gradient(120deg, #0099de, #7bc643); color: #fff; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 12px 28px rgba(0,153,222,.28); transition: transform .25s ease, box-shadow .25s ease;" style-hover="transform: translateY(-2px); box-shadow: 0 18px 38px rgba(0,153,222,.42);" style-active="transform: translateY(0);">
         <i class="ph-duotone ph-plus-circle" style="font-size: 18px;"></i>{{ t.addNew }}
       </button>
+      </sc-if>
       <button type="button" onClick="{{ onReconnect }}" title="{{ dbTitle }}" style="{{ dbBadgeStyle }}">
         <span style="{{ dbDotStyle }}"></span>{{ dbLabel }}
       </button>
@@ -166,7 +168,7 @@
                 <sc-for list="{{ entRows }}" as="row" hint-placeholder-count="6">
                   <tr style="border-top: 1px solid var(--line);" style-hover="background: var(--hover);">
                     <sc-for list="{{ row.cells }}" as="cell" hint-placeholder-count="5">
-                      <td style="{{ cell.tdStyle }}" dir="{{ cell.dir }}">
+                      <td style="{{ cell.tdStyle }}" dir="{{ cell.dir }}" title="{{ cell.title }}">
                         <sc-if value="{{ cell.isText }}" hint-placeholder-val="{{ true }}">
                           <div style="{{ cell.mainStyle }}">{{ cell.text }}</div>
                           <sc-if value="{{ cell.sub }}" hint-placeholder-val="{{ false }}">
@@ -469,7 +471,7 @@ const ADMIN_STR = {
     loginTitle: 'لوحة تحكم Match Systems', loginSub: 'سجّل الدخول للمتابعة', loginEmail: 'البريد الإلكتروني', loginPassword: 'كلمة المرور',
     loginAction: 'تسجيل الدخول', loginBusy: 'جارٍ التحقق…', loginOk: 'تم تسجيل الدخول بنجاح', loggedOut: 'تم تسجيل الخروج', logout: 'خروج',
     pickSectorFirst: '— اختر القطاع أولاً —', loadingCompanies: '— جارٍ تحميل الشركات… —',
-    checking: 'جارٍ التحقق من الجلسة…', noCompanies: '— لا توجد شركات، أضف شركة أولاً —', sessionGone: 'انتهت صلاحية الجلسة، يرجى إعادة تسجيل الدخول', loginInvalid: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.', loginFailed: 'تعذّر تسجيل الدخول. تحقق من اتصال الخادم.', loginMissing: 'يرجى إدخال البريد الإلكتروني وكلمة المرور.',
+    checking: 'جارٍ التحقق من الجلسة…', noCompanies: '— لا توجد شركات، أضف شركة أولاً —', leaveWarn: 'لديك سجل مفتوح لم يُحفظ. هل تريد مغادرة لوحة التحكم؟', sessionGone: 'انتهت صلاحية الجلسة، يرجى إعادة تسجيل الدخول', loginInvalid: 'البريد الإلكتروني أو كلمة المرور غير صحيحة.', loginFailed: 'تعذّر تسجيل الدخول. تحقق من اتصال الخادم.', loginMissing: 'يرجى إدخال البريد الإلكتروني وكلمة المرور.',
     chooseImage: 'اختيار صورة', imageStaged: 'تم اختيار الصورة، سيتم رفعها عند الحفظ', stagedTag: 'بانتظار الحفظ', removePick: 'إزالة', logoType: 'الملف المختار ليس صورة.', logoSize: 'حجم الملف يتجاوز 8 ميغابايت.', uploading: 'جارٍ رفع الصورة…', uploaded: 'تم رفع الصورة بنجاح', logoRead: 'تعذّر رفع الملف.',
     reconnecting: 'إعادة محاولة الاتصال…', dbOnline: 'تم الاتصال بقاعدة البيانات بنجاح', dbOffline: 'تعذّر الوصول إلى قاعدة البيانات'
   },
@@ -489,7 +491,7 @@ const ADMIN_STR = {
     loginTitle: 'Match Systems Admin', loginSub: 'Sign in to continue', loginEmail: 'Email', loginPassword: 'Password',
     loginAction: 'Sign in', loginBusy: 'Verifying…', loginOk: 'Signed in successfully', loggedOut: 'Signed out', logout: 'Log out',
     pickSectorFirst: '— Choose a sector first —', loadingCompanies: '— Loading companies… —',
-    checking: 'Checking your session…', noCompanies: '— No companies yet, add one first —', sessionGone: 'Session expired, please log in again', loginInvalid: 'Invalid email or password.', loginFailed: 'Sign-in failed. Check the server connection.', loginMissing: 'Enter both email and password.',
+    checking: 'Checking your session…', noCompanies: '— No companies yet, add one first —', leaveWarn: 'You have an unsaved record open. Leave the admin panel?', sessionGone: 'Session expired, please log in again', loginInvalid: 'Invalid email or password.', loginFailed: 'Sign-in failed. Check the server connection.', loginMissing: 'Enter both email and password.',
     chooseImage: 'Choose image', imageStaged: 'Image selected, it will upload when you save', stagedTag: 'Pending save', removePick: 'Remove', logoType: 'The selected file is not an image.', logoSize: 'File exceeds 8 MB.', uploading: 'Uploading image…', uploaded: 'Image uploaded', logoRead: 'Could not upload the file.',
     reconnecting: 'Retrying connection…', dbOnline: 'Connected to the database', dbOffline: 'Cannot reach the database'
   }
@@ -606,6 +608,37 @@ const SCHEMA = {
         options: [{ v: 'global', ar: 'كل الشركات', en: 'All clients' }, { v: 'per_client', ar: 'حسب الشركة', en: 'Per client' }] },
       { key: 'status', ar: 'الحالة', en: 'Status', type: 'select', required: true,
         options: [{ v: 'active', ar: 'مُفعّلة', en: 'Enabled' }, { v: 'suspended', ar: 'معطّلة', en: 'Disabled' }, { v: 'draft', ar: 'تجريبية', en: 'Beta' }] }
+    ]
+  },
+  demo_requests: {
+    path: '/demo-requests', icon: 'ph-duotone ph-calendar-check',
+    ar: 'طلبات الزبائن', en: 'Demo Requests',
+    // Leads arrive from the public form. The dashboard moves them through the
+    // pipeline; it never authors one, and never edits what the client wrote.
+    noCreate: true,
+    defaultSort: 'createdAt', defaultAsc: false,
+    columns: [
+      { key: 'fullName', ar: 'اسم العميل', en: 'Client name', sortable: true },
+      { key: 'email', ar: 'البريد الإلكتروني', en: 'Email', ltr: true },
+      { key: 'phoneNumber', ar: 'رقم الجوال', en: 'Phone', ltr: true },
+      { key: 'companyName', ar: 'الشركة', en: 'Company' },
+      { key: 'sector', ar: 'القطاع', en: 'Sector' },
+      { key: 'message', ar: 'وصف الطلب', en: 'Description', wrap: true },
+      { key: 'createdAt', ar: 'تاريخ الطلب', en: 'Submitted' },
+      { key: 'status', ar: 'الحالة', en: 'Status' }
+    ],
+    // Payload sent to the API: { status } and nothing else.
+    fields: [
+      { key: 'status', readKey: 'status', ar: 'حالة الطلب', en: 'Request status',
+        type: 'select', required: true, fallback: 'pending',
+        hintAr: 'تُحدَّث الحالة فقط — بيانات العميل تصل كما كتبها ولا تُعدَّل',
+        hintEn: 'Only the status changes - the client details arrive as written and stay as written',
+        options: [
+          { v: 'pending', ar: 'قيد الانتظار', en: 'Pending' },
+          { v: 'contacted', ar: 'تم التواصل', en: 'Contacted' },
+          { v: 'completed', ar: 'مكتمل', en: 'Completed' },
+          { v: 'cancelled', ar: 'ملغي', en: 'Cancelled' }
+        ] }
     ]
   },
   stats: {
@@ -732,7 +765,7 @@ const SCHEMA = {
 };
 
 const SECTOR_KEYS = SECTORS.map((s) => s.v);
-const ENTITY_KEYS = ['stats', 'images', 'clients', 'feedback', 'users', 'portals', 'subscriptions', 'modules', 'logs'];
+const ENTITY_KEYS = ['demo_requests', 'stats', 'images', 'clients', 'feedback', 'users', 'portals', 'subscriptions', 'modules', 'logs'];
 
 /* --- Validation, shared by the client form and the mock server ------------ */
 function validateRecord(entity, values, lang) {
@@ -906,11 +939,29 @@ const API = {
     return data;
   },
 
+  /* Deliberately NOT routed through fetchJson: that path calls
+     onUnauthorized() on a 401, which would sign an admin out mid-edit every
+     time the poll ran. A liveness ping only ever moves the status light, and
+     sends no Authorization header because /health is public. */
   async health() {
+    const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timer = ctrl ? setTimeout(() => ctrl.abort(), DB_CONFIG.TIMEOUT_MS) : null;
     try {
-      await this.fetchJson('GET', this.BASE_URL + '/health');
-      return true;
-    } catch (e) { return false; }
+      const res = await fetch(this.BASE_URL + '/health', {
+        method: 'GET',
+        headers: { Accept: 'application/json' },
+        signal: ctrl ? ctrl.signal : undefined
+      });
+      if (timer) clearTimeout(timer);
+      if (res.ok) { this.setStatus('online'); return true; }
+      this.setStatus('offline', 'Database reported HTTP ' + res.status + '.');
+      return false;
+    } catch (e) {
+      if (timer) clearTimeout(timer);
+      this.setStatus('offline', e && e.name === 'AbortError'
+        ? 'Health check timed out.' : 'Cannot reach the database server.');
+      return false;
+    }
   },
 
   table(entity) { return SCHEMA[entity].path; },
@@ -968,6 +1019,16 @@ class Component extends DCLogic {
 
   componentDidMount() {
     document.documentElement.setAttribute('data-theme', this.state.theme);
+    /* A stray refresh would silently discard an open record. The browser only
+       honours this once the admin has interacted with the page, which is
+       exactly the case worth protecting. */
+    this.onBeforeUnload = (e) => {
+      if (!this.state.form) return undefined;
+      e.preventDefault();
+      e.returnValue = '';
+      return '';
+    };
+    window.addEventListener('beforeunload', this.onBeforeUnload);
     this.verifySession().then((ok) => { if (ok) this.adminBoot(); });
   }
 
@@ -984,7 +1045,11 @@ class Component extends DCLogic {
     else this.loadEntity();
   }
 
-  componentWillUnmount() { clearTimeout(this.queryTimer); }
+  componentWillUnmount() {
+    clearTimeout(this.queryTimer);
+    clearInterval(this.healthTimer);
+    window.removeEventListener('beforeunload', this.onBeforeUnload);
+  }
 
   L(o, key) { return this.state.lang === 'ar' ? o[key + 'Ar'] : o[key + 'En']; }
   pick(o) { return this.state.lang === 'ar' ? o.ar : o.en; }
@@ -1158,9 +1223,14 @@ class Component extends DCLogic {
     const seq = (this.reqSeq = (this.reqSeq || 0) + 1);
     this.setState({ entity: { rows: [], total: 0, loading: true, error: '' } });
     try {
+      const def = SCHEMA[entity] || {};
+      /* Leads read newest-first by default; everything else keeps id/asc. */
+      const sortKey = this.state.sortKey || def.defaultSort || 'id';
+      const asc = this.state.sortKey ? this.state.sortAsc
+        : (def.defaultAsc === undefined ? this.state.sortAsc : def.defaultAsc);
       const res = await API.list(entity, {
         q: this.state.query, page: this.state.page, per: 8,
-        sort: this.state.sortKey || 'id', dir: this.state.sortAsc ? 'asc' : 'desc'
+        sort: sortKey, dir: asc ? 'asc' : 'desc'
       });
       if (seq !== this.reqSeq) return;
       this.setState({ entity: { rows: res.items, total: res.total, loading: false, error: '' } });
@@ -1180,7 +1250,7 @@ class Component extends DCLogic {
   }
 
   openCreate(entity) {
-    if (SCHEMA[entity].readOnly) return;
+    if (SCHEMA[entity].readOnly || SCHEMA[entity].noCreate) return;
     this.sectorClients = [];
     this.setState({ form: { entity, id: null, values: this.blankValues(entity), errors: [], saving: false, clientsLoading: false, pending: {}, previews: {} } });
   }
@@ -1490,22 +1560,42 @@ class Component extends DCLogic {
   }
 
   watchConnection() {
-    API.onStatus((next, err) => {
-      const a = ADMIN_STR[this.state.lang];
-      this.setState({ dbStatus: next });
-      if (next === 'offline') this.toast(err || a.dbOffline, 'ph-duotone ph-plugs-connected');
-      if (next === 'online' && this.sawOffline) this.toast(a.dbOnline, 'ph-duotone ph-check-circle');
-      this.sawOffline = next === 'offline';
-    });
+    /* adminBoot() runs on mount and again after every login, so both the
+       subscription and the interval have to be idempotent. Without this the
+       poll stacks: two logins, two timers, two setState calls per flip. */
+    if (!this.statusBound) {
+      this.statusBound = true;
+      API.onStatus((next, err) => {
+        const a = ADMIN_STR[this.state.lang];
+        if (next === this.state.dbStatus) return;      // nothing actually changed
+        this.setState({ dbStatus: next });
+        if (next === 'offline') this.toast(err || a.dbOffline, 'ph-duotone ph-plugs-connected');
+        if (next === 'online' && this.sawOffline) this.toast(a.dbOnline, 'ph-duotone ph-check-circle');
+        this.sawOffline = next === 'offline';
+      });
+    }
+    clearInterval(this.healthTimer);
     API.health();
-    this.healthTimer = setInterval(() => API.health(), DB_CONFIG.HEALTH_EVERY_MS);
+    this.healthTimer = setInterval(() => {
+      /* Never poll over somebody mid-task. A status flip re-renders the tree,
+         and a background check is not worth interrupting an open record for.
+         A hidden tab does not need polling either. */
+      if (document.hidden) return;
+      if (this.state.form || this.state.confirm) return;
+      API.health();
+    }, DB_CONFIG.HEALTH_EVERY_MS);
   }
 
   statusTone(value) {
     const map = {
       active: ['rgba(123,198,67,.14)', 'rgba(123,198,67,.4)', '#4e8b1f'],
       suspended: ['rgba(226,86,86,.13)', 'rgba(226,86,86,.38)', '#c0392b'],
-      draft: ['rgba(0,153,222,.12)', 'rgba(0,153,222,.34)', '#0d7cb3']
+      draft: ['rgba(0,153,222,.12)', 'rgba(0,153,222,.34)', '#0d7cb3'],
+      /* demo request pipeline */
+      pending: ['rgba(245,158,11,.15)', 'rgba(245,158,11,.42)', '#b45309'],
+      contacted: ['rgba(0,153,222,.13)', 'rgba(0,153,222,.36)', '#0d7cb3'],
+      completed: ['rgba(123,198,67,.15)', 'rgba(123,198,67,.42)', '#4e8b1f'],
+      cancelled: ['rgba(148,163,184,.18)', 'rgba(148,163,184,.42)', '#64748b']
     };
     return map[value] || map.draft;
   }
@@ -1602,6 +1692,13 @@ class Component extends DCLogic {
         if (['plan', 'scope', 'sector', 'role', 'category'].indexOf(c.key) !== -1) text = this.optLabel(entity, c.key, r[c.key]);
         if (c.key === 'at' && r.at) text = String(r.at).replace('T', ' ').slice(0, 16);
         if (c.key === 'createdAt') text = r.createdAt ? String(r.createdAt).replace('T', ' ').slice(0, 16) : '—';
+        // A free-text message would stretch the row, so show a clipped preview
+        // and hand the full text to the cell's tooltip.
+        let full = '';
+        if (c.key === 'message') {
+          full = String(r.message || '').trim();
+          text = full ? (full.length > 90 ? full.slice(0, 90) + '…' : full) : '—';
+        }
         if (c.key === 'category') text = this.optLabel(entity, 'category', r.category);
         if (c.key === 'action') text = a.actions[r.action] || r.action;
         if (c.key === 'status' && entity === 'logs') text = r.level;
@@ -1615,8 +1712,10 @@ class Component extends DCLogic {
           thumbStyle: 'width: 54px; height: 40px; border-radius: 8px; object-fit: cover; border: 1px solid var(--line); background: var(--field);',
           badgeLabel: chip ? chip.label : '', badgeStyle: chip ? chip.style : '',
           text: text == null || text === '' ? '—' : String(text), sub: sub || '',
+          title: full || '',
           dir: c.ltr ? 'ltr' : 'auto',
-          tdStyle: 'padding: 12px 16px; vertical-align: middle;' + (c.key === 'name' ? '' : ' color: var(--muted);'),
+          tdStyle: 'padding: 12px 16px; vertical-align: middle;' + (c.key === 'name' ? '' : ' color: var(--muted);') +
+                   (c.wrap ? ' max-width: 320px; white-space: normal; line-height: 1.6;' : ''),
           mainStyle: c.key === 'name'
             ? "font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 14px; color: var(--text);"
             : 'font-size: 13.5px;'
@@ -1730,6 +1829,7 @@ class Component extends DCLogic {
       entError: data.error || '',
       entEmpty: !data.loading && !data.error && rows.length === 0,
       entReadOnly: def ? !!def.readOnly : false,
+      entCanCreate: def ? !(def.readOnly || def.noCreate) : true,
       entColumns: columns,
       entRows: rows,
       entPageInfo: (lang === 'en' ? 'Page ' : 'صفحة ') + (page + 1) + (lang === 'en' ? ' of ' : ' من ') + pages,
@@ -1749,6 +1849,13 @@ class Component extends DCLogic {
       formSaving: f ? !!f.saving : false,
       formSaveLabel: f && f.uploading ? a.uploading : (f && f.saving ? a.saving : a.save),
       onFormSave: (e) => this.saveForm(e),
+      onLeaveAdmin: (e) => {
+        // The sidebar brand is a real link to the public site. With a record
+        // open, a mis-click would throw the edit away without a word.
+        if (!this.state.form && !this.state.confirm) return;
+        const a = ADMIN_STR[this.state.lang];
+        if (!window.confirm(a.leaveWarn)) e.preventDefault();
+      },
       onFormClose: () => this.closeForm(),
 
       onReconnect: () => this.reconnect(),
@@ -1781,7 +1888,7 @@ class Component extends DCLogic {
       return {
         label: t.nav[i], icon: NAV_ICONS[i],
         go: () => this.setState({ view: v, page: 0 }),
-        style: 'position: relative; display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 14px; font-family: inherit; text-align: right; border: 1px solid ' + (on ? 'rgba(0,153,222,.35)' : 'transparent') + '; background: ' + (on ? 'linear-gradient(90deg, rgba(0,153,222,.16), rgba(123,198,67,.08))' : 'transparent') + '; color: ' + (on ? '#0099de' : 'var(--muted)') + '; box-shadow: ' + (on ? '0 0 20px rgba(0,153,222,.18)' : 'none') + '; transition: background .3s ease, color .3s ease, box-shadow .3s ease;',
+        style: 'position: relative; display: flex; align-items: center; gap: 14px; padding: 12px; border-radius: 12px; cursor: pointer; font-size: 14px; font-family: inherit; text-align: start; border: 1px solid ' + (on ? 'rgba(0,153,222,.35)' : 'transparent') + '; background: ' + (on ? 'linear-gradient(90deg, rgba(0,153,222,.16), rgba(123,198,67,.08))' : 'transparent') + '; color: ' + (on ? '#0099de' : 'var(--muted)') + '; box-shadow: ' + (on ? '0 0 20px rgba(0,153,222,.18)' : 'none') + '; transition: background .3s ease, color .3s ease, box-shadow .3s ease;',
         barStyle: 'position: absolute; inset-inline-end: 0; top: 22%; bottom: 22%; width: 3px; border-radius: 3px; background: ' + (on ? 'linear-gradient(180deg, #0099de, #7bc643)' : 'transparent') + '; box-shadow: ' + (on ? '0 0 12px #0099de' : 'none') + ';'
       };
     });

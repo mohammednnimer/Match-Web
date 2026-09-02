@@ -16,7 +16,10 @@
      (non-blocking) and is promoted to all media once it arrives. -->
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css" media="print" onload="this.media='all'; this.onload=null;">
 <noscript><link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css"></noscript>
+<link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css" media="print" onload="this.media='all'; this.onload=null;">
+<noscript><link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css"></noscript>
 <script src="./image-slot.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7/css/flag-icons.min.css">
 <style>
   html { scroll-behavior: smooth; }
   body { margin: 0; background: #ffffff; color: #274653; font-family: 'IBM Plex Sans Arabic', 'Segoe UI', Tahoma, sans-serif; overflow-x: hidden; }
@@ -24,6 +27,127 @@
   a:hover { color: #5cbe3e; }
   ::selection { background: rgba(26,158,219,0.28); }
   *:focus-visible { outline: 2px solid #1a9edb; outline-offset: 3px; }
+
+  /* ---------------------------------------------------------------------
+     Demo request form on phones. Desktop is untouched: media query only.
+     --------------------------------------------------------------------- */
+  @media (max-width: 760px) {
+    /* The inner padding was eating most of the field width. */
+    #demo form, #contact form { padding: 22px 16px !important; gap: 14px !important; }
+
+    #demo form input, #demo form select, #demo form textarea,
+    #contact form input, #contact form select, #contact form textarea {
+      box-sizing: border-box !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      /* Anything under 16px makes iOS Safari zoom the page on focus, which
+         then leaves the layout scrolled sideways. */
+      font-size: 16px !important;
+    }
+
+    /* A full-width action reads better than a floating one on a narrow screen. */
+    #demo form button[type="submit"],
+    #contact form button[type="submit"] { width: 100% !important; }
+
+    /* The phone box and its dropdown have to stay inside the viewport. */
+    .tel { box-sizing: border-box !important; max-width: 100% !important; }
+    .tel-menu { width: min(300px, calc(100vw - 60px)) !important; }
+    .tel-input { font-size: 16px !important; }
+
+    .site-toast { inset-inline: 12px !important; bottom: 12px !important; max-width: none !important; }
+  }
+
+  @media (max-width: 560px) {
+    #demo, #contact { padding-inline: 14px !important; }
+    /* The label sits above its field; it does not need to reserve a column. */
+    #demo form label, #contact form label { gap: 6px !important; }
+  }
+  /* Submission feedback for the demo form. */
+  @keyframes toast-in { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+  .site-toast { position: fixed; z-index: 200; inset-inline-end: 22px; bottom: 22px;
+    display: flex; align-items: center; gap: 10px; max-width: min(380px, 88vw);
+    padding: 14px 18px; border-radius: 14px; font-family: 'Cairo', sans-serif;
+    font-weight: 700; font-size: 14px; color: #ffffff; box-shadow: 0 18px 44px rgba(6,20,40,.30);
+    animation: toast-in .4s cubic-bezier(.16,1,.3,1) both; }
+  .site-toast.ok { background: linear-gradient(120deg, #16a34a, #15803d); }
+  .site-toast.err { background: linear-gradient(120deg, #dc2626, #b91c1c); }
+  .site-toast > i { font-size: 19px; flex: none; }
+  /* --- Reviews ----------------------------------------------------------
+     Three per view. The strip only becomes interactive when there is a
+     fourth review to reach. */
+  @keyframes rv-in { from { opacity: 0; transform: translateY(18px) scale(.985); filter: blur(4px) }
+                     to { opacity: 1; transform: none; filter: blur(0) } }
+  .rv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+  .rv-grid > * { height: 100%; box-sizing: border-box; }
+  .rv-anim { animation: rv-in .55s cubic-bezier(.16,1,.3,1) both; }
+  .rv-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: clamp(26px, 3vw, 38px); }
+  .rv-arrow { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center;
+    cursor: pointer; border: 1px solid #e2ebf0; background: #ffffff; color: #55747f; font: inherit;
+    transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s ease, color .3s ease, border-color .3s ease; }
+  .rv-arrow:hover { transform: translateY(-2px); color: var(--rv-accent, #0099de);
+    border-color: var(--rv-accent, #0099de); box-shadow: 0 10px 24px rgba(15,43,52,.14); }
+  /* The buttons swap sides with the direction; the glyphs have to follow. */
+  [dir="ltr"] .rv-arrow > i { transform: scaleX(-1); }
+  .rv-dots { display: flex; align-items: center; gap: 8px; }
+  .rv-dot { width: 8px; height: 8px; padding: 0; flex: none; border: 0; border-radius: 999px; cursor: pointer;
+    background: #cbd8e0; transition: width .38s cubic-bezier(.16,1,.3,1), background .38s ease; }
+  .rv-dot:hover { background: #9fb4c0; }
+  .rv-dot.on { width: 26px; background: var(--rv-accent, #0099de); }
+  @media (max-width: 900px) { .rv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 760px) {
+    /* One at a time, swiped natively - no gesture library, no JS. */
+    .rv-grid { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 86%;
+      overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 7%;
+      padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+    .rv-grid > * { scroll-snap-align: center; }
+  }
+  @media (prefers-reduced-motion: reduce) { .rv-anim { animation: none; } }
+  /* Flags come from flag-icons: one real SVG per country. 22x16.5 is exactly
+     4:3, the ratio the library's assets are authored at, so `contain` fills
+     the box with no letterboxing and no stretching. */
+  .tel .fi, .tel-opt .fi { flex: none; display: inline-block; width: 22px; height: 16.5px;
+    line-height: 0; border-radius: 2px; background-size: contain; background-position: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.18), 0 0 0 1px rgba(255,255,255,.16); }
+  .tel .fi::before, .tel-opt .fi::before { content: none; }
+  /* --- Phone field ------------------------------------------------------
+     One rounded box holds the flag trigger, a divider, the dial code and the
+     number. The menu is toggled by class, not by sc-if, so the search input
+     keeps its focus and caret between keystrokes. */
+  .tel { position: relative; display: flex; align-items: center; box-sizing: border-box; }
+  .tel-trigger { display: flex; align-items: center; gap: 6px; flex: none; padding: 0;
+    margin-inline-end: 10px; border: 0; background: transparent; cursor: pointer; color: inherit; font: inherit; }
+  .tel-caret { font-size: 11px; opacity: .5; transition: transform .25s ease; }
+  .tel.open .tel-caret { transform: rotate(180deg); }
+  .tel-div { flex: none; width: 1px; align-self: stretch; margin: 3px 0; }
+  .tel-code { flex: none; padding-inline: 10px 8px; opacity: .72; direction: ltr;
+    unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+  .tel-input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent;
+    padding: 0; font: inherit; color: inherit; }
+  .tel-menu { position: absolute; z-index: 60; top: calc(100% + 8px); inset-inline-start: 0;
+    display: none; flex-direction: column; width: min(310px, 80vw); overflow: hidden; border-radius: 14px; }
+  .tel-menu.open { display: flex; }
+  .tel-search { display: flex; align-items: center; gap: 9px; padding: 11px 13px; }
+  .tel-search > i { font-size: 15px; opacity: .5; flex: none; }
+  .tel-search > input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent;
+    font: inherit; font-size: 14px; color: inherit; }
+  .tel-list { display: flex; flex-direction: column; max-height: 238px; overflow-y: auto; padding: 6px; }
+  .tel-opt { display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box;
+    padding: 8px 10px; border: 0; border-radius: 9px; background: transparent; cursor: pointer;
+    font: inherit; font-size: 14px; color: inherit; text-align: start; }
+  .tel-opt:hover { background: rgba(127,127,127,.15); }
+  .tel-opt.on { background: rgba(127,127,127,.22); font-weight: 700; }
+  .tel-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tel-dial { flex: none; opacity: .62; direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+  .tel-empty { padding: 16px; text-align: center; opacity: .6; font-size: 13px; }
+  /* A phone number is an LTR run: isolate it so RTL context cannot reorder
+     the digit groups or move the + to the wrong end. */
+  .phone-number { unicode-bidi: isolate; direction: ltr; white-space: nowrap; }
+  /* --- Direction ---------------------------------------------------------
+     Driven by the wrapper's dir attribute, not by a JS-set data attribute, so
+     the first paint is already correct. Explicit centring on a descendant
+     still wins; only start/end alignment follows the language. */
+  [data-dir-auto] { text-align: start; }
+  input, textarea, select { text-align: start; }
   @keyframes ms-stream { 0% { transform: translateY(-100%); opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { transform: translateY(220%); opacity: 0; } }
   @keyframes ms-drift { 0% { transform: translate3d(0,0,0) } 50% { transform: translate3d(-2%,-3%,0) } 100% { transform: translate3d(0,0,0) } }
   @keyframes ms-pulse { 0%,100% { opacity: .45 } 50% { opacity: .9 } }
@@ -93,10 +217,10 @@
 </style>
 </helmet>
 
-<div dir="rtl" style="position: relative; background: #ffffff; min-height: 100vh; overflow-x: clip;">
+<div dir="rtl" data-dir-auto style="position: relative; background: #ffffff; min-height: 100vh; overflow-x: clip;">
 
   <nav class="ms-nav" style="position: fixed; inset: 0 0 auto 0; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 32px; padding: 18px 48px; backdrop-filter: blur(18px); background: linear-gradient(180deg, rgba(255,255,255,.93), rgba(255,255,255,.62)); border-bottom: 1px solid rgba(26,158,219,.14);">
-    <a href="Match%20Systems%20Landing.dc.html" title="الصفحة الرئيسية" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
+    <a href="index.html" title="الصفحة الرئيسية" style="display: flex; align-items: center; gap: 14px; cursor: pointer;">
       <img src="assets/ms-logo.png" alt="Match Systems" width="44" height="44" style="height: 44px; width: auto; animation: ms-glow 4.5s ease-in-out infinite;">
       <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 19px; letter-spacing: .04em; color: #0f2b34;">Match<span style="color: #357010;">Systems</span></span>
     </a>
@@ -219,10 +343,10 @@
     </div>
   </section>
 
-  <section id="sectors" data-screen-label="Sectors" dir="rtl" style="position: relative; z-index: 2; background: linear-gradient(180deg, #ffffff 0%, #f6fafc 50%, #ffffff 100%); padding: 80px 6vw 100px; overflow: hidden;">
+  <section id="sectors" data-screen-label="Sectors" dir="rtl" data-dir-auto style="position: relative; z-index: 2; background: linear-gradient(180deg, #ffffff 0%, #f6fafc 50%, #ffffff 100%); padding: 80px 6vw 100px; overflow: hidden;">
     <div style="max-width: 1320px; margin: 0 auto;">
 
-      <div style="margin-bottom: 42px; text-align: right;">
+      <div style="margin-bottom: 42px; text-align: start;">
         <p class="reveal-item" style="margin: 0 0 10px; color: #1a9edb; font-size: 13px; font-weight: 700; letter-spacing: .18em;">القطاعات</p>
         <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.2vw, 48px); line-height: 1.25; margin: 0 0 12px; color: #0f2b34;">نعمل حيث تعمل أعمالكم</h2>
         <p class="reveal-item" style="max-width: 600px; margin: 0; color: #54727e; font-size: 16px; line-height: 1.8; font-weight: 300;">حلول تقنية متخصصة مصممة لتناسب احتياجات مختلف القطاعات.</p>
@@ -302,11 +426,11 @@
   </section>
 </sc-if>
 
-  <section id="clients" data-screen-label="Clients" dir="rtl" style="position: relative; z-index: 2; background: #ffffff; padding: clamp(70px, 7vw, 110px) 0; overflow: hidden;">
+  <section id="clients" data-screen-label="Clients" dir="rtl" data-dir-auto style="position: relative; z-index: 2; background: #ffffff; padding: clamp(70px, 7vw, 110px) 0; overflow: hidden;">
 
     <div style="padding: 0 6vw; max-width: 1320px; margin: 0 auto clamp(35px, 4vw, 55px); box-sizing: border-box;">
       <p class="reveal-item" style="margin: 0 0 10px; color: #1a9edb; font-size: 13px; font-weight: 700; letter-spacing: .18em;">عملاؤنا</p>
-      <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.4vw, 52px); line-height: 1.25; margin: 0 0 12px; color: #0f2b34;">أهم عملائنا</h2>
+      <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.4vw, 52px); line-height: 1.25; margin: 0 0 12px; color: #0f2b34;">بعض من عملائنا</h2>
       <p class="reveal-item" style="max-width: 620px; margin: 0; color: #54727e; font-size: 17px; line-height: 1.8; font-weight: 300;">نفتخر بشراكتنا مع مجموعة من المؤسسات والشركات في مختلف القطاعات.</p>
     </div>
 
@@ -325,7 +449,6 @@
 
           <div style="flex: none; padding: 15px 4px 2px; text-align: center;">
             <div style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 21px; line-height: 1.4; color: #0f2b34;">{{ c.name }}</div>
-            <p style="margin: 5px 0 0; color: #54727e; font-size: 14px; line-height: 1.6; font-weight: 300;">{{ c.sectorLabel }}</p>
           </div>
 
         </div>
@@ -341,9 +464,9 @@
     <div style="max-width: 1240px; margin: 0 auto;">
       <p class="reveal-item" style="font-size: 14px; letter-spacing: .3em; color: #1a9edb; margin: 0 0 clamp(14px, 1.4vw, 20px);">آراء العملاء</p>
       <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.4vw, 52px); margin: 0 0 clamp(48px, 5vw, 76px); color: #0f2b34;">ما يقوله شركاؤنا</h2>
-      <div ref="{{ setFeedback }}" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 20px; align-items: stretch;">
-        <sc-for list="{{ siteVoices }}" as="v" hint-placeholder-count="3">
-        <div class="fb-card" style="position: relative; display: flex; flex-direction: column; gap: 18px; padding: 28px; border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0; border-inline-start: 3px solid {{ v.accent }}; transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 18px 40px rgba(15,43,52,.08);">
+      <div class="rv-grid" ref="{{ setReviews }}">
+        <sc-for list="{{ reviewSlice }}" as="v" hint-placeholder-count="3">
+        <div class="fb-card rv-anim" style="position: relative; display: flex; flex-direction: column; gap: 18px; padding: 28px; border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0; border-inline-start: 3px solid {{ v.accent }}; transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 18px 40px rgba(15,43,52,.08);">
           <i class="ph-duotone ph-quotes" style="font-size: 30px; color: {{ v.accent }}; opacity: .55;"></i>
           <p style="margin: 0; color: #1d3b46; font-size: 15.5px; line-height: 1.95; font-weight: 300; flex: 1;">{{ v.body }}</p>
           <div style="font-size: 15px; letter-spacing: .16em; color: #f0a92b;">{{ v.stars }}</div>
@@ -357,6 +480,21 @@
         </div>
         </sc-for>
       </div>
+              <sc-if value="{{ reviewPaged }}" hint-placeholder-val="{{ true }}">
+                <div class="rv-nav" style="--rv-accent: #1a9edb;">
+                  <button type="button" class="rv-arrow" onClick="{{ reviewPrev }}" aria-label="Previous reviews">
+                    <i class="ph-bold ph-caret-right" style="font-size: 15px;"></i>
+                  </button>
+                  <span class="rv-dots">
+                    <sc-for list="{{ reviewDots }}" as="d" hint-placeholder-count="3">
+                      <button type="button" class="{{ d.cls }}" onClick="{{ d.go }}" aria-label="{{ d.label }}"></button>
+                    </sc-for>
+                  </span>
+                  <button type="button" class="rv-arrow" onClick="{{ reviewNext }}" aria-label="Next reviews">
+                    <i class="ph-bold ph-caret-left" style="font-size: 15px;"></i>
+                  </button>
+                </div>
+              </sc-if>
       <sc-if value="{{ noVoices }}" hint-placeholder-val="{{ false }}">
         <p style="margin: 0; padding: 26px; text-align: center; border-radius: 18px; background: #f7fafc; border: 1px dashed #cbd8e0; color: #7a949e; font-size: 15px;">{{ emptyText }}</p>
       </sc-if>
@@ -370,34 +508,73 @@
         <h2 class="reveal-item" style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(30px, 3.2vw, 46px); margin: 0 0 24px; color: #0f2b34; line-height: 1.3;">لنبدأ الحديث عن مشروعكم</h2>
         <p class="reveal-item" style="color: #54727e; font-size: 17px; line-height: 1.9; font-weight: 300; margin: 0 0 40px;">أرسلوا لنا تفاصيل احتياجكم وسنعود إليكم خلال يوم عمل واحد.</p>
         <div class="reveal-item" style="display: flex; flex-direction: column; gap: 18px; font-size: 16px; color: #3b5b67;">
-          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-envelope-simple" style="font-size: 24px; color: #1a9edb;"></i>info@matchprosys.com</div>
-          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-phone" style="font-size: 24px; color: #1a9edb;"></i>+970 593 081 003</div>
+          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-envelope-simple" style="font-size: 24px; color: #1a9edb;"></i>info@matchsystems.com</div>
+          <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-phone" style="font-size: 24px; color: #1a9edb;"></i><span dir="ltr" class="phone-number">+970 593 081 003</span></div>
           <div style="display: flex; align-items: center; gap: 14px;"><i class="ph-duotone ph-map-pin" style="font-size: 24px; color: #1a9edb;"></i>رام الله، فلسطين</div>
         </div>
       </div>
-      <form class="contact-form" onSubmit="{{ onSubmit }}" style="display: grid; gap: 20px; padding: 44px; border-radius: 24px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.2);">
+      <form class="contact-form" onSubmit="{{ onSubmit }}" ref="{{ setDemoForm }}" style="display: grid; gap: 20px; padding: 44px; border-radius: 24px; background: linear-gradient(160deg, #f7fafc, #edf4f8); border: 1px solid rgba(26,158,219,.2);">
         <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">الاسم الكامل
-          <input type="text" name="name" autocomplete="name" placeholder="اكتب اسمك" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none;" style-focus="border-color: #1a9edb;">
+          <input type="text" name="full_name" placeholder="اكتب اسمك" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none;">
         </label>
         <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">البريد الإلكتروني
-          <input type="email" name="email" autocomplete="email" placeholder="name@company.com" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none; direction: ltr; text-align: right;" style-focus="border-color: #1a9edb;">
+          <input type="email" name="email" autocomplete="email" placeholder="name@company.com" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none; direction: ltr; text-align: start;" style-focus="border-color: #1a9edb;">
         </label>
-        <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">الخدمة المطلوبة
-          <select name="service" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none;" style-focus="border-color: #1a9edb;">
-            <option>المحاسبة</option>
-            <option>الموارد البشرية</option>
-            <option>إدارة المخزون</option>
-            <option>تطوير المواقع والاستضافة</option>
-            <option>القطاع التعليمي </option>
-            <option>القطاع الصحي</option>
-            <option>حلول السحابة والنسخ الاحتياطي</option>
+        <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">اسم الشركة
+          <input type="text" name="company_name" placeholder="اكتب اسم الشركة" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none;">
+        </label>
+        <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">القطاع المطلوب
+          <select name="sector" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none;">
+            <option value="education">القطاع التعليمي</option>
+            <option value="distribution">قطاع التوزيع</option>
+            <option value="accounting">المحاسبة والمالية</option>
+            <option value="hr">الموارد البشرية</option>
+            <option value="inventory">إدارة المخزون</option>
+            <option value="health">القطاع الصحي</option>
+            <option value="general" selected>قطاع آخر</option>
           </select>
         </label>
-        <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">الرسالة
-          <textarea name="message" rows="4" placeholder="أخبرنا عن احتياجكم" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none; resize: vertical;" style-focus="border-color: #1a9edb;"></textarea>
+        <div style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;"><span>رقم الجوال</span>
+          <span class="{{ ccWrapClass }}" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px;">
+            <button type="button" class="tel-trigger" onClick="{{ ccToggle }}" aria-haspopup="listbox" aria-label="Country code">
+              <span class="{{ ccFlag }}"></span>
+              <i class="ph-bold ph-caret-down tel-caret" aria-hidden="true"></i>
+            </button>
+            <span class="tel-div" aria-hidden="true" style="background: rgba(26,158,219,.22);"></span>
+            <span class="tel-code" dir="ltr">{{ ccCode }}</span>
+            <input type="tel" class="tel-input" name="phone_national" ref="{{ setTel }}" placeholder="59 123 4567" dir="ltr" inputmode="tel">
+              <input type="hidden" name="phone" ref="{{ setPhoneFull }}">
+
+            <span class="{{ ccMenuClass }}" role="listbox" style="background: #ffffff; border: 1px solid rgba(26,158,219,.22); box-shadow: 0 22px 50px rgba(15,43,52,.20);">
+              <span class="tel-search" style="border-bottom: 1px solid rgba(26,158,219,.22);">
+                <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
+                <input type="text" placeholder="Search country..." value="{{ ccQuery }}" onInput="{{ ccSearch }}" ref="{{ setCcSearch }}" dir="ltr">
+              </span>
+              <span class="tel-list">
+                <sc-for list="{{ ccList }}" as="c" hint-placeholder-count="6">
+                  <button type="button" class="{{ c.cls }}" onClick="{{ c.pick }}" role="option">
+                    <span class="{{ c.flag }}"></span>
+                    <span class="tel-name" dir="ltr">{{ c.name }}</span>
+                    <span class="tel-dial" dir="ltr">{{ c.code }}</span>
+                  </button>
+                </sc-for>
+                <sc-if value="{{ ccEmpty }}" hint-placeholder-val="{{ false }}">
+                  <span class="tel-empty">No match</span>
+                </sc-if>
+              </span>
+            </span>
+          </span>
+        </div>
+        <label style="display: grid; gap: 10px; font-size: 15px; color: #4b6b78;">وصف الطلب
+          <textarea name="message" rows="4" placeholder="اشرحوا لنا احتياجكم أو تفاصيل المشروع" style="padding: 15px 18px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(26,158,219,.22); color: #0f2b34; font-family: inherit; font-size: 16px; outline: none; resize: vertical;"></textarea>
         </label>
         <button type="submit" style="margin-top: 6px; padding: 17px 30px; border-radius: 12px; border: 1px solid rgba(255,255,255,.22); background: linear-gradient(120deg, #1a9edb, #5cbe3e); color: #ffffff; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 17px; cursor: pointer; box-shadow: 0 16px 44px rgba(26,158,219,.3); transition: transform .25s ease, box-shadow .25s ease;" style-hover="transform: translateY(-2px); box-shadow: 0 22px 56px rgba(26,158,219,.45);" style-active="transform: translateY(0);">{{ submitLabel }}</button>
       </form>
+        <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+          <div class="{{ toastCls }}" role="status">
+            <i class="{{ toastIcon }}" aria-hidden="true"></i><span>{{ toastText }}</span>
+          </div>
+        </sc-if>
     </div>
   </section>
 
@@ -419,6 +596,27 @@
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
+const PAGE_SECTOR = 'general';
+
+const PHONE_CC = [
+  ['PS', 'Palestine', '+970'], ['SA', 'Saudi Arabia', '+966'], ['AE', 'United Arab Emirates', '+971'], ['JO', 'Jordan', '+962'],
+  ['EG', 'Egypt', '+20'], ['KW', 'Kuwait', '+965'], ['QA', 'Qatar', '+974'], ['BH', 'Bahrain', '+973'],
+  ['OM', 'Oman', '+968'], ['LB', 'Lebanon', '+961'], ['SY', 'Syria', '+963'], ['IQ', 'Iraq', '+964'],
+  ['YE', 'Yemen', '+967'], ['LY', 'Libya', '+218'], ['TN', 'Tunisia', '+216'], ['DZ', 'Algeria', '+213'],
+  ['MA', 'Morocco', '+212'], ['SD', 'Sudan', '+249'], ['MR', 'Mauritania', '+222'], ['SO', 'Somalia', '+252'],
+  ['DJ', 'Djibouti', '+253'], ['KM', 'Comoros', '+269'], ['TR', 'Turkiye', '+90'], ['IR', 'Iran', '+98'],
+  ['PK', 'Pakistan', '+92'], ['IN', 'India', '+91'], ['BD', 'Bangladesh', '+880'], ['ID', 'Indonesia', '+62'],
+  ['MY', 'Malaysia', '+60'], ['SG', 'Singapore', '+65'], ['CN', 'China', '+86'], ['JP', 'Japan', '+81'],
+  ['KR', 'South Korea', '+82'], ['US', 'United States', '+1'], ['CA', 'Canada', '+1'], ['GB', 'United Kingdom', '+44'],
+  ['IE', 'Ireland', '+353'], ['FR', 'France', '+33'], ['DE', 'Germany', '+49'], ['IT', 'Italy', '+39'],
+  ['ES', 'Spain', '+34'], ['PT', 'Portugal', '+351'], ['NL', 'Netherlands', '+31'], ['BE', 'Belgium', '+32'],
+  ['CH', 'Switzerland', '+41'], ['AT', 'Austria', '+43'], ['SE', 'Sweden', '+46'], ['NO', 'Norway', '+47'],
+  ['DK', 'Denmark', '+45'], ['FI', 'Finland', '+358'], ['PL', 'Poland', '+48'], ['RO', 'Romania', '+40'],
+  ['GR', 'Greece', '+30'], ['RU', 'Russia', '+7'], ['UA', 'Ukraine', '+380'], ['AU', 'Australia', '+61'],
+  ['NZ', 'New Zealand', '+64'], ['ZA', 'South Africa', '+27'], ['NG', 'Nigeria', '+234'], ['KE', 'Kenya', '+254'],
+  ['BR', 'Brazil', '+55'], ['AR', 'Argentina', '+54'], ['MX', 'Mexico', '+52'], ['CL', 'Chile', '+56'],
+];
+
 /* ==========================================================================
    Match Systems — landing logic
 
@@ -521,6 +719,28 @@ async function apiList(table, extra) {
 }
 
 const AR_EN = {
+  /* sector selector */
+  'القطاع المطلوب': 'Sector',
+  'المحاسبة والمالية': 'Accounting & Finance',
+  'قطاع آخر': 'Other',
+  /* demo request feedback */
+  'تم استلام طلبكم، سنتواصل معكم قريباً': 'Your request has been received, we will contact you shortly',
+  'تعذّر الاتصال بالخادم، حاولوا مجدداً': 'Could not reach the server, please try again',
+  'جارٍ الإرسال…': 'Sending…',
+  /* UI strings the walker also has to cover */
+  'عربي': 'Arabic',
+  'العربية': 'Arabic',
+  'تم إرسال رسالتكم ✓': 'Your message has been sent ✓',
+  'إرسال الطلب': 'Send request',
+  'تعذّر الاتصال بالخادم.': 'Could not reach the server.',
+  'لا توجد بيانات للعرض حالياً.': 'No data to display right now.',
+  'جارٍ التحميل…': 'Loading…',
+  /* footer contact form */
+  'اسم الشركة': 'Company Name',
+  'اكتب اسم الشركة': 'Enter the company name',
+  'رقم الجوال': 'Phone Number',
+  'وصف الطلب': 'Description',
+  'اشرحوا لنا احتياجكم أو تفاصيل المشروع': 'Tell us what you need, or the details of your project',
   /* added so the language toggle covers every rendered string */
   'القطاعات': 'Sectors',
   'عملاؤنا': 'Our Clients',
@@ -569,7 +789,7 @@ const AR_EN = {
   'نعمل حيث تعمل أعمالكم': 'We work where your business works',
   'حلول تقنية متخصصة مصممة لتناسب احتياجات مختلف القطاعات.': 'Specialised technology built around the needs of each sector.',
   'قطاع التوزيع': 'Distribution Sector', 'الموارد البشرية': 'Human Resources', 'القطاع الصحي': 'Healthcare Sector',
-  'أهم عملائنا': 'Companies that build on it every day',
+  'بعض من عملائنا': 'Companies that build on it every day',
   'نفتخر بشراكتنا مع مجموعة من المؤسسات والشركات في مختلف القطاعات.': 'We are proud to partner with organisations across many sectors.',
   'مجموعة الأمل التجارية': 'Al Amal Trading Group',
   'مستشفى المدينة': 'Al Madina Hospital',
@@ -597,7 +817,7 @@ const EN_AR = Object.keys(AR_EN).reduce((m, k) => { m[AR_EN[k]] = k; return m; }
 
 class Component extends DCLogic {
   /* FIX: state starts full, not empty. Nothing waits on the network to render. */
-  state = {
+  state = { reviewPage: 0, phoneIso: 'PS', phoneOpen: false, phoneQuery: '', 
     submitted: false,
     lang: 'ar',
     siteClients: [],
@@ -610,6 +830,14 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     this.els = {};
+    this.setDemoForm = (el) => { this.els.demoForm = el; };
+    this.setReviews = (el) => {
+      if (this.els.reviews === el) return;    // same node, listeners already on
+      this.els.reviews = el;
+      if (!el) return;
+      el.addEventListener('pointerenter', () => { this.reviewHold = true; });
+      el.addEventListener('pointerleave', () => { this.reviewHold = false; });
+    };
     this.active = 0;
     this.lastLang = 'ar';
 
@@ -626,14 +854,148 @@ class Component extends DCLogic {
       this.setState({ lang: next });
     };
 
-    this.onSubmit = (e) => {
+    this.onSubmit = async (e) => {
       e.preventDefault();
-      this.setState({ submitted: true });
-      setTimeout(() => this.setState({ submitted: false }), 3200);
+      if (this.state.sending) return;
+      const form = this.els.demoForm;
+      const val = (n) => {
+        const el = form && form.querySelector('[name="' + n + '"]');
+        return el ? String(el.value || '').trim() : '';
+      };
+      /* The dial code lives in component state, the digits in the input. */
+      const cc = (PHONE_CC.find((c) => c[0] === this.state.phoneIso) || PHONE_CC[0])[2];
+      const local = val('phone_national').replace(/[^0-9]/g, '').replace(/^0+/, '');
+      const payload = {
+        full_name: val('full_name'),
+        email: val('email'),
+        phone_number: local ? cc + local : '',
+        company_name: val('company_name'),
+        // The visitor's choice wins; the page's own sector is only a fallback
+        // for a browser that somehow submits without the field.
+        sector: val('sector') || PAGE_SECTOR,
+        message: val('message')
+      };
+
+      this.setState({ sending: true, sendError: '', submitted: false });
+      try {
+        const res = await fetch(SITE_API.BASE_URL + '/demo-requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        let data = null;
+        try { data = await res.json(); } catch (err) { /* empty body */ }
+        if (!res.ok) {
+          /* 422 carries per-field messages; surface the first one so the
+             visitor knows which box to fix. */
+          const d = data && data.detail;
+          const msg = d && d.fields && d.fields.length ? d.fields[0].message
+            : (d && d.message) || (typeof d === 'string' ? d : '') || ('HTTP ' + res.status);
+          throw new Error(msg);
+        }
+        if (form && form.reset) form.reset();
+        this.setState({ sending: false, submitted: true, sendError: '' });
+        setTimeout(() => this.setState({ submitted: false }), 4500);
+      } catch (err) {
+        const offline = err && (err.name === 'TypeError' || !err.message);
+        this.setState({
+          sending: false,
+          submitted: false,
+          sendError: offline ? 'NETWORK' : String(err.message)
+        });
+        setTimeout(() => this.setState({ sendError: '' }), 6000);
+      }
     };
   }
 
+  /* Countries matching the search box, by name or by dial code. */
+  ccFiltered() {
+    const q = String(this.state.phoneQuery || '').trim().toLowerCase();
+    if (!q) return PHONE_CC;
+    return PHONE_CC.filter((c) => c[1].toLowerCase().indexOf(q) >= 0 ||
+      c[2].indexOf(q) >= 0 || c[0].toLowerCase() === q);
+  }
+
+  /* Three reviews to a page. Controls and the timer only exist once there is
+     a fourth review to reach. */
+  reviewVals(list) {
+    const all = list || [];
+    const per = 3;
+    const pages = Math.max(1, Math.ceil(all.length / per));
+    const page = Math.min(Math.max(0, this.state.reviewPage || 0), pages - 1);
+    const start = page * per;
+    const dots = [];
+    for (let i = 0; i < pages; i += 1) {
+      dots.push({
+        cls: 'rv-dot' + (i === page ? ' on' : ''),
+        label: 'Reviews page ' + (i + 1),
+        go: ((n) => () => this.gotoReview(n))(i)
+      });
+    }
+    return {
+      reviewSlice: all.slice(start, start + per),
+      reviewPaged: all.length > per,
+      reviewDots: dots,
+      reviewPrev: () => this.gotoReview((page - 1 + pages) % pages),
+      reviewNext: () => this.gotoReview((page + 1) % pages)
+    };
+  }
+
+  /* Pages, not cards: wrap the index and keep it inside the real page count
+     so a shrinking review list cannot leave a stale index behind. */
+  reviewPageCount() {
+    return Math.max(1, Math.ceil(((this.state.siteVoices || []).length) / 3));
+  }
+
+  gotoReview(i) {
+    const pages = this.reviewPageCount();
+    const next = ((i % pages) + pages) % pages;
+    /* Once the reader drives the carousel, the timer stops for good: an
+       auto-advance on top of a manual choice is never what was wanted. */
+    clearInterval(this.reviewTimer);
+    this.reviewTimer = null;
+    if (next === (this.state.reviewPage || 0)) return;
+    this.setState({ reviewPage: next });
+  }
+
+  /* Cards are reused nodes, so the entrance has to be restarted by hand the
+     same way the page swap does elsewhere on this page. */
+  replayReviews() {
+    const cards = document.querySelectorAll('.rv-grid > *');
+    cards.forEach((el, i) => {
+      el.classList.remove('rv-anim');
+      void el.offsetWidth;                     // flush the removal
+      el.style.animationDelay = (i * 70) + 'ms';
+      el.classList.add('rv-anim');
+    });
+  }
+
+  startReviewRotation() {
+    clearInterval(this.reviewTimer);
+    this.reviewTimer = setInterval(() => {
+      // Never rotate under the reader's cursor, or in a background tab.
+      if (document.hidden || this.reviewHold) return;
+      const total = (this.state.siteVoices || []).length;
+      if (total <= 3) return;
+      const pages = Math.ceil(total / 3);
+      /* Advance from the index actually on screen, not from a stale one. */
+      this.setState((s) => {
+        const shown = Math.min(Math.max(0, s.reviewPage || 0), pages - 1);
+        return { reviewPage: (shown + 1) % pages };
+      });
+    }, 7000);
+  }
+
   componentDidMount() {
+    this.startReviewRotation();
+    /* Any click that is not inside the picker closes it. */
+    this.onCcOutside = (e) => {
+      if (!this.state.phoneOpen) return;
+      const t = e.target;
+      if (t && t.closest && t.closest('.tel')) return;
+      this.setState({ phoneOpen: false });
+    };
+    document.addEventListener('click', this.onCcOutside);
     this.bindHeroParallax();
     this.ensureRevealObserver();
     this.registerReveals();
@@ -669,9 +1031,22 @@ class Component extends DCLogic {
     if (this.state.lang === 'en') this.applyLang('en');
     this.registerReveals();
     this.surge();
+    /* This hook takes no prev argument, so track the values ourselves. */
+    if (this.lastReviewPage !== this.state.reviewPage) {
+      this.lastReviewPage = this.state.reviewPage;
+      this.replayReviews();
+    }
+    if (this.lastDirLang !== this.state.lang) {
+      this.lastDirLang = this.state.lang;
+      // The carousel fans along the reading direction, so re-lay it out the
+      // moment the direction changes instead of waiting for the next tick.
+      this.layoutCarousel();
+    }
   }
 
   componentWillUnmount() {
+    clearInterval(this.reviewTimer);
+    document.removeEventListener('click', this.onCcOutside);
     window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('resize', this.onResize);
     window.removeEventListener('focus', this.onSiteFocus);
@@ -726,12 +1101,16 @@ class Component extends DCLogic {
     const kids = Array.prototype.slice.call(c.children);
     const n = kids.length;
     if (!n) return;
+    /* Fan the cards along the reading direction: the next card sits to the
+       right in LTR and to the left in RTL. Read from the document rather than
+       from state so it always matches the direction actually applied. */
+    const flow = document.documentElement.dir === 'rtl' ? -1 : 1;
     kids.forEach((el, i) => {
       let d = (i - this.active + n) % n;
       if (d > n / 2) d -= n;
       const a = Math.abs(d);
       // FIX: no per-card blur() — opacity and scale read the same and cost far less.
-      el.style.transform = 'translateX(50%) translateX(' + (d * 340) + 'px) translateY(' + (a * 22) + 'px) scale(' + Math.max(0.6, 1 - a * 0.16) + ')';
+      el.style.transform = 'translateX(50%) translateX(' + (d * 340 * flow) + 'px) translateY(' + (a * 22) + 'px) scale(' + Math.max(0.6, 1 - a * 0.16) + ')';
       el.style.opacity = String(a > 2 ? 0 : Math.max(0, 1 - a * 0.34));
       el.style.zIndex = String(20 - a);
       el.style.pointerEvents = a === 0 ? 'auto' : 'none';
@@ -839,9 +1218,11 @@ class Component extends DCLogic {
         const p = el.getAttribute('placeholder');
         if (p && EN_AR[p.trim()]) el.setAttribute('placeholder', EN_AR[p.trim()]);
       });
-      const wrap0 = scope.querySelector('[dir]');
-      if (wrap0) wrap0.setAttribute('dir', 'rtl');
+      scope.querySelectorAll('[data-dir-auto]').forEach((el) => el.setAttribute('dir', 'rtl'));
       document.documentElement.lang = 'ar';
+      document.documentElement.dir = 'rtl';
+      document.body.dir = 'rtl';
+      document.body.dataset.lang = 'ar';
       return;
     }
 
@@ -863,9 +1244,11 @@ class Component extends DCLogic {
       const p = el.getAttribute('placeholder');
       if (p && AR_EN[p.trim()]) el.setAttribute('placeholder', AR_EN[p.trim()]);
     });
-    const wrap = scope.querySelector('[dir]');
-    if (wrap) wrap.setAttribute('dir', 'ltr');
+    scope.querySelectorAll('[data-dir-auto]').forEach((el) => el.setAttribute('dir', 'ltr'));
     document.documentElement.lang = 'en';
+    document.documentElement.dir = 'ltr';
+    document.body.dir = 'ltr';
+    document.body.dataset.lang = 'en';
   }
 
   /* --------------------------------------------------------------- data ---
@@ -1034,8 +1417,42 @@ class Component extends DCLogic {
   }
 
   renderVals() {
+    const site = this.siteVals();
     return {
-      ...this.siteVals(),
+      sending: !!this.state.sending,
+      toastOn: !!this.state.submitted || !!this.state.sendError,
+      toastCls: 'site-toast ' + (this.state.sendError ? 'err' : 'ok'),
+      toastIcon: this.state.sendError ? 'ph-duotone ph-warning-circle' : 'ph-duotone ph-check-circle',
+      toastText: this.state.sendError
+        ? (this.state.sendError === 'NETWORK' ? 'تعذّر الاتصال بالخادم، حاولوا مجدداً' : this.state.sendError)
+        : 'تم استلام طلبكم، سنتواصل معكم قريباً',
+      setDemoForm: this.setDemoForm,
+      ...site,
+      ...this.reviewVals(site.siteVoices),
+      setTel: (el) => { this.els.tel = el; },
+      setPhoneFull: (el) => { this.els.phoneFull = el; },
+      ccOpen: !!this.state.phoneOpen,
+      ccWrapClass: 'tel' + (this.state.phoneOpen ? ' open' : ''),
+      ccMenuClass: 'tel-menu' + (this.state.phoneOpen ? ' open' : ''),
+      ccCode: (PHONE_CC.find((c) => c[0] === this.state.phoneIso) || PHONE_CC[0])[2],
+      ccFlag: 'fi fi-' + String(this.state.phoneIso || 'PS').toLowerCase(),
+      ccQuery: this.state.phoneQuery || '',
+      setReviews: this.setReviews,
+      setCcSearch: (el) => { this.els.ccSearch = el; },
+      ccToggle: () => {
+        const open = !this.state.phoneOpen;
+        this.setState({ phoneOpen: open, phoneQuery: '' });
+        // Let the menu render before reaching for its search box.
+        if (open) setTimeout(() => { const el = this.els.ccSearch; if (el) { try { el.focus(); } catch (err) {} } }, 30);
+      },
+      ccSearch: (e) => this.setState({ phoneQuery: e.target.value }),
+      ccList: this.ccFiltered().map((c) => ({
+        code: c[2], name: c[1],
+        flag: 'fi fi-' + c[0].toLowerCase(),
+        cls: 'tel-opt' + (c[0] === this.state.phoneIso ? ' on' : ''),
+        pick: () => this.setState({ phoneIso: c[0], phoneOpen: false, phoneQuery: '' })
+      })),
+      ccEmpty: this.ccFiltered().length === 0,
       setHeroBg: this.setHeroBg,
       setHeroText: this.setHeroText,
       setStats: this.setStats,

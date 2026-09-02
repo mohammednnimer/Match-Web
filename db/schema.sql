@@ -405,4 +405,36 @@ DO $$ BEGIN ALTER TYPE sector_kind ADD VALUE IF NOT EXISTS 'accounting'; EXCEPTI
 DO $$ BEGIN ALTER TYPE sector_kind ADD VALUE IF NOT EXISTS 'inventory';  EXCEPTION WHEN others THEN NULL; END $$;
 DO $$ BEGIN ALTER TYPE sector_kind ADD VALUE IF NOT EXISTS 'hr';         EXCEPTION WHEN others THEN NULL; END $$;
 
+-- ---------------------------------------------------------------------------
+-- demo_requests
+-- Leads submitted by the public form. Written by anonymous visitors, so every
+-- column is constrained at the database level rather than trusting the caller.
+-- ---------------------------------------------------------------------------
+DO $$ BEGIN
+  CREATE TYPE demo_status AS ENUM ('pending', 'contacted', 'completed', 'cancelled');
+EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+CREATE TABLE IF NOT EXISTS demo_requests (
+  id            bigserial PRIMARY KEY,
+  full_name     text        NOT NULL CHECK (length(btrim(full_name)) BETWEEN 2 AND 120),
+  email         text        NOT NULL CHECK (email ~ '^[^@[:space:]]+@[^@[:space:]]+\.[a-zA-Z]{2,}$'),
+  phone_number  text        NOT NULL CHECK (length(btrim(phone_number)) BETWEEN 5 AND 32),
+  company_name  text,
+  sector        text,
+  message       text        CHECK (message IS NULL OR length(message) <= 4000),
+  status        demo_status NOT NULL DEFAULT 'pending',
+  handled_by    text,
+  created_at    timestamptz NOT NULL DEFAULT now(),
+  updated_at    timestamptz NOT NULL DEFAULT now()
+);
+
+DROP TRIGGER IF EXISTS demo_requests_touch ON demo_requests;
+CREATE TRIGGER demo_requests_touch BEFORE UPDATE ON demo_requests
+  FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+
+-- The admin list is always newest-first, and filtering by status is the one
+-- query the dashboard runs constantly.
+CREATE INDEX IF NOT EXISTS demo_requests_created_idx ON demo_requests (created_at DESC);
+CREATE INDEX IF NOT EXISTS demo_requests_status_idx  ON demo_requests (status, created_at DESC);
+
 COMMIT;

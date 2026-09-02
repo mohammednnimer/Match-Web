@@ -29,6 +29,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/duotone/style.css">
 <link rel="stylesheet" href="https://unpkg.com/@phosphor-icons/web@2.1.1/src/bold/style.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flag-icons@7/css/flag-icons.min.css">
 <style>
   html { scroll-behavior: smooth; }
   body { margin: 0; background: #0a1128; color: #223f4d; font-family: 'IBM Plex Sans Arabic', sans-serif; overflow-x: hidden; }
@@ -36,6 +37,127 @@
   a:hover { color: #4e8b1f; }
   ::selection { background: rgba(0,153,222,.2); }
   *:focus-visible { outline: 2px solid #0099de; outline-offset: 3px; }
+
+  /* ---------------------------------------------------------------------
+     Demo request form on phones. Desktop is untouched: media query only.
+     --------------------------------------------------------------------- */
+  @media (max-width: 760px) {
+    /* The inner padding was eating most of the field width. */
+    #demo form, #contact form { padding: 22px 16px !important; gap: 14px !important; }
+
+    #demo form input, #demo form select, #demo form textarea,
+    #contact form input, #contact form select, #contact form textarea {
+      box-sizing: border-box !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      /* Anything under 16px makes iOS Safari zoom the page on focus, which
+         then leaves the layout scrolled sideways. */
+      font-size: 16px !important;
+    }
+
+    /* A full-width action reads better than a floating one on a narrow screen. */
+    #demo form button[type="submit"],
+    #contact form button[type="submit"] { width: 100% !important; }
+
+    /* The phone box and its dropdown have to stay inside the viewport. */
+    .tel { box-sizing: border-box !important; max-width: 100% !important; }
+    .tel-menu { width: min(300px, calc(100vw - 60px)) !important; }
+    .tel-input { font-size: 16px !important; }
+
+    .site-toast { inset-inline: 12px !important; bottom: 12px !important; max-width: none !important; }
+  }
+
+  @media (max-width: 560px) {
+    #demo, #contact { padding-inline: 14px !important; }
+    /* The label sits above its field; it does not need to reserve a column. */
+    #demo form label, #contact form label { gap: 6px !important; }
+  }
+  /* Submission feedback for the demo form. */
+  @keyframes toast-in { from { opacity: 0; transform: translateY(14px) } to { opacity: 1; transform: none } }
+  .site-toast { position: fixed; z-index: 200; inset-inline-end: 22px; bottom: 22px;
+    display: flex; align-items: center; gap: 10px; max-width: min(380px, 88vw);
+    padding: 14px 18px; border-radius: 14px; font-family: 'Cairo', sans-serif;
+    font-weight: 700; font-size: 14px; color: #ffffff; box-shadow: 0 18px 44px rgba(6,20,40,.30);
+    animation: toast-in .4s cubic-bezier(.16,1,.3,1) both; }
+  .site-toast.ok { background: linear-gradient(120deg, #16a34a, #15803d); }
+  .site-toast.err { background: linear-gradient(120deg, #dc2626, #b91c1c); }
+  .site-toast > i { font-size: 19px; flex: none; }
+  /* --- Reviews ----------------------------------------------------------
+     Three per view. The strip only becomes interactive when there is a
+     fourth review to reach. */
+  @keyframes rv-in { from { opacity: 0; transform: translateY(18px) scale(.985); filter: blur(4px) }
+                     to { opacity: 1; transform: none; filter: blur(0) } }
+  .rv-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+  .rv-grid > * { height: 100%; box-sizing: border-box; }
+  .rv-anim { animation: rv-in .55s cubic-bezier(.16,1,.3,1) both; }
+  .rv-nav { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: clamp(26px, 3vw, 38px); }
+  .rv-arrow { width: 38px; height: 38px; flex: none; border-radius: 50%; display: grid; place-items: center;
+    cursor: pointer; border: 1px solid #e2ebf0; background: #ffffff; color: #55747f; font: inherit;
+    transition: transform .3s cubic-bezier(.16,1,.3,1), box-shadow .3s ease, color .3s ease, border-color .3s ease; }
+  .rv-arrow:hover { transform: translateY(-2px); color: var(--rv-accent, #0099de);
+    border-color: var(--rv-accent, #0099de); box-shadow: 0 10px 24px rgba(15,43,52,.14); }
+  /* The buttons swap sides with the direction; the glyphs have to follow. */
+  [dir="ltr"] .rv-arrow > i { transform: scaleX(-1); }
+  .rv-dots { display: flex; align-items: center; gap: 8px; }
+  .rv-dot { width: 8px; height: 8px; padding: 0; flex: none; border: 0; border-radius: 999px; cursor: pointer;
+    background: #cbd8e0; transition: width .38s cubic-bezier(.16,1,.3,1), background .38s ease; }
+  .rv-dot:hover { background: #9fb4c0; }
+  .rv-dot.on { width: 26px; background: var(--rv-accent, #0099de); }
+  @media (max-width: 900px) { .rv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 760px) {
+    /* One at a time, swiped natively - no gesture library, no JS. */
+    .rv-grid { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: 86%;
+      overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 7%;
+      padding-bottom: 8px; -webkit-overflow-scrolling: touch; }
+    .rv-grid > * { scroll-snap-align: center; }
+  }
+  @media (prefers-reduced-motion: reduce) { .rv-anim { animation: none; } }
+  /* Flags come from flag-icons: one real SVG per country. 22x16.5 is exactly
+     4:3, the ratio the library's assets are authored at, so `contain` fills
+     the box with no letterboxing and no stretching. */
+  .tel .fi, .tel-opt .fi { flex: none; display: inline-block; width: 22px; height: 16.5px;
+    line-height: 0; border-radius: 2px; background-size: contain; background-position: 50%;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,.18), 0 0 0 1px rgba(255,255,255,.16); }
+  .tel .fi::before, .tel-opt .fi::before { content: none; }
+  /* --- Phone field ------------------------------------------------------
+     One rounded box holds the flag trigger, a divider, the dial code and the
+     number. The menu is toggled by class, not by sc-if, so the search input
+     keeps its focus and caret between keystrokes. */
+  .tel { position: relative; display: flex; align-items: center; box-sizing: border-box; }
+  .tel-trigger { display: flex; align-items: center; gap: 6px; flex: none; padding: 0;
+    margin-inline-end: 10px; border: 0; background: transparent; cursor: pointer; color: inherit; font: inherit; }
+  .tel-caret { font-size: 11px; opacity: .5; transition: transform .25s ease; }
+  .tel.open .tel-caret { transform: rotate(180deg); }
+  .tel-div { flex: none; width: 1px; align-self: stretch; margin: 3px 0; }
+  .tel-code { flex: none; padding-inline: 10px 8px; opacity: .72; direction: ltr;
+    unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+  .tel-input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent;
+    padding: 0; font: inherit; color: inherit; }
+  .tel-menu { position: absolute; z-index: 60; top: calc(100% + 8px); inset-inline-start: 0;
+    display: none; flex-direction: column; width: min(310px, 80vw); overflow: hidden; border-radius: 14px; }
+  .tel-menu.open { display: flex; }
+  .tel-search { display: flex; align-items: center; gap: 9px; padding: 11px 13px; }
+  .tel-search > i { font-size: 15px; opacity: .5; flex: none; }
+  .tel-search > input { flex: 1; min-width: 0; border: 0; outline: none; background: transparent;
+    font: inherit; font-size: 14px; color: inherit; }
+  .tel-list { display: flex; flex-direction: column; max-height: 238px; overflow-y: auto; padding: 6px; }
+  .tel-opt { display: flex; align-items: center; gap: 10px; width: 100%; box-sizing: border-box;
+    padding: 8px 10px; border: 0; border-radius: 9px; background: transparent; cursor: pointer;
+    font: inherit; font-size: 14px; color: inherit; text-align: start; }
+  .tel-opt:hover { background: rgba(127,127,127,.15); }
+  .tel-opt.on { background: rgba(127,127,127,.22); font-weight: 700; }
+  .tel-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tel-dial { flex: none; opacity: .62; direction: ltr; unicode-bidi: isolate; font-variant-numeric: tabular-nums; }
+  .tel-empty { padding: 16px; text-align: center; opacity: .6; font-size: 13px; }
+  /* A phone number is an LTR run: isolate it so RTL context cannot reorder
+     the digit groups or move the + to the wrong end. */
+  .phone-number { unicode-bidi: isolate; direction: ltr; white-space: nowrap; }
+  /* --- Direction ---------------------------------------------------------
+     Driven by the wrapper's dir attribute, not by a JS-set data attribute, so
+     the first paint is already correct. Explicit centring on a descendant
+     still wins; only start/end alignment follows the language. */
+  [data-dir-auto] { text-align: start; }
+  input, textarea, select { text-align: start; }
   /* The accent half of the wordmark follows the navbar between its dark and
      white states. Both tones clear WCAG AA against their own background. */
   .brand-accent { color: var(--brand-accent, #5ea82c); transition: color .25s ease; }
@@ -147,24 +269,24 @@
     nav { padding: 14px 20px !important; }
     nav > div { gap: 12px !important; }
     nav > div > a:not(:last-child):not(.nav-home) { display: none !important; }
-    .timeline-spine { left: auto !important; inset-inline-start: 23px !important; transform: none !important; }
-    .timeline-item { grid-template-columns: 48px minmax(0, 1fr) !important; min-height: 170px !important; }
-    .timeline-item > div:first-child { grid-column: 2 !important; text-align: start !important; padding: 22px 0 !important; padding-inline: 4px 0 !important; }
+    .timeline-spine { left: auto !important; inset-inline-start: 31px !important; transform: none !important; }
+    .timeline-item { grid-template-columns: 64px minmax(0, 1fr) !important; min-height: 170px !important; }
+    .timeline-item > div:first-child { grid-column: 2 !important; text-align: start !important; padding: 22px 0 !important; padding-inline: 16px 0 !important; }
     .timeline-item > div:nth-child(2) { grid-column: 1 !important; }
     #demo > div { grid-template-columns: 1fr !important; gap: 34px !important; }
   }
 </style>
 </helmet>
 
-<div dir="rtl" style="position: relative; background: #0a1128; overflow-x: clip;">
+<div dir="rtl" data-dir-auto style="position: relative; background: #0a1128; overflow-x: clip;">
 
   <nav ref="{{ setNav }}" style="--brand-accent: #5ea82c; position: fixed; inset: 0 0 auto 0; z-index: 90; display: flex; align-items: center; justify-content: space-between; gap: 28px; padding: 15px 44px; background: rgba(10,17,40,.9); border-bottom: 1px solid rgba(0,153,222,.22); color: #dbe7f3; backdrop-filter: blur(20px); transition: background .5s ease, border-color .5s ease, color .5s ease;">
-    <a href="Match%20Systems%20Landing.dc.html" title="الصفحة الرئيسية" style="display: flex; align-items: center; gap: 12px; color: inherit; cursor: pointer;">
+    <a href="index.html" title="الصفحة الرئيسية" style="display: flex; align-items: center; gap: 12px; color: inherit; cursor: pointer;">
       <img src="uploads/pasted-1787471797548-0.png" alt="Match Education" style="width: 42px; height: 42px; object-fit: contain; filter: drop-shadow(0 0 12px rgba(0,153,222,.32));">
       <span style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 18px;">Match<span class="brand-accent">Education</span></span>
     </a>
     <div style="display: flex; align-items: center; gap: 28px; font-size: 15px;">
-      <a class="nav-home" href="Match%20Systems%20Landing.dc.html" style="display: inline-flex; align-items: center; gap: 7px; color: inherit; font-family: 'Cairo', sans-serif; font-weight: 700;" style-hover="color: #0099de;"><i class="ph-duotone ph-house" style="font-size: 17px;"></i>الصفحة الرئيسية</a>
+      <a class="nav-home" href="index.html" style="display: inline-flex; align-items: center; gap: 7px; color: inherit; font-family: 'Cairo', sans-serif; font-weight: 700;" style-hover="color: #0099de;"><i class="ph-duotone ph-house" style="font-size: 17px;"></i>الصفحة الرئيسية</a>
       <a href="#roles" style="color: inherit;" style-hover="color: #0099de;">البوابات</a>
       <a href="#connect" style="color: inherit;" style-hover="color: #0099de;">التواصل</a>
       <a href="#modules" style="color: inherit;" style-hover="color: #0099de;">الركائز</a>
@@ -439,9 +561,9 @@
         <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(28px, 3vw, 46px); margin: 0 0 14px; color: #0f172a; text-wrap: pretty;">ماذا تقول المدارس عن المنظومة</h2>
         <p style="color: #475569; font-size: 17px; font-weight: 300; line-height: 1.85; margin: 0 0 clamp(44px, 4.4vw, 66px); max-width: 560px;">تجارب حقيقية من مدارس اعتمدت المنظومة في إدارتها اليومية.</p>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 20px;">
-          <sc-for list="{{ eduVoices }}" as="v" hint-placeholder-count="3">
-            <div class="voice-card" style="position: relative; display: flex; flex-direction: column; gap: 18px; padding: 28px; border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0; border-inline-start: 3px solid {{ v.accent }}; transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 18px 40px rgba(15,23,42,.08);">
+        <div class="rv-grid" ref="{{ setReviews }}">
+          <sc-for list="{{ reviewSlice }}" as="v" hint-placeholder-count="3">
+            <div class="voice-card rv-anim" style="position: relative; display: flex; flex-direction: column; gap: 18px; padding: 28px; border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0; border-inline-start: 3px solid {{ v.accent }}; transition: transform .45s cubic-bezier(.16,1,.3,1), box-shadow .45s ease;" style-hover="transform: translateY(-5px); box-shadow: 0 18px 40px rgba(15,23,42,.08);">
               <i class="ph-duotone ph-quotes" style="font-size: 30px; color: {{ v.accent }}; opacity: .55;"></i>
               <p style="margin: 0; color: #334155; font-size: 15.5px; line-height: 1.95; font-weight: 300; flex: 1;">{{ v.body }}</p>
               <div style="font-size: 15px; letter-spacing: .16em; color: #f0a92b;">{{ v.stars }}</div>
@@ -455,6 +577,21 @@
             </div>
           </sc-for>
         </div>
+              <sc-if value="{{ reviewPaged }}" hint-placeholder-val="{{ true }}">
+                <div class="rv-nav" style="--rv-accent: #0099de;">
+                  <button type="button" class="rv-arrow" onClick="{{ reviewPrev }}" aria-label="Previous reviews">
+                    <i class="ph-bold ph-caret-right" style="font-size: 15px;"></i>
+                  </button>
+                  <span class="rv-dots">
+                    <sc-for list="{{ reviewDots }}" as="d" hint-placeholder-count="3">
+                      <button type="button" class="{{ d.cls }}" onClick="{{ d.go }}" aria-label="{{ d.label }}"></button>
+                    </sc-for>
+                  </span>
+                  <button type="button" class="rv-arrow" onClick="{{ reviewNext }}" aria-label="Next reviews">
+                    <i class="ph-bold ph-caret-left" style="font-size: 15px;"></i>
+                  </button>
+                </div>
+              </sc-if>
 
         <sc-if value="{{ siteLoading }}" hint-placeholder-val="{{ false }}">
           <div style="display: flex; align-items: center; gap: 12px; padding: 26px; border-radius: 18px; background: #f5f9fb; border: 1px solid #e2ebf0; color: #64748b; font-size: 14px;">
@@ -481,31 +618,73 @@
           <h2 style="font-family: 'Cairo', sans-serif; font-weight: 800; font-size: clamp(26px, 2.7vw, 40px); margin: 0 0 18px; color: #14313c; line-height: 1.35;">شاهدوا بياناتكم في على النظام </h2>
           <p style="color: #55747f; font-size: 16px; line-height: 1.9; font-weight: 300; margin: 0 0 30px;">جلسة مدتها ثلاثون دقيقة نستعرض فيها البوابات الخمس والوحدات التي تحتاجونها.</p>
           <div style="display: flex; flex-direction: column; gap: 14px; font-size: 15px; color: #44646f;">
-            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-envelope-simple" style="font-size: 21px; color: #0099de;"></i>info@matchprosys.com</div>
-            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-phone" style="font-size: 21px; color: #0099de;"></i>+970 593 081 003</div>
+            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-envelope-simple" style="font-size: 21px; color: #0099de;"></i>info@matchsystems.com</div>
+            <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-phone" style="font-size: 21px; color: #0099de;"></i><span dir="ltr" class="phone-number">+970 593 081 003</span></div>
             <div style="display: flex; align-items: center; gap: 13px;"><i class="ph-duotone ph-clock" style="font-size: 21px; color: #4e8b1f;"></i>رد خلال يوم عمل واحد</div>
           </div>
         </div>
-        <form onSubmit="{{ onSubmit }}" style="display: grid; gap: 16px; padding: 34px; border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0;">
-          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">اسم المدرسة
-            <input type="text" placeholder="اكتب اسم المدرسة" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; transition: border-color .25s ease, box-shadow .25s ease;" style-focus="border-color: #0099de; box-shadow: 0 0 16px rgba(0,153,222,.2);">
+        <form onSubmit="{{ onSubmit }}" ref="{{ setDemoForm }}" style="display: grid; gap: 16px; padding: 34px; border-radius: 20px; background: #f5f9fb; border: 1px solid #e2ebf0;">
+          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">الاسم الكامل
+            <input type="text" name="full_name" placeholder="اكتب اسمك" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; transition: border-color .25s ease, box-shadow .25s ease;">
           </label>
           <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">البريد الإلكتروني
-            <input type="email" placeholder="name@school.edu" dir="ltr" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; text-align: right; transition: border-color .25s ease, box-shadow .25s ease;" style-focus="border-color: #0099de; box-shadow: 0 0 16px rgba(0,153,222,.2);">
+            <input type="email" name="email" placeholder="name@school.edu" dir="ltr" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; transition: border-color .25s ease, box-shadow .25s ease;" style-focus="border-color: #0099de; box-shadow: 0 0 16px rgba(0,153,222,.2);">
           </label>
-          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">عدد الطلاب
-            <select style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none;" style-focus="border-color: #0099de;">
-              <option>أقل من 300</option>
-              <option>300 - 800</option>
-              <option>800 - 2000</option>
-              <option>أكثر من 2000</option>
+          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">اسم الشركة
+            <input type="text" name="company_name" placeholder="اكتب اسم الشركة" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; transition: border-color .25s ease, box-shadow .25s ease;">
+          </label>
+          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">القطاع المطلوب
+            <select name="sector" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; transition: border-color .25s ease, box-shadow .25s ease;">
+              <option value="education" selected>القطاع التعليمي</option>
+              <option value="distribution">قطاع التوزيع</option>
+              <option value="accounting">المحاسبة والمالية</option>
+              <option value="hr">الموارد البشرية</option>
+              <option value="inventory">إدارة المخزون</option>
+              <option value="health">القطاع الصحي</option>
+              <option value="general">قطاع آخر</option>
             </select>
           </label>
-          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">الوحدات التي تهمكم
-            <textarea rows="3" placeholder="مثال: الحضور، العلامات، الرسوم المالية" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; resize: vertical; transition: border-color .25s ease, box-shadow .25s ease;" style-focus="border-color: #0099de; box-shadow: 0 0 16px rgba(0,153,222,.2);"></textarea>
+          <div style="display: grid; gap: 8px; font-size: 14px; color: #55747f;"><span>رقم الجوال</span>
+            <span class="{{ ccWrapClass }}" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px;">
+              <button type="button" class="tel-trigger" onClick="{{ ccToggle }}" aria-haspopup="listbox" aria-label="Country code">
+                <span class="{{ ccFlag }}"></span>
+                <i class="ph-bold ph-caret-down tel-caret" aria-hidden="true"></i>
+              </button>
+              <span class="tel-div" aria-hidden="true" style="background: #dbe7ee;"></span>
+              <span class="tel-code" dir="ltr">{{ ccCode }}</span>
+              <input type="tel" class="tel-input" name="phone_national" ref="{{ setTel }}" placeholder="59 123 4567" dir="ltr" inputmode="tel">
+              <input type="hidden" name="phone" ref="{{ setPhoneFull }}">
+
+              <span class="{{ ccMenuClass }}" role="listbox" style="background: #ffffff; border: 1px solid #dbe7ee; box-shadow: 0 22px 50px rgba(15,43,52,.20);">
+                <span class="tel-search" style="border-bottom: 1px solid #dbe7ee;">
+                  <i class="ph-bold ph-magnifying-glass" aria-hidden="true"></i>
+                  <input type="text" placeholder="Search country..." value="{{ ccQuery }}" onInput="{{ ccSearch }}" ref="{{ setCcSearch }}" dir="ltr">
+                </span>
+                <span class="tel-list">
+                  <sc-for list="{{ ccList }}" as="c" hint-placeholder-count="6">
+                    <button type="button" class="{{ c.cls }}" onClick="{{ c.pick }}" role="option">
+                      <span class="{{ c.flag }}"></span>
+                      <span class="tel-name" dir="ltr">{{ c.name }}</span>
+                      <span class="tel-dial" dir="ltr">{{ c.code }}</span>
+                    </button>
+                  </sc-for>
+                  <sc-if value="{{ ccEmpty }}" hint-placeholder-val="{{ false }}">
+                    <span class="tel-empty">No match</span>
+                  </sc-if>
+                </span>
+              </span>
+            </span>
+          </div>
+          <label style="display: grid; gap: 8px; font-size: 14px; color: #55747f;">وصف الطلب
+            <textarea name="message" rows="3" placeholder="اشرحوا لنا احتياجكم أو تفاصيل المشروع" style="padding: 13px 15px; border-radius: 11px; background: #ffffff; border: 1px solid #dbe7ee; color: #14313c; font-family: inherit; font-size: 15px; outline: none; resize: vertical; transition: border-color .25s ease, box-shadow .25s ease;"></textarea>
           </label>
           <button type="submit" style="margin-top: 4px; padding: 15px 26px; border-radius: 11px; border: none; background: #7bc643; color: #0f2733; font-family: 'Cairo', sans-serif; font-weight: 800; font-size: 16px; cursor: pointer; box-shadow: 0 0 24px rgba(123,198,67,.32); transition: transform .3s cubic-bezier(.16,1,.3,1), background .25s ease, box-shadow .3s ease;" style-hover="transform: translateY(-3px); background: #91d957; box-shadow: 0 0 32px rgba(123,198,67,.5);" style-active="transform: translateY(0);">{{ submitLabel }}</button>
         </form>
+        <sc-if value="{{ toastOn }}" hint-placeholder-val="{{ false }}">
+          <div class="{{ toastCls }}" role="status">
+            <i class="{{ toastIcon }}" aria-hidden="true"></i><span>{{ toastText }}</span>
+          </div>
+        </sc-if>
       </div>
     </section>
 
@@ -528,6 +707,27 @@
 </div>
 </x-dc>
 <script type="text/x-dc" data-dc-script data-props="{}">
+const PAGE_SECTOR = 'education';
+
+const PHONE_CC = [
+  ['PS', 'Palestine', '+970'], ['SA', 'Saudi Arabia', '+966'], ['AE', 'United Arab Emirates', '+971'], ['JO', 'Jordan', '+962'],
+  ['EG', 'Egypt', '+20'], ['KW', 'Kuwait', '+965'], ['QA', 'Qatar', '+974'], ['BH', 'Bahrain', '+973'],
+  ['OM', 'Oman', '+968'], ['LB', 'Lebanon', '+961'], ['SY', 'Syria', '+963'], ['IQ', 'Iraq', '+964'],
+  ['YE', 'Yemen', '+967'], ['LY', 'Libya', '+218'], ['TN', 'Tunisia', '+216'], ['DZ', 'Algeria', '+213'],
+  ['MA', 'Morocco', '+212'], ['SD', 'Sudan', '+249'], ['MR', 'Mauritania', '+222'], ['SO', 'Somalia', '+252'],
+  ['DJ', 'Djibouti', '+253'], ['KM', 'Comoros', '+269'], ['TR', 'Turkiye', '+90'], ['IR', 'Iran', '+98'],
+  ['PK', 'Pakistan', '+92'], ['IN', 'India', '+91'], ['BD', 'Bangladesh', '+880'], ['ID', 'Indonesia', '+62'],
+  ['MY', 'Malaysia', '+60'], ['SG', 'Singapore', '+65'], ['CN', 'China', '+86'], ['JP', 'Japan', '+81'],
+  ['KR', 'South Korea', '+82'], ['US', 'United States', '+1'], ['CA', 'Canada', '+1'], ['GB', 'United Kingdom', '+44'],
+  ['IE', 'Ireland', '+353'], ['FR', 'France', '+33'], ['DE', 'Germany', '+49'], ['IT', 'Italy', '+39'],
+  ['ES', 'Spain', '+34'], ['PT', 'Portugal', '+351'], ['NL', 'Netherlands', '+31'], ['BE', 'Belgium', '+32'],
+  ['CH', 'Switzerland', '+41'], ['AT', 'Austria', '+43'], ['SE', 'Sweden', '+46'], ['NO', 'Norway', '+47'],
+  ['DK', 'Denmark', '+45'], ['FI', 'Finland', '+358'], ['PL', 'Poland', '+48'], ['RO', 'Romania', '+40'],
+  ['GR', 'Greece', '+30'], ['RU', 'Russia', '+7'], ['UA', 'Ukraine', '+380'], ['AU', 'Australia', '+61'],
+  ['NZ', 'New Zealand', '+64'], ['ZA', 'South Africa', '+27'], ['NG', 'Nigeria', '+234'], ['KE', 'Kenya', '+254'],
+  ['BR', 'Brazil', '+55'], ['AR', 'Argentina', '+54'], ['MX', 'Mexico', '+52'], ['CL', 'Chile', '+56'],
+];
+
 const ROLES = [
   { key: 'admin', label: 'مدير المدرسة', en: 'Administrator', icon: 'ph-duotone ph-user-gear',
     desc: 'صورة كاملة عن المدرسة في لوحة واحدة، مع صلاحية القرار على المسار الأكاديمي والمالي. يتابع الأداء العام ويتخذ قراراته بثقة من مساحة عمل مركزية.',
@@ -745,6 +945,32 @@ function initialsOf(text) {
 }
 
 const I18N = {
+  /* sector selector */
+  'القطاع المطلوب': 'Sector',
+  'القطاع التعليمي': 'Education',
+  'قطاع التوزيع': 'Distribution',
+  'المحاسبة والمالية': 'Accounting & Finance',
+  'الموارد البشرية': 'Human Resources',
+  'إدارة المخزون': 'Inventory',
+  'القطاع الصحي': 'Healthcare',
+  'قطاع آخر': 'Other',
+  /* demo request feedback */
+  'تم استلام طلبكم، سنتواصل معكم قريباً': 'Your request has been received, we will contact you shortly',
+  'تعذّر الاتصال بالخادم، حاولوا مجدداً': 'Could not reach the server, please try again',
+  'جارٍ الإرسال…': 'Sending…',
+  /* UI strings the walker also has to cover */
+  'عربي': 'Arabic',
+  'وحدة': 'module',
+  'تم إرسال طلبكم ✓': 'Your request has been sent ✓',
+  'احصل على العرض الكامل': 'Get the full demo',
+  /* footer contact form */
+  'الاسم الكامل': 'Full Name',
+  'اكتب اسمك': 'Enter your name',
+  'اسم الشركة': 'Company Name',
+  'اكتب اسم الشركة': 'Enter the company name',
+  'رقم الجوال': 'Phone Number',
+  'وصف الطلب': 'Description',
+  'اشرحوا لنا احتياجكم أو تفاصيل المشروع': 'Tell us what you need, or the details of your project',
   /* added so the language toggle covers every rendered string */
   'طلب عرض': 'Request a Demo',
   '© 2026 Match Systems. جميع الحقوق محفوظة.': '© 2026 Match Systems. All rights reserved.',
@@ -828,12 +1054,20 @@ const I18N = {
 const I18N_REVERSE = Object.keys(I18N).reduce((map, ar) => { map[I18N[ar]] = ar; return map; }, {});
 
 class Component extends DCLogic {
-  state = { role: 'admin', group: 0, chunk: 0, submitted: false, lang: 'ar',
+  state = { reviewPage: 0, phoneIso: 'PS', phoneOpen: false, phoneQuery: '',  role: 'admin', group: 0, chunk: 0, submitted: false, lang: 'ar',
     siteClients: [], siteVoices: [], siteStats: [], siteLoading: true, siteError: '' };
 
   constructor(props) {
     super(props);
     this.els = {};
+    this.setDemoForm = (el) => { this.els.demoForm = el; };
+    this.setReviews = (el) => {
+      if (this.els.reviews === el) return;    // same node, listeners already on
+      this.els.reviews = el;
+      if (!el) return;
+      el.addEventListener('pointerenter', () => { this.reviewHold = true; });
+      el.addEventListener('pointerleave', () => { this.reviewHold = false; });
+    };
     this.active = 0;
     this.setCarousel = (el) => { this.els.carousel = el; this.layoutCarousel(); };
     this.setHeroBg = (el) => { this.els.heroBg = el; };
@@ -846,10 +1080,18 @@ class Component extends DCLogic {
     this.setSpineGradient = (el) => { this.els.spineGradient = el; };
     this.setSpineHead = (el) => { this.els.spineHead = el; };
     this.applyLang = (next) => {
+      const rtl = next !== 'en';
       document.documentElement.lang = next;
-      document.documentElement.dir = next === 'en' ? 'ltr' : 'rtl';
-      document.body.dir = next === 'en' ? 'ltr' : 'rtl';
+      document.documentElement.dir = rtl ? 'rtl' : 'ltr';
+      document.body.dir = rtl ? 'rtl' : 'ltr';
       document.body.dataset.lang = next;
+      /* Every container that follows the page language is tagged. A single
+         querySelector missed nested ones, which then kept their old direction
+         and their old alignment. Elements pinned to LTR on purpose (phone
+         numbers, dial codes, e-mail fields) carry no marker. */
+      document.querySelectorAll('[data-dir-auto]').forEach((el) => {
+        el.setAttribute('dir', rtl ? 'rtl' : 'ltr');
+      });
       const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
       const nodes = [];
       while (walker.nextNode()) nodes.push(walker.currentNode);
@@ -871,14 +1113,148 @@ class Component extends DCLogic {
       this.applyLang(next);
       this.setState({ lang: next });
     };
-    this.onSubmit = (e) => {
+    this.onSubmit = async (e) => {
       e.preventDefault();
-      this.setState({ submitted: true });
-      setTimeout(() => this.setState({ submitted: false }), 3200);
+      if (this.state.sending) return;
+      const form = this.els.demoForm;
+      const val = (n) => {
+        const el = form && form.querySelector('[name="' + n + '"]');
+        return el ? String(el.value || '').trim() : '';
+      };
+      /* The dial code lives in component state, the digits in the input. */
+      const cc = (PHONE_CC.find((c) => c[0] === this.state.phoneIso) || PHONE_CC[0])[2];
+      const local = val('phone_national').replace(/[^0-9]/g, '').replace(/^0+/, '');
+      const payload = {
+        full_name: val('full_name'),
+        email: val('email'),
+        phone_number: local ? cc + local : '',
+        company_name: val('company_name'),
+        // The visitor's choice wins; the page's own sector is only a fallback
+        // for a browser that somehow submits without the field.
+        sector: val('sector') || PAGE_SECTOR,
+        message: val('message')
+      };
+
+      this.setState({ sending: true, sendError: '', submitted: false });
+      try {
+        const res = await fetch(SITE_API.BASE_URL + '/demo-requests', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        let data = null;
+        try { data = await res.json(); } catch (err) { /* empty body */ }
+        if (!res.ok) {
+          /* 422 carries per-field messages; surface the first one so the
+             visitor knows which box to fix. */
+          const d = data && data.detail;
+          const msg = d && d.fields && d.fields.length ? d.fields[0].message
+            : (d && d.message) || (typeof d === 'string' ? d : '') || ('HTTP ' + res.status);
+          throw new Error(msg);
+        }
+        if (form && form.reset) form.reset();
+        this.setState({ sending: false, submitted: true, sendError: '' });
+        setTimeout(() => this.setState({ submitted: false }), 4500);
+      } catch (err) {
+        const offline = err && (err.name === 'TypeError' || !err.message);
+        this.setState({
+          sending: false,
+          submitted: false,
+          sendError: offline ? 'NETWORK' : String(err.message)
+        });
+        setTimeout(() => this.setState({ sendError: '' }), 6000);
+      }
     };
   }
 
+  /* Countries matching the search box, by name or by dial code. */
+  ccFiltered() {
+    const q = String(this.state.phoneQuery || '').trim().toLowerCase();
+    if (!q) return PHONE_CC;
+    return PHONE_CC.filter((c) => c[1].toLowerCase().indexOf(q) >= 0 ||
+      c[2].indexOf(q) >= 0 || c[0].toLowerCase() === q);
+  }
+
+  /* Three reviews to a page. Controls and the timer only exist once there is
+     a fourth review to reach. */
+  reviewVals(list) {
+    const all = list || [];
+    const per = 3;
+    const pages = Math.max(1, Math.ceil(all.length / per));
+    const page = Math.min(Math.max(0, this.state.reviewPage || 0), pages - 1);
+    const start = page * per;
+    const dots = [];
+    for (let i = 0; i < pages; i += 1) {
+      dots.push({
+        cls: 'rv-dot' + (i === page ? ' on' : ''),
+        label: 'Reviews page ' + (i + 1),
+        go: ((n) => () => this.gotoReview(n))(i)
+      });
+    }
+    return {
+      reviewSlice: all.slice(start, start + per),
+      reviewPaged: all.length > per,
+      reviewDots: dots,
+      reviewPrev: () => this.gotoReview((page - 1 + pages) % pages),
+      reviewNext: () => this.gotoReview((page + 1) % pages)
+    };
+  }
+
+  /* Pages, not cards: wrap the index and keep it inside the real page count
+     so a shrinking review list cannot leave a stale index behind. */
+  reviewPageCount() {
+    return Math.max(1, Math.ceil(((this.state.siteVoices || []).length) / 3));
+  }
+
+  gotoReview(i) {
+    const pages = this.reviewPageCount();
+    const next = ((i % pages) + pages) % pages;
+    /* Once the reader drives the carousel, the timer stops for good: an
+       auto-advance on top of a manual choice is never what was wanted. */
+    clearInterval(this.reviewTimer);
+    this.reviewTimer = null;
+    if (next === (this.state.reviewPage || 0)) return;
+    this.setState({ reviewPage: next });
+  }
+
+  /* Cards are reused nodes, so the entrance has to be restarted by hand the
+     same way the page swap does elsewhere on this page. */
+  replayReviews() {
+    const cards = document.querySelectorAll('.rv-grid > *');
+    cards.forEach((el, i) => {
+      el.classList.remove('rv-anim');
+      void el.offsetWidth;                     // flush the removal
+      el.style.animationDelay = (i * 70) + 'ms';
+      el.classList.add('rv-anim');
+    });
+  }
+
+  startReviewRotation() {
+    clearInterval(this.reviewTimer);
+    this.reviewTimer = setInterval(() => {
+      // Never rotate under the reader's cursor, or in a background tab.
+      if (document.hidden || this.reviewHold) return;
+      const total = (this.state.siteVoices || []).length;
+      if (total <= 3) return;
+      const pages = Math.ceil(total / 3);
+      /* Advance from the index actually on screen, not from a stale one. */
+      this.setState((s) => {
+        const shown = Math.min(Math.max(0, s.reviewPage || 0), pages - 1);
+        return { reviewPage: (shown + 1) % pages };
+      });
+    }, 7000);
+  }
+
   componentDidMount() {
+    this.startReviewRotation();
+    /* Any click that is not inside the picker closes it. */
+    this.onCcOutside = (e) => {
+      if (!this.state.phoneOpen) return;
+      const t = e.target;
+      if (t && t.closest && t.closest('.tel')) return;
+      this.setState({ phoneOpen: false });
+    };
+    document.addEventListener('click', this.onCcOutside);
     this.onScroll = () => {
       if (this.raf) return;
       this.raf = requestAnimationFrame(() => {
@@ -959,6 +1335,7 @@ class Component extends DCLogic {
   }
 
   componentDidUpdate(prev) {
+    if (prev && prev.reviewPage !== this.state.reviewPage) this.replayReviews();
     this.setupReveals();
     if (this.onScroll) this.onScroll();
     if (this.state.lang === 'en') this.applyLang('en');
@@ -980,6 +1357,8 @@ class Component extends DCLogic {
   }
 
   componentWillUnmount() {
+    clearInterval(this.reviewTimer);
+    document.removeEventListener('click', this.onCcOutside);
     window.removeEventListener('scroll', this.onScroll);
     window.removeEventListener('pointermove', this.onTilt);
     this.unbindSiteSync();
@@ -1004,10 +1383,24 @@ class Component extends DCLogic {
       }, { threshold: 0.05, rootMargin: '0px 0px -50px 0px' });
     }
     const sel = '#roles > div > p, #roles > div > h2, #roles > div > div > div:not(.rc-grid), #connect > div > p, #connect > div > h2, #connect .cx-orbit, #connect .cx-feat, #modules > div > p, #modules > div > h2, #modules .timeline-item, #metrics .metric-card, #clients > div > p, #clients > div > h2, #voices > div > p, #voices > div > h2, #voices .voice-card, #demo > div > div, footer > div > div';
+    /* First pass animates everything. Later passes must not re-hide nodes the
+       reader is already looking at - that is what made the page flash. */
+    const firstPass = !this.revealsRan;
+    this.revealsRan = true;
+    const vh = window.innerHeight || 0;
     const seen = new Map();
     document.querySelectorAll(sel).forEach((el) => {
       if (el.dataset.rev) return;
       el.dataset.rev = '1';
+      if (!firstPass) {
+        const box = el.getBoundingClientRect();
+        if (box.top < vh && box.bottom > 0) {
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+          el.style.filter = 'blur(0)';
+          return;                       // already visible: show it, do not replay
+        }
+      }
       const p = el.parentElement;
       const i = seen.get(p) || 0;
       seen.set(p, i + 1);
@@ -1170,8 +1563,42 @@ class Component extends DCLogic {
   }
 
   renderVals() {
+    const site = this.siteVals();
     return {
-      ...this.siteVals(),
+      sending: !!this.state.sending,
+      toastOn: !!this.state.submitted || !!this.state.sendError,
+      toastCls: 'site-toast ' + (this.state.sendError ? 'err' : 'ok'),
+      toastIcon: this.state.sendError ? 'ph-duotone ph-warning-circle' : 'ph-duotone ph-check-circle',
+      toastText: this.state.sendError
+        ? (this.state.sendError === 'NETWORK' ? 'تعذّر الاتصال بالخادم، حاولوا مجدداً' : this.state.sendError)
+        : 'تم استلام طلبكم، سنتواصل معكم قريباً',
+      setDemoForm: this.setDemoForm,
+      ...site,
+      ...this.reviewVals(site.eduVoices),
+      setTel: (el) => { this.els.tel = el; },
+      setPhoneFull: (el) => { this.els.phoneFull = el; },
+      ccOpen: !!this.state.phoneOpen,
+      ccWrapClass: 'tel' + (this.state.phoneOpen ? ' open' : ''),
+      ccMenuClass: 'tel-menu' + (this.state.phoneOpen ? ' open' : ''),
+      ccCode: (PHONE_CC.find((c) => c[0] === this.state.phoneIso) || PHONE_CC[0])[2],
+      ccFlag: 'fi fi-' + String(this.state.phoneIso || 'PS').toLowerCase(),
+      ccQuery: this.state.phoneQuery || '',
+      setReviews: this.setReviews,
+      setCcSearch: (el) => { this.els.ccSearch = el; },
+      ccToggle: () => {
+        const open = !this.state.phoneOpen;
+        this.setState({ phoneOpen: open, phoneQuery: '' });
+        // Let the menu render before reaching for its search box.
+        if (open) setTimeout(() => { const el = this.els.ccSearch; if (el) { try { el.focus(); } catch (err) {} } }, 30);
+      },
+      ccSearch: (e) => this.setState({ phoneQuery: e.target.value }),
+      ccList: this.ccFiltered().map((c) => ({
+        code: c[2], name: c[1],
+        flag: 'fi fi-' + c[0].toLowerCase(),
+        cls: 'tel-opt' + (c[0] === this.state.phoneIso ? ' on' : ''),
+        pick: () => this.setState({ phoneIso: c[0], phoneOpen: false, phoneQuery: '' })
+      })),
+      ccEmpty: this.ccFiltered().length === 0,
       setCarousel: this.setCarousel,
       setHeroBg: this.setHeroBg,
       setHeroText: this.setHeroText,
@@ -1188,7 +1615,8 @@ class Component extends DCLogic {
         const on = r.key === this.state.role;
         return {
           label: r.label, icon: r.icon,
-          pick: () => this.setState({ role: r.key }),
+          // Re-selecting the active tab must not cost a render.
+          pick: () => { if (this.state.role !== r.key) this.setState({ role: r.key }); },
           style: 'display: inline-flex; align-items: center; gap: 10px; padding: 13px 21px; border-radius: 12px; cursor: pointer; font-family: Cairo, sans-serif; font-weight: 700; font-size: 15px; border: 1px solid ' + (on ? '#0099de' : '#e2ebf0') + '; background: ' + (on ? '#0099de' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#44646f') + '; box-shadow: ' + (on ? '0 0 24px rgba(0,153,222,.4)' : 'none') + '; transform: ' + (on ? 'translateY(-3px)' : 'none') + '; transition: transform .35s cubic-bezier(.16,1,.3,1), background .3s ease, box-shadow .3s ease, color .3s ease, border-color .3s ease;'
         };
       }),
@@ -1208,7 +1636,7 @@ class Component extends DCLogic {
         return {
           ar: x.ar, en: x.en, num: String(i + 1), count: x.items.length + ' وحدة',
           pick: () => this.setState({ group: i, chunk: 0 }),
-          style: 'position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; padding: 15px 16px; border-radius: 14px; cursor: pointer; text-align: right; font-family: inherit; border: 1px solid ' + (on ? '#0099de' : 'transparent') + '; background: ' + (on ? '#ffffff' : 'transparent') + '; box-shadow: ' + (on ? '0 10px 26px rgba(0,153,222,.16), 0 0 20px rgba(0,153,222,.14)' : 'none') + '; transition: background .3s ease, border-color .3s ease, box-shadow .3s ease, transform .3s cubic-bezier(.16,1,.3,1); transform: ' + (on ? 'translateX(-4px)' : 'none') + ';',
+          style: 'position: relative; z-index: 1; display: flex; align-items: center; gap: 14px; padding: 15px 16px; border-radius: 14px; cursor: pointer; text-align: start; font-family: inherit; border: 1px solid ' + (on ? '#0099de' : 'transparent') + '; background: ' + (on ? '#ffffff' : 'transparent') + '; box-shadow: ' + (on ? '0 10px 26px rgba(0,153,222,.16), 0 0 20px rgba(0,153,222,.14)' : 'none') + '; transition: background .3s ease, border-color .3s ease, box-shadow .3s ease, transform .3s cubic-bezier(.16,1,.3,1); transform: ' + (on ? 'translateX(-4px)' : 'none') + ';',
           nodeStyle: 'width: 44px; height: 44px; border-radius: 50%; flex: none; display: grid; place-items: center; font-family: Cairo, sans-serif; font-weight: 800; font-size: 16px; border: 2px solid ' + (on ? '#0099de' : '#e2ebf0') + '; background: ' + (on ? '#0099de' : '#ffffff') + '; color: ' + (on ? '#ffffff' : '#5c7a86') + '; box-shadow: ' + (on ? '0 0 18px rgba(0,153,222,.5)' : 'none') + '; transition: all .3s ease;',
           titleStyle: 'display: block; font-family: Cairo, sans-serif; font-weight: 700; font-size: 16px; color: ' + (on ? '#14313c' : '#44646f') + ';',
           countStyle: 'flex: none; font-size: 11px; padding: 5px 10px; border-radius: 999px; background: ' + (on ? 'rgba(123,198,67,.16)' : '#eef4f7') + '; color: ' + (on ? '#4e8b1f' : '#5c7a86') + ';'
@@ -1227,7 +1655,7 @@ class Component extends DCLogic {
           ar: p.ar, en: p.en, icon: p.icon, summary: p.summary, accent, glow, accentText, softGlow, nodeIcon,
           pick: () => { if (!on) this.setState({ group: i }); },
           itemStyle: 'display: grid; grid-template-columns: minmax(0, 1fr) 72px minmax(0, 1fr); min-height: 190px; align-items: center; opacity: 0; filter: blur(8px); transform: translateX(' + (side * 42) + 'px); transition: opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1), filter .9s ease;',
-          contentStyle: 'grid-column: ' + (i % 2 ? '3' : '1') + '; grid-row: 1; padding: 26px 0; text-align: ' + (i % 2 ? 'left' : 'right') + '; ' + (i % 2 ? 'padding-left: clamp(18px, 3vw, 48px);' : 'padding-right: clamp(18px, 3vw, 48px);'),
+          contentStyle: 'grid-column: ' + (i % 2 ? '3' : '1') + '; grid-row: 1; padding: 26px 0; text-align: ' + (i % 2 ? 'end' : 'start') + '; ' + (i % 2 ? 'padding-inline-end: clamp(18px, 3vw, 48px);' : 'padding-inline-start: clamp(18px, 3vw, 48px);'),
           nodeWrapStyle: 'grid-column: 2; grid-row: 1; display: grid; place-items: center; position: relative; z-index: 2;',
           nodeStyle: 'display: grid; place-items: center; width: 48px; height: 48px; border-radius: 50%; color: #94a3b8; background: #ffffff; border: 6px solid #ffffff; box-shadow: 0 0 0 1px #dbe7ee; transform: scale(.94); transition: transform .45s ease, box-shadow .45s ease, color .45s ease;'
         };
